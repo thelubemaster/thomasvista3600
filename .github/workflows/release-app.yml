@@ -1,5 +1,4 @@
-# Build a downloadable Android APK + zip, publish to GitHub Releases.
-# Install page: https://thelubemaster.github.io/thomasvista3600/?install=1
+# Build APK from the same Vite app as Pages.
 name: Release app
 
 on:
@@ -15,32 +14,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pack:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.ver.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: ver
-        run: echo "version=$(tr -d ' \n' < VERSION | head -1)" >> "$GITHUB_OUTPUT"
-      - name: Zip companion
-        run: |
-          mkdir -p artifacts
-          (cd companion && zip -qr ../artifacts/3600-wiring.zip .)
-          ls -lh artifacts/3600-wiring.zip
-      - uses: actions/upload-artifact@v4
-        with:
-          name: wiring-zip
-          path: artifacts/3600-wiring.zip
-
   apk:
     runs-on: ubuntu-latest
-    needs: pack
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -50,72 +31,46 @@ jobs:
         run: |
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-      - name: Capacitor Android shell
+      - run: npm install
+      - run: npm run build
+      - name: Capacitor Android
         run: |
           set -e
           npm install --no-save @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
           npx cap add android
           npx cap sync android
-          VER=$(tr -d ' \n' < VERSION)
           python3 -c "
           from pathlib import Path
-          import os
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 2')
-          t = t.replace('versionName \"1.0\"', 'versionName \"%s\"' % os.environ['VER'])
+          t = t.replace('versionCode 1', 'versionCode 3')
+          t = t.replace('versionName \"1.0\"', 'versionName \"1.0.3\"')
           p.write_text(t)
-          print('stamped', os.environ['VER'])
           "
-        env:
-          VER: "1.0.1"
-      - name: Assemble debug APK
+      - name: Assemble APK
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
-      - name: Stage APK
+      - name: Stage
         run: |
           mkdir -p artifacts
           cp android/app/build/outputs/apk/debug/app-debug.apk artifacts/3600-wiring.apk
+          cp -r dist artifacts/web || true
           ls -lh artifacts/3600-wiring.apk
       - uses: actions/upload-artifact@v4
         with:
           name: wiring-apk
           path: artifacts/3600-wiring.apk
-          if-no-files-found: error
-
-  release:
-    needs: [pack, apk]
-    if: ${{ always() && needs.pack.result == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: wiring-zip
-          path: artifacts
-      - name: Download APK if present
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: wiring-apk
-          path: artifacts
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v1
           name: 3600 Wiring
           body: |
-            ## Install
+            **[Install the app](https://thelubemaster.github.io/thomasvista3600/?install=1)**
 
-            **[Open the install page](https://thelubemaster.github.io/thomasvista3600/?install=1)**
-
-            | Device | How |
-            | --- | --- |
-            | **Android** | [Download APK](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk) |
-            | **Any phone** | Install page → Add to Home screen |
-          files: |
-            artifacts/3600-wiring.zip
-            artifacts/3600-wiring.apk
+            Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
+          files: artifacts/3600-wiring.apk
           fail_on_unmatched_files: false
           make_latest: true
         env:

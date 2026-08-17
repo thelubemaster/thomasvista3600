@@ -23,6 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
       - run: npm install
       - name: Stamp version
         run: |
@@ -30,6 +31,10 @@ jobs:
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\"}" > public/version.json
       - run: npm run build
+      - name: Keep APK on the site
+        run: |
+          [ -f public/3600-wiring.apk ] && cp public/3600-wiring.apk dist/3600-wiring.apk
+          ls -la dist | head
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
