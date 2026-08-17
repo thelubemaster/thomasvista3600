@@ -1,8 +1,8 @@
 {
-  "version": "1.1.4",
-  "apkVersion": "1.1.4",
-  "apkVersionCode": 10,
+  "version": "1.1.5",
+  "apkVersion": "1.1.5",
+  "apkVersionCode": 11,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Drawing wires go around boxes, not through them."
+  "notes": "Tap the version badge to check for an update."
 }

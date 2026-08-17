@@ -9,9 +9,9 @@ import { JobBook } from "@/components/job-book";
 import { Manual } from "@/components/manual";
 import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
+import { APP_VERSION, VersionBadge } from "@/components/version-badge";
 import { cn } from "@/lib/utils";
 
-const APP_VERSION = "1.1.4";
 const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
@@ -198,9 +198,7 @@ export default function App() {
           <p className="min-w-0 flex-1 truncate font-mono text-[11px] tracking-[0.16em] text-accent uppercase">
             3600 · T444E 7.3
           </p>
-          <span className="shrink-0 rounded-xs border border-border bg-raised px-2 py-1 font-mono text-xs text-fg">
-            v{APP_VERSION}
-          </span>
+          <VersionBadge />
           <button
             type="button"
             onClick={() => setJumpOpen(true)}
@@ -219,9 +217,7 @@ export default function App() {
             <h1 className="font-display text-3xl font-semibold tracking-tight">Electrical Circuit Diagrams</h1>
           </div>
           <div className="flex items-center gap-2">
-            <span className="rounded-xs border border-border bg-raised px-2.5 py-1.5 font-mono text-sm text-fg">
-              v{APP_VERSION}
-            </span>
+            <VersionBadge />
             <button
               type="button"
               onClick={() => setJumpOpen(true)}
