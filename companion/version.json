@@ -1,7 +1,7 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "3600 Wiring",
-  "builtAt": "2026-08-17T13:00:00Z",
+  "builtAt": "2026-08-17T13:15:00Z",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "In-app updater. Same check as the cost tracker."
+  "notes": "This is the app. Phones install first, then open like Cost Tracker."
 }

@@ -6,7 +6,9 @@
 <meta name="theme-color" content="#0d0c0b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="3600 Wiring" />
-<meta name="app-version" content="1.0.1" />
+<meta name="app-version" content="1.0.2" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="3600 Wiring" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Electrical Circuit Diagrams · 3600 T444E</title>
@@ -74,7 +76,19 @@ main{padding:16px 16px calc(28px + var(--safe))}
 .hop{width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
 .marks button{width:auto;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 12px;color:var(--muted)}
 .marks button.on{border-color:var(--accent);color:var(--fg)}
-#installPage{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;padding:20px}
+#installPage{position:fixed;inset:0;z-index:90;background:var(--bg);overflow:auto;padding:28px 20px calc(28px + var(--safe));display:none}
+#installPage.show{display:block}
+.installer{max-width:420px;margin:0 auto;text-align:center}
+.installer img{width:88px;height:88px;border-radius:20px;border:1px solid var(--border)}
+.installer h1{font-family:var(--font-display);font-size:40px;margin:12px 0 8px}
+.installer-lead{color:var(--muted);margin:0 0 16px}
+.installer ol{text-align:left;color:var(--fg);padding-left:20px}
+.installer-skip{margin-top:20px;background:none;border:0;color:var(--subtle);text-decoration:underline;width:100%}
+body.app-mode header.top{padding-top:calc(12px + env(safe-area-inset-top,0px))}
+body.install-only > header.top,
+body.install-only > .update-bar,
+body.install-only > nav,
+body.install-only > main{display:none!important}
 .primary{display:block;text-align:center;background:var(--accent);color:#1a120c;font-weight:600;padding:16px;border-radius:12px;text-decoration:none;min-height:48px}
 .update-bar{display:none;margin:12px 16px 0;padding:14px;border:1px solid color-mix(in oklab,var(--accent) 45%, var(--border));background:var(--raised);border-radius:14px}
 .update-bar.show{display:block}
@@ -124,14 +138,14 @@ main{padding:16px 16px calc(28px + var(--safe))}
     <div class="card">
       <p class="eyebrow">Updates</p>
       <h2 class="display" style="font-size:28px">Get up to date</h2>
-      <p id="updStatus" class="muted">This app is 1.0.1. Checks the live site when you open it.</p>
+      <p id="updStatus" class="muted">This app is 1.0.2. Checks the live site when you open it.</p>
       <p><button type="button" class="primary" id="chkUpd" style="width:100%;border:0">Check for updates</button></p>
     </div>
-    <div class="card">
+    <div id="installCard" class="card">
       <p class="eyebrow">Install</p>
       <h2 class="display" style="font-size:28px">Put it on the phone</h2>
       <p class="muted">Home screen or APK. Updates then land inside the app.</p>
-      <p><a class="primary" href="?install=1">Open install page</a></p>
+      <p><button type="button" class="primary" id="openInstall" style="width:100%;border:0">Install this app</button></p>
     </div>
     <div class="card">
       <p class="eyebrow">Chassis</p>
@@ -140,21 +154,22 @@ main{padding:16px 16px calc(28px + var(--safe))}
     </div>
   </section>
 </main>
-<div id="installPage" class="hidden">
-  <p class="eyebrow">Install</p>
-  <h1 class="display" style="font-size:40px;margin:8px 0 12px">3600 Wiring</h1>
-  <div class="card">
-    <h3>Android APK</h3>
-    <p class="muted">Direct file. 3.7 MB. Open it, tap Install.</p>
-    <a class="primary" href="3600-wiring.apk" download="3600-wiring.apk">Download APK</a>
-  </div>
-  <div class="card">
-    <h3>Home screen</h3>
-    <p class="muted">Samsung / Chrome: menu → Add to Home screen. iPhone: Safari Share → Add to Home Screen.</p>
-    <button type="button" id="pwaBtn" class="primary" style="width:100%;border:0">Install on this phone</button>
+<div id="installPage">
+  <div class="installer">
+    <img src="icon-192.png" width="88" height="88" alt="" />
+    <p class="eyebrow" style="margin-top:16px">3600 Wiring</p>
+    <h1>Install the app</h1>
+    <p class="installer-lead" id="instLead">One app. Android gets the package. iPhone adds it to the Home Screen.</p>
+    <p><a class="primary" id="apkBtn" href="3600-wiring.apk" download="3600-wiring.apk">Download the app</a></p>
+    <p><button type="button" class="primary" id="pwaBtn" style="width:100%;border:0;margin-top:10px;background:var(--raised);color:var(--fg);border:1px solid var(--border)">Add to Home Screen</button></p>
     <p id="pwaMsg" class="subtle"></p>
+    <ol class="installer-ol" id="instSteps">
+      <li>Android: open the downloaded file → Install</li>
+      <li>iPhone: Safari → Share → Add to Home Screen</li>
+      <li>Open <strong>3600 Wiring</strong> from the home screen</li>
+    </ol>
+    <button type="button" class="installer-skip" id="skipInstall">Continue without installing</button>
   </div>
-  <p><a href="./" class="muted">Back to the diagrams</a></p>
 </div>
 <script src="data.js"></script>
 <script>
@@ -393,7 +408,7 @@ function renderJob(){
 
 draw();
 
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.2";
 const UPDATE_ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK_URL = UPDATE_ORIGIN + "/3600-wiring.apk";
 function cmpVer(a,b){
@@ -474,16 +489,61 @@ if(navigator.serviceWorker){
 }
 
 (function installFlow(){
-  const want=/(?:\?|&)install=1(?:&|$)/.test(location.search);
-  if(want) $("installPage").classList.remove("hidden");
+  const ua=navigator.userAgent||"";
+  const android=/Android/i.test(ua);
+  const ios=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==="MacIntel" && (navigator.maxTouchPoints||0)>1);
+  const cap=!!(window.Capacitor && (window.Capacitor.isNativePlatform?.() || /android|ios/i.test(window.Capacitor.getPlatform?.()||"")));
+  const standalone = cap
+    || window.matchMedia("(display-mode: standalone)").matches
+    || Boolean(navigator.standalone)
+    || /; wv\)/i.test(ua)
+    || document.referrer.includes("android-app://");
+  const params=new URLSearchParams(location.search);
+  let skip=false;
+  try{ skip=localStorage.getItem("wiring-skip-installer")==="1"; }catch(e){}
+  const force=params.get("install")==="1";
+  const appOnly=params.get("app")==="1";
+  const show = !appOnly && (force || ((!standalone && !skip && (android||ios))));
+
+  function openInstaller(){
+    document.body.classList.add("install-only");
+    $("installPage").classList.add("show");
+    if(android){
+      $("instLead").textContent="Download the app, open the file, tap Install. Then open 3600 Wiring from the home screen.";
+      if(!force){
+        setTimeout(function(){ $("apkBtn").click(); }, 400);
+      }
+    } else if(ios){
+      $("instLead").textContent="Same app. In Safari: Share → Add to Home Screen. Then open it like any other app.";
+    }
+  }
+  function closeInstaller(){
+    document.body.classList.remove("install-only");
+    $("installPage").classList.remove("show");
+    try{ localStorage.setItem("wiring-skip-installer","1"); }catch(e){}
+  }
+
+  if(standalone){
+    document.body.classList.add("app-mode");
+    const card=$("installCard");
+    if(card) card.classList.add("hidden");
+  }
+  if(show) openInstaller();
+
+  const openBtn=$("openInstall");
+  if(openBtn) openBtn.onclick=openInstaller;
+  $("skipInstall").onclick=closeInstaller;
+
   let deferred=null;
   window.addEventListener("beforeinstallprompt",(e)=>{ e.preventDefault(); deferred=e; });
   $("pwaBtn").onclick=()=>{
     if(deferred){ deferred.prompt(); return; }
-    const ua=navigator.userEntry||navigator.userAgent||"";
-    $("pwaMsg").textContent=/iPhone|iPad/i.test(ua)?"Safari → Share → Add to Home Screen.":"Menu → Add to Home screen / Install app.";
+    $("pwaMsg").textContent=ios
+      ? "Safari → Share (square with arrow) → Add to Home Screen."
+      : "Menu (⋮) → Add to Home screen / Install app.";
   };
 })();
+
 </script>
 </body>
 </html>
