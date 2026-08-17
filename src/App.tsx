@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { AllCircuits } from "@/components/all-circuits";
 import { CircuitTable } from "@/components/circuit-table";
 import { CommandJump, type JumpTab } from "@/components/command-jump";
-import { Firewall } from "@/components/firewall";
+import { BookPlugs } from "@/components/book-plugs";
 import { FusePanel } from "@/components/fuse-panel";
 import { JobBook } from "@/components/job-book";
 import { Manual } from "@/components/manual";
@@ -11,7 +11,7 @@ import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
 import { cn } from "@/lib/utils";
 
-const APP_VERSION = "1.1.2";
+const APP_VERSION = "1.1.3";
 const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
@@ -280,7 +280,7 @@ export default function App() {
                 ["plugs", "Plugs"],
               ]}
             />
-            {circuitView === "draw" ? <AllCircuits query={query} focus={hint} /> : <Firewall focus={hint} />}
+            {circuitView === "draw" ? <AllCircuits query={query} focus={hint} /> : <BookPlugs focus={hint} />}
           </div>
         ) : null}
         {tab === "fuses" ? (

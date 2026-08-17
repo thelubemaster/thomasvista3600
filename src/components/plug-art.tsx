@@ -677,6 +677,171 @@ function SvgPlate({
   );
 }
 
+/** 2-pin Weather Pack — sensors, stop/hyd switches. */
+export function Weather2Art({ pins, active, family, onPick }: ArtProps) {
+  const cavs = pins.length ? pins.map((p) => p.cavity) : ["A", "B"];
+  return (
+    <SvgPlate caption="2-way Weather Pack · mating end" find="Small sealed 2-pin. Latch on the long side. Same family as the book’s stop / hyd / sender plugs.">
+      <path d="M 70 70 L 90 48 L 190 48 L 210 70 L 210 130 L 190 152 L 90 152 L 70 130 Z" fill={paper} stroke={ink} strokeWidth="2.2" />
+      <path d="M 124 48 L 124 38 L 156 38 L 156 48" fill="none" stroke={ink} strokeWidth="1.6" />
+      {cavs.slice(0, 2).map((c, i) => (
+        <g key={c}>
+          <Hole x={92 + i * 52} y={78} size={40} cavity={c} pin={pinAt(pins, c)} active={active === c} family={family} onPick={onPick} round />
+          <text x={112 + i * 52} y={136} textAnchor="middle" fill={ink} style={lab}>
+            {c}
+          </text>
+        </g>
+      ))}
+    </SvgPlate>
+  );
+}
+
+/** 3-pin Weather Pack — BAP, diode, APS. */
+export function Weather3Art({ pins, active, family, onPick }: ArtProps) {
+  const cavs = pins.length ? pins.map((p) => p.cavity) : ["A", "B", "C"];
+  return (
+    <SvgPlate caption="3-way Weather Pack · mating end" find="Sealed 3-pin triangle latch. Used on sensors and the hyd diode pack.">
+      <path d="M 58 78 L 86 44 L 194 44 L 222 78 L 222 148 L 194 176 L 86 176 L 58 148 Z" fill={paper} stroke={ink} strokeWidth="2.2" />
+      <path d="M 118 44 L 118 32 L 162 32 L 162 44" fill="none" stroke={ink} strokeWidth="1.6" />
+      {cavs.slice(0, 3).map((c, i) => (
+        <g key={c}>
+          <Hole x={74 + i * 46} y={82} size={36} cavity={c} pin={pinAt(pins, c)} active={active === c} family={family} onPick={onPick} round />
+          <text x={92 + i * 46} y={138} textAnchor="middle" fill={ink} style={lab}>
+            {c}
+          </text>
+        </g>
+      ))}
+    </SvgPlate>
+  );
+}
+
+/** 4-pin lamp / sealed. */
+export function Weather4Art({ pins, active, family, onPick }: ArtProps) {
+  const cavs = pins.length ? pins.map((p) => p.cavity) : ["A", "B", "C", "D"];
+  const pos = [
+    [78, 56],
+    [128, 56],
+    [78, 108],
+    [128, 108],
+  ];
+  return (
+    <SvgPlate caption="4-way sealed · mating end" find="Square sealed 4-pin. Headlamp and small harness plugs.">
+      <rect x="62" y="40" width="116" height="120" rx="8" fill={paper} stroke={ink} strokeWidth="2.2" />
+      <path d="M 104 40 L 104 28 L 136 28 L 136 40" fill="none" stroke={ink} strokeWidth="1.6" />
+      {cavs.slice(0, 4).map((c, i) => (
+        <g key={c}>
+          <Hole x={pos[i][0]} y={pos[i][1]} size={36} cavity={c} pin={pinAt(pins, c)} active={active === c} family={family} onPick={onPick} round />
+          <text x={pos[i][0] + 18} y={pos[i][1] + 50} textAnchor="middle" fill={ink} style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", fontWeight: 600 }}>
+            {c}
+          </text>
+        </g>
+      ))}
+    </SvgPlate>
+  );
+}
+
+/** Multi-cavity sealed row (monitor 49, body builder, cruise). */
+export function SealedRowArt({ pins, active, family, onPick }: ArtProps) {
+  const cavs = pins.map((p) => p.cavity);
+  const cols = Math.min(5, Math.max(2, Math.ceil(cavs.length / 2)));
+  const rows = Math.ceil(cavs.length / cols);
+  const w = 36 + cols * 40;
+  const h = 48 + rows * 46;
+  return (
+    <SvgPlate
+      caption={`${cavs.length}-way sealed · mating end`}
+      find="Sealed row housing as printed — tap a cavity for the circuit."
+      box={`0 0 ${Math.max(280, w + 24)} ${Math.max(180, h + 20)}`}
+      maxW={Math.max(280, w + 24)}
+    >
+      <rect x="20" y="28" width={w} height={h} rx="8" fill={paper} stroke={ink} strokeWidth="2.2" />
+      <path d={`M ${20 + w / 2 - 16} 28 L ${20 + w / 2 - 16} 16 L ${20 + w / 2 + 16} 16 L ${20 + w / 2 + 16} 28`} fill="none" stroke={ink} strokeWidth="1.6" />
+      {cavs.map((c, i) => {
+        const ci = i % cols;
+        const ri = Math.floor(i / cols);
+        return (
+          <g key={c}>
+            <Hole x={36 + ci * 40} y={44 + ri * 46} size={30} cavity={c} pin={pinAt(pins, c)} active={active === c} family={family} onPick={onPick} />
+            <text x={51 + ci * 40} y={42 + ri * 46} textAnchor="middle" fill={ink} style={{ fontSize: 9, fontFamily: "ui-monospace, monospace", fontWeight: 600 }}>
+              {c}
+            </text>
+          </g>
+        );
+      })}
+    </SvgPlate>
+  );
+}
+
+/** Diagnostic / program 6-way (384). */
+export function Diag6Art({ pins, active, family, onPick }: ArtProps) {
+  const cavs = ["A", "B", "C", "D", "E", "F"];
+  return (
+    <SvgPlate caption="DIAGNOSTIC & PROGRAM (384) · mating end" find="6-way under the dash. A–F across two rows. This is the self-test / data plug.">
+      <rect x="48" y="48" width="184" height="120" rx="10" fill={paper} stroke={ink} strokeWidth="2.2" />
+      <path d="M 118 48 L 118 34 L 162 34 L 162 48" fill="none" stroke={ink} strokeWidth="1.6" />
+      {cavs.map((c, i) => {
+        const ci = i % 3;
+        const ri = Math.floor(i / 3);
+        return (
+          <g key={c}>
+            <Hole x={66 + ci * 50} y={64 + ri * 48} size={36} cavity={c} pin={pinAt(pins, c)} active={active === c} family={family} onPick={onPick} />
+            <text x={84 + ci * 50} y={62 + ri * 48} textAnchor="middle" fill={ink} style={lab}>
+              {c}
+            </text>
+          </g>
+        );
+      })}
+    </SvgPlate>
+  );
+}
+
+/** FUSE BLOCK — printed page 77, cable insertion end. */
+export function FuseBlockArt({ pins, active, family, onPick }: ArtProps) {
+  const rows: string[][] = [
+    ["A1-A", "A1-B", "A2-A", "A2-B"],
+    ["B1-A", "B1-B"],
+    ["C1-A", "C1-B", "C2-A", "C2-B", "C3-A", "C3-B"],
+    ["D1-A", "D1-B", "D2-A", "D2-B", "D3-A", "D3-B"],
+    ["E1-A", "E1-B", "E2-A", "E2-B", "E3-A", "E3-B"],
+    ["F1-A", "F1-B", "F2-A", "F2-B", "F3-A", "F3-B"],
+    ["G1-A", "G1-B"],
+    ["H1-A", "H1-B"],
+    ["R1-A", "R1-B"],
+  ];
+  const labels = ["A", "B", "C", "D", "E", "F", "G", "H", "FL"];
+  return (
+    <SvgPlate
+      caption="FUSE BLOCK · cable insertion end · page 77"
+      find="Behind the fuse cover. Each fuse is a pair of cavities (A feed / B load). Flasher is the round pair at the bottom."
+      wide
+      box="0 0 440 360"
+      maxW={440}
+    >
+      <rect x="16" y="16" width="408" height="328" rx="6" fill={paper} stroke={ink} strokeWidth="2.2" />
+      {rows.map((row, ri) => (
+        <g key={labels[ri]}>
+          <text x="28" y={42 + ri * 34} fill={ink} style={lab}>
+            {labels[ri]}
+          </text>
+          {row.map((c, ci) => (
+            <Hole
+              key={c}
+              x={52 + ci * 58}
+              y={24 + ri * 34}
+              size={26}
+              cavity={c}
+              pin={pinAt(pins, c)}
+              active={active === c}
+              family={family}
+              onPick={onPick}
+            />
+          ))}
+        </g>
+      ))}
+    </SvgPlate>
+  );
+}
+
 export function PlugArt({
   tag,
   pins,
@@ -691,6 +856,7 @@ export function PlugArt({
   onPick: (cavity: string) => void;
 }) {
   const p = { pins, active, family, onPick };
+  if (tag === "FUSE") return <FuseBlockArt {...p} />;
   if (tag === "2") return <Dash2Art {...p} />;
   if (tag === "2A") return <Engine2AArt {...p} />;
   if (tag === "2B" || tag === "2B-M") return <Front2BArt {...p} />;
@@ -700,25 +866,15 @@ export function PlugArt({
   if (tag === "27") return <Cluster17Art {...p} color="GREEN" />;
   if (tag === "28") return <Cluster17Art {...p} color="NATURAL" />;
   if (tag === "63") return <Key63Art {...p} />;
-  if (tag === "71" || tag === "399") return <Filter6Art {...p} />;
+  if (tag === "71" || tag === "399" || tag === "401") return <Filter6Art {...p} />;
   if (tag === "379") return <Cec60Art {...p} />;
-  if (["61", "387", "396", "431", "300", "615"].includes(tag)) return <Iso4Art {...p} />;
-  return (
-    <SvgPlate caption={`CONNECTOR ${tag} · mating end`} find="Cavities as listed in the book. Tap a hole.">
-      <rect x="20" y="20" width="240" height="220" rx="6" fill={paper} stroke={ink} strokeWidth="2" />
-      {pins.slice(0, 24).map((pin, i) => (
-        <Hole
-          key={pin.cavity}
-          x={36 + (i % 6) * 36}
-          y={40 + Math.floor(i / 6) * 36}
-          size={28}
-          cavity={pin.cavity}
-          pin={pin}
-          active={active === pin.cavity}
-          family={family}
-          onPick={onPick}
-        />
-      ))}
-    </SvgPlate>
-  );
+  if (tag === "384") return <Diag6Art {...p} />;
+  if (["61", "387", "396", "431", "300", "615", "100", "101", "423", "639", "661", "662", "995", "996"].includes(tag)) {
+    return <Iso4Art {...p} />;
+  }
+  if (["50", "51", "303", "304", "398", "345", "373", "374", "540"].includes(tag)) return <Weather2Art {...p} />;
+  if (["47/48", "406", "382", "301", "763", "605"].includes(tag)) return <Weather3Art {...p} />;
+  if (["502", "504", "503", "470"].includes(tag)) return <Weather4Art {...p} />;
+  if (["284", "286"].includes(tag)) return <Weather4Art {...p} />;
+  return <SealedRowArt {...p} />;
 }
