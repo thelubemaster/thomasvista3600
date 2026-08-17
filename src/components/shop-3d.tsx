@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { circuitToggles, partById, type ToggleId } from "@/data/world";
-import { keyPositions, type KeyPos } from "@/data/follow";
+import { hopsForCircuit, keyPositions, type Hop, type KeyPos } from "@/data/follow";
 import { FollowPanel } from "@/components/follow-panel";
 import { relayFaces } from "@/data/relay-pins";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,13 @@ function loadOn(): Set<string> {
 
 function defaultCrit() {
   return new Set(circuitToggles.filter((c) => c.crit).map((c) => c.id));
+}
+
+function hopChip(h: Hop) {
+  const num = h.toLabel.match(/\(([^)]+)\)\s*$/);
+  if (num) return num[1];
+  const word = h.toLabel.split(/[·,/]/)[0]?.trim() ?? h.circuit;
+  return word.length > 14 ? `${word.slice(0, 13)}…` : word;
 }
 
 export function Shop3D() {
@@ -77,34 +84,59 @@ export function Shop3D() {
 
   const count = on.size;
   const onMemo = useMemo(() => on, [on]);
+  const hops = followId ? hopsForCircuit(followId) : [];
+  const hopChips = (() => {
+    const seen = new Set<string>();
+    const out: Hop[] = [];
+    for (const h of hops) {
+      if (seen.has(h.toId)) continue;
+      seen.add(h.toId);
+      out.push(h);
+    }
+    return out;
+  })();
+
+  const pickPart = (id: string | null) => {
+    setSelected(id);
+    if (id) {
+      const p = partById(id);
+      const c = p?.circuits.find((x) => on.has(x));
+      if (c) setFollow(c);
+    }
+    setHopWireId(null);
+  };
+
+  const walkHop = (h: Hop) => {
+    setHopWireId(h.wireId);
+    setSelected(h.toId);
+    setFollow(h.circuit.match(/^\d+/)?.[0] ?? h.circuit);
+    const fam = h.circuit.match(/^\d+/)?.[0];
+    if (fam && !on.has(fam)) {
+      setOn((prev) => new Set(prev).add(fam));
+    }
+  };
 
   return (
     <div className="flex min-w-0 flex-col gap-4 lg:flex-row">
-      <div className="relative min-h-[420px] flex-1 overflow-hidden rounded-md border border-border bg-bg lg:min-h-[640px]">
-        {ready ? (
-          <Suspense fallback={<p className="p-6 font-mono text-sm text-muted">Loading shop…</p>}>
-            <ShopCanvas
-              on={onMemo}
-              selected={selected}
-              onSelect={(id) => {
-                setSelected(id);
-                if (id) {
-                  const p = partById(id);
-                  const c = p?.circuits.find((x) => on.has(x));
-                  if (c) setFollow(c);
-                }
-                setHopWireId(null);
-              }}
-              keyPos={keyPos}
-              followCircuit={followId}
-              hopWireId={hopWireId}
-            />
-          </Suspense>
-        ) : (
-          <p className="p-6 font-mono text-sm text-muted">Loading shop…</p>
-        )}
-        <div className="absolute top-3 left-3 right-3 flex flex-wrap items-center gap-2">
-          <div className="flex rounded-sm border border-border bg-raised/95 p-1">
+      <div className="relative isolate h-[min(48svh,420px)] w-full overflow-hidden rounded-md border border-border bg-bg sm:h-[min(60svh,540px)] lg:h-[min(78vh,680px)]">
+        <div className="absolute inset-0">
+          {ready ? (
+            <Suspense fallback={<p className="p-6 font-mono text-sm text-muted">Loading shop…</p>}>
+              <ShopCanvas
+                on={onMemo}
+                selected={selected}
+                onSelect={pickPart}
+                keyPos={keyPos}
+                followCircuit={followId}
+                hopWireId={hopWireId}
+              />
+            </Suspense>
+          ) : (
+            <p className="p-6 font-mono text-sm text-muted">Loading shop…</p>
+          )}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center p-2 sm:justify-start sm:p-3">
+          <div className="pointer-events-auto flex rounded-sm border border-border bg-raised/95 p-1">
             {keyPositions.map((k) => (
               <button
                 key={k.id}
@@ -120,9 +152,34 @@ export function Shop3D() {
             ))}
           </div>
         </div>
-        <p className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10px] text-subtle">
-          Drag to orbit · tap a part · key shows what is live
-        </p>
+        <div className="absolute inset-x-0 bottom-0 z-10 p-2 sm:p-3">
+          <p className="pointer-events-none mb-1.5 font-mono text-[10px] text-subtle">
+            Drag to orbit · tap a part · tap a hop
+          </p>
+          {hopChips.length ? (
+            <div className="hop-strip flex gap-1 overflow-x-auto pb-0.5">
+              {hopChips.map((h) => {
+                const active = hopWireId === h.wireId;
+                return (
+                  <button
+                    key={h.wireId}
+                    type="button"
+                    onClick={() => walkHop(h)}
+                    className={cn(
+                      "flex min-h-9 shrink-0 items-center gap-1.5 rounded-xs border px-2 font-mono text-[11px]",
+                      active
+                        ? "border-accent bg-accent text-accent-fg"
+                        : "border-border bg-raised/95 text-fg",
+                    )}
+                  >
+                    <span className={active ? "opacity-80" : "text-accent"}>{h.i}</span>
+                    <span>{hopChip(h)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <aside className="flex w-full shrink-0 flex-col gap-3 lg:w-80">
@@ -171,15 +228,7 @@ export function Shop3D() {
               setOn((prev) => new Set(prev).add(id));
             }
           }}
-          onHop={(h) => {
-            setHopWireId(h.wireId);
-            setSelected(h.toId);
-            setFollow(h.circuit.match(/^\d+/)?.[0] ?? h.circuit);
-            const fam = h.circuit.match(/^\d+/)?.[0];
-            if (fam && !on.has(fam)) {
-              setOn((prev) => new Set(prev).add(fam));
-            }
-          }}
+          onHop={walkHop}
         />
 
         <div className="max-h-[280px] overflow-y-auto rounded-md border border-border bg-surface lg:max-h-[220px]">

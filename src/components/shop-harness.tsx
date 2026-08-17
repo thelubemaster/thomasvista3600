@@ -139,7 +139,7 @@ export function Cable({
         />
       </mesh>
       {tag && (focus || (!dim && live)) ? (
-        <Html position={mid} center distanceFactor={7} style={{ pointerEvents: "none" }}>
+        <Html position={mid} center distanceFactor={7} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
           <span className="rounded-xs border border-border bg-raised/90 px-1.5 py-0.5 font-mono text-[10px] text-fg">
             {tag}
           </span>

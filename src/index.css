@@ -63,6 +63,22 @@
   }
 }
 
+/* drei Html labels — never participate in document flow or steal taps */
+.shop-html {
+  pointer-events: none !important;
+}
+.shop-html > div {
+  pointer-events: none !important;
+  white-space: nowrap;
+}
+
+.hop-strip {
+  scrollbar-width: none;
+}
+.hop-strip::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

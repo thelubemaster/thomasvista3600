@@ -1,5 +1,6 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
+import { useLayoutEffect, useRef } from "react";
 import {
   AllisonTrans,
   Alternator,
@@ -186,7 +187,7 @@ function Dash2Face({ selected, onPick }: { selected: boolean; onPick: () => void
         )),
       )}
       {selected ? (
-        <Html center distanceFactor={8} style={{ pointerEvents: "none" }}>
+        <Html center distanceFactor={8} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
           <div className="rounded-sm border border-accent bg-raised/95 px-2 py-1 font-mono text-[10px] whitespace-nowrap text-fg">
             DASH CONNECTOR (2)
           </div>
@@ -211,13 +212,51 @@ function Front2BFace({ selected, onPick }: { selected: boolean; onPick: () => vo
         )),
       )}
       {selected ? (
-        <Html center distanceFactor={8} style={{ pointerEvents: "none" }}>
+        <Html center distanceFactor={8} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
           <div className="rounded-sm border border-accent bg-raised/95 px-2 py-1 font-mono text-[10px] whitespace-nowrap text-fg">
             FRONT END CONNECTOR (2B)
           </div>
         </Html>
       ) : null}
     </group>
+  );
+}
+
+function Engine3Card({ cab }: { cab: { c: string; x: number; y: number }[] }) {
+  const wide = useThree((s) => s.size.width > 520);
+  if (!wide) {
+    return (
+      <Html center distanceFactor={7} position={[0, 0.22, 0]} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
+        <div className="rounded-sm border border-accent bg-raised/95 px-2 py-1 font-mono text-[10px] whitespace-nowrap text-fg">
+          ENGINE DASH (3)
+        </div>
+      </Html>
+    );
+  }
+  return (
+    <Html center distanceFactor={5} position={[0, 0.22, 0.08]} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
+      <div className="w-56 rounded-sm border border-[#c9c2b4] bg-[#f4f0e6] px-2 py-2 text-[#1a1814] shadow-sm">
+        <p className="text-center font-mono text-[9px] font-semibold tracking-widest uppercase">
+          ELECTRONIC ENGINE DASH CONNECTOR (3)
+        </p>
+        <p className="mt-0.5 text-center font-mono text-[9px] uppercase">Cab harness · mating end · green seal</p>
+        <div className="relative mx-auto mt-1 h-36 w-36">
+          {cab.map((p) => (
+            <span
+              key={p.c}
+              className="absolute font-mono text-[9px] font-bold"
+              style={{
+                left: `${50 + p.x * 520}%`,
+                top: `${50 - p.y * 520}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              {p.c}
+            </span>
+          ))}
+        </div>
+      </div>
+    </Html>
   );
 }
 
@@ -281,34 +320,8 @@ function Engine3Face({ selected, onPick }: { selected: boolean; onPick: () => vo
         </group>
       ))}
       {selected ? (
-        <Html center distanceFactor={5} position={[0, 0.22, 0.08]} style={{ pointerEvents: "none" }}>
-          <div className="w-56 rounded-sm border border-[#c9c2b4] bg-[#f4f0e6] px-2 py-2 text-[#1a1814] shadow-sm">
-            <p className="text-center font-mono text-[9px] font-semibold tracking-widest uppercase">
-              ELECTRONIC ENGINE DASH CONNECTOR (3)
-            </p>
-            <p className="mt-0.5 text-center font-mono text-[9px] uppercase">Cab harness · mating end · green seal</p>
-            <div className="relative mx-auto mt-1 h-36 w-36">
-              {cab.map((p) => (
-                <span
-                  key={p.c}
-                  className="absolute font-mono text-[9px] font-bold"
-                  style={{
-                    left: `${50 + p.x * 520}%`,
-                    top: `${50 - p.y * 520}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                >
-                  {p.c}
-                </span>
-              ))}
-            </div>
-          </div>
-        </Html>
-      ) : (
-        <Html center distanceFactor={9} position={[0, 0.18, 0]} style={{ pointerEvents: "none" }}>
-          <p className="font-mono text-[10px] text-subtle">3</p>
-        </Html>
-      )}
+        <Engine3Card cab={cab} />
+      ) : null}
     </group>
   );
 }
@@ -342,7 +355,7 @@ function PartMesh({
         </mesh>
       )}
       {selected ? (
-        <Html center distanceFactor={8} style={{ pointerEvents: "none" }}>
+        <Html center distanceFactor={8} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
           <div className="rounded-sm border border-accent bg-raised/95 px-2 py-1 font-mono text-[10px] whitespace-nowrap text-fg">
             {part.label}
             <span className="ml-2 text-muted">{part.sub}</span>
@@ -355,13 +368,67 @@ function PartMesh({
 
 function ZoneTag({ pos, text }: { pos: [number, number, number]; text: string }) {
   return (
-    <Html position={pos} center style={{ pointerEvents: "none" }}>
+    <Html position={pos} center distanceFactor={14} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
       <p className="font-mono text-[10px] tracking-[0.2em] text-subtle uppercase">{text}</p>
     </Html>
   );
 }
 
+function FitShop() {
+  const { camera, size, controls } = useThree();
+  const mode = size.height / Math.max(size.width, 1) > 1.08 ? "tall" : "wide";
+  const applied = useRef<string | null>(null);
+  useLayoutEffect(() => {
+    if (applied.current === mode) return;
+    applied.current = mode;
+    const persp = camera as typeof camera & { fov?: number; updateProjectionMatrix: () => void };
+    const ctrl = controls as { target?: { set: (x: number, y: number, z: number) => void }; update?: () => void } | undefined;
+    if (mode === "tall") {
+      camera.position.set(2.05, 1.28, 0.72);
+      if (typeof persp.fov === "number") persp.fov = 36;
+      ctrl?.target?.set(0, 0.74, -0.72);
+    } else {
+      camera.position.set(3.4, 2.2, 1.6);
+      if (typeof persp.fov === "number") persp.fov = 40;
+      ctrl?.target?.set(0, 0.7, -0.8);
+    }
+    persp.updateProjectionMatrix();
+    ctrl?.update?.();
+  }, [camera, controls, mode]);
+  return null;
+}
+
 export function ShopScene({
+  on,
+  selected,
+  onSelect,
+  keyPos,
+  followCircuit,
+  hopWireId,
+}: {
+  on: Set<string>;
+  selected: string | null;
+  onSelect: (id: string | null) => void;
+  keyPos: KeyPos;
+  followCircuit: string | null;
+  hopWireId: string | null;
+}) {
+  return (
+    <group onClick={() => onSelect(null)}>
+      <Structure />
+      <ShopParts
+        on={on}
+        selected={selected}
+        onSelect={onSelect}
+        keyPos={keyPos}
+        followCircuit={followCircuit}
+        hopWireId={hopWireId}
+      />
+    </group>
+  );
+}
+
+function ShopParts({
   on,
   selected,
   onSelect,
@@ -383,8 +450,7 @@ export function ShopScene({
   };
 
   return (
-    <group onClick={() => onSelect(null)}>
-      <Structure />
+    <group>
       <CabDash selectedId={selected} onPick={onSelect} />
       <ZoneTag pos={[0, 2.15, 1.3]} text="Cab" />
       <ZoneTag pos={[0, 2.15, 0]} text="Firewall" />
@@ -440,7 +506,7 @@ export function ShopScene({
             dim={dim}
             focus={onHop || (!!followCircuit && inFollow && !selected)}
             live={wireIsLive(w, keyPos)}
-            tag={onHop || (followCircuit === w.circuit && inFollow) ? w.circuit : undefined}
+            tag={onHop ? w.circuit : undefined}
           />
         );
       })}
@@ -469,7 +535,8 @@ export default function ShopCanvas({
       dpr={[1, 1.75]}
       shadows
       gl={{ antialias: true, alpha: false }}
-      style={{ touchAction: "none" }}
+      resize={{ debounce: 0 }}
+      style={{ position: "absolute", inset: 0, touchAction: "none" }}
     >
       <color attach="background" args={["#0d0c0b"]} />
       <hemisphereLight args={["#c4b8a8", "#1a1612", 0.35]} />
@@ -477,16 +544,18 @@ export default function ShopCanvas({
       <directionalLight position={[4, 6, 3]} intensity={1.25} castShadow />
       <directionalLight position={[-2.5, 3.2, -2.5]} intensity={0.45} />
       <spotLight position={[1.2, 3.4, -1.6]} angle={0.55} penumbra={0.5} intensity={1.1} />
+      <FitShop />
       <ShopScene on={on} selected={selected} onSelect={onSelect} keyPos={keyPos} followCircuit={followCircuit} hopWireId={hopWireId} />
       <OrbitControls
         makeDefault
         enableDamping
         dampingFactor={0.08}
-        minDistance={1.6}
+        minDistance={1.4}
         maxDistance={12}
         maxPolarAngle={Math.PI / 2.05}
         target={[0, 0.7, -0.8]}
       />
+      <FitShop />
     </Canvas>
   );
 }

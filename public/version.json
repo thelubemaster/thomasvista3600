@@ -1,6 +1,6 @@
 {
-  "version": "1.0.5",
+  "version": "1.0.6",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Shop-manual updates itself. 3D shop, hops, fuse panel, book, pin map."
+  "notes": "3D shop viewer fills the screen. Hop chips sit on the shop, not stacked on the key."
 }

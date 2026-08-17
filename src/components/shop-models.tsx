@@ -42,7 +42,7 @@ function M({
 
 function Tag({ text, sub }: { text: string; sub?: string }) {
   return (
-    <Html center distanceFactor={7} style={{ pointerEvents: "none" }}>
+    <Html center distanceFactor={7} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
       <div className="rounded-sm border border-accent bg-raised/95 px-2 py-1 font-mono text-[10px] whitespace-nowrap text-fg shadow-lg">
         {text}
         {sub ? <span className="ml-2 text-muted">{sub}</span> : null}
@@ -453,7 +453,7 @@ export function IsoRelay({
               <meshBasicMaterial color={p.hex} transparent opacity={op} />
             </mesh>
             {selected ? (
-              <Html center distanceFactor={5} style={{ pointerEvents: "none" }}>
+              <Html center distanceFactor={5} wrapperClass="shop-html" style={{ pointerEvents: "none" }}>
                 <span className="font-mono text-[9px] text-fg">{p.iso}</span>
               </Html>
             ) : null}
