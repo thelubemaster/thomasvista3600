@@ -1,0 +1,76 @@
+# Deploy Thomas Vista 3600 wiring site on every push to main.
+# Site: https://thelubemaster.github.io/thomasvista3600/
+#
+# One-time setup (repo Settings → Pages):
+#   Source = GitHub Actions
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci || npm install
+
+      - name: Build site
+        run: |
+          set -e
+          mkdir -p _site
+          if [ -f companion/index.html ]; then
+            cp companion/index.html _site/index.html
+            if [ -d companion/public ]; then
+              cp -r companion/public _site/public || true
+            fi
+            if [ -d companion/pages ]; then
+              cp -r companion/pages _site/pages || true
+            fi
+          fi
+          if npm run build; then
+            mkdir -p _site/app
+            cp -r dist/* _site/app/ || true
+          else
+            echo "Vite build skipped or incomplete — companion still deployed"
+          fi
+          if [ ! -f _site/index.html ]; then
+            echo '<!DOCTYPE html><html><body><h1>Thomas Vista 3600</h1><p>Push companion/index.html to deploy the wiring app.</p></body></html>' > _site/index.html
+          fi
+          ls -la _site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
