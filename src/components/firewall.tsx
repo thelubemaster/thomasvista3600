@@ -12,7 +12,6 @@ const PLUGS = [
   {
     id: "dash",
     connId: "dash-2-hyd",
-    extraId: "front-2-cab",
     tag: "2",
     title: "DASH CONNECTOR (2)",
     where: "ENGINE CONNECTOR W/HYD BRAKES (CAB SIDE)",
@@ -30,8 +29,16 @@ const PLUGS = [
     id: "front",
     connId: "front-2-cab",
     tag: "2B",
-    title: "FRONT END CONNECTOR (2B)",
-    where: "Lamp / horn half · tall 3×8",
+    title: "FRONT END CONNECTOR (2B) · CAB",
+    where: "Lamp / horn half · cab side",
+    page: "78",
+  },
+  {
+    id: "frontm",
+    connId: "front-2b-mate",
+    tag: "2B",
+    title: "FRONT END CONNECTOR (2B) · HOOD",
+    where: "Front-end / hood harness mate",
     page: "79",
   },
   {
@@ -90,21 +97,33 @@ export function Firewall({ focus }: { focus?: string | null }) {
   }
 
   return (
-    <div className="space-y-6">
-      <header>
-        <p className="font-mono text-xs tracking-widest text-accent uppercase">
-          CONNECTOR BODY COMPOSITE — VIEWED FROM MATING ENDS
-        </p>
-        <h2 className="font-display text-xl font-semibold tracking-tight sm:text-3xl">Find the plug</h2>
-        <p className="mt-1 hidden max-w-2xl text-sm leading-relaxed text-muted sm:block">
-          Same drawings as the book. Cream plate, black outline, mating end. Tap a hole — that circuit lights on every plug.
-        </p>
-      </header>
+    <div className="space-y-4">
+      <nav className="tab-strip flex gap-1 overflow-x-auto">
+        {PLUGS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => {
+              setPlugId(p.id);
+              const first = plugPins(p).find((x) => !isEmpty(x));
+              if (first) setCavity(first.cavity);
+              document.getElementById(`plug-${p.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className={cn(
+              "h-11 shrink-0 rounded-xs border px-3 font-mono text-sm",
+              plug.id === p.id ? "border-accent bg-raised text-fg" : "border-border text-muted",
+            )}
+          >
+            {p.tag}
+            {p.id === "frontm" ? " hood" : p.id === "front" ? " cab" : ""}
+          </button>
+        ))}
+      </nav>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         <div className="space-y-5">
           {PLUGS.map((p) => (
-            <article key={p.id} className="rounded-lg border border-border bg-surface p-3 sm:p-4">
+            <article id={`plug-${p.id}`} key={p.id} className="scroll-mt-28 rounded-lg border border-border bg-surface p-3 sm:p-4">
               <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
                 <div>
                   <p className="font-mono text-[10px] tracking-widest text-accent uppercase">

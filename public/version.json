@@ -1,6 +1,6 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Book tab is the CTS-5123V PDF."
+  "notes": "Plugs shows every firewall face: 2, 2A, 2B cab, 2B hood, 3."
 }
