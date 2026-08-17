@@ -32,6 +32,11 @@ jobs:
             [ -f companion/data.js ] && cp companion/data.js _site/data.js
             [ -f companion/app.js ] && cp companion/app.js _site/app.js
             [ -d companion/public ] && cp -r companion/public _site/public || true
+            mkdir -p _site/now
+            cp companion/index.html _site/now/index.html
+            [ -f companion/data.js ] && cp companion/data.js _site/now/data.js
+            # cache-buster file so phones that cached / don't stick
+            date -u +%Y-%m-%dT%H:%M:%SZ > _site/BUILD.txt
           elif [ -f index.html ]; then
             cp index.html _site/index.html
           else
