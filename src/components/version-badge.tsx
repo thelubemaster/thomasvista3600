@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const APP_VERSION = "1.1.5";
+export const APP_VERSION = "1.1.7";
 const LIVE = "https://thelubemaster.github.io/thomasvista3600";
 
 function cmpVer(a: string, b: string) {
@@ -15,11 +16,11 @@ function cmpVer(a: string, b: string) {
   return 0;
 }
 
-type Status = "checking" | "current" | "available" | "error";
+type Status = "idle" | "checking" | "current" | "available" | "error";
 
 export function VersionBadge({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState<Status>("checking");
+  const [status, setStatus] = useState<Status>("idle");
   const [remote, setRemote] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -50,6 +51,11 @@ export function VersionBadge({ className }: { className?: string }) {
   }
 
   function apply() {
+    try {
+      navigator.serviceWorker?.controller?.postMessage({ type: "SKIP_WAITING" });
+    } catch {
+      /* ignore */
+    }
     window.location.replace(`${LIVE}/?updated=${Date.now()}`);
   }
 
@@ -59,11 +65,12 @@ export function VersionBadge({ className }: { className?: string }) {
         type="button"
         onClick={openSheet}
         className={cn(
-          "shrink-0 rounded-xs border border-border bg-raised px-2 py-1 font-mono text-xs text-fg sm:px-2.5 sm:py-1.5 sm:text-sm",
+          "inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xs border border-accent/50 bg-raised px-2.5 font-mono text-xs text-fg sm:px-3 sm:text-sm",
           className,
         )}
-        aria-label={`Version ${APP_VERSION}, check for update`}
+        aria-label={`Version ${APP_VERSION}. Check for update`}
       >
+        <RefreshCw className="size-3.5 text-accent" aria-hidden />
         v{APP_VERSION}
       </button>
 
@@ -83,8 +90,11 @@ export function VersionBadge({ className }: { className?: string }) {
               This copy
             </p>
             <h2 className="mt-1 font-display text-2xl font-semibold">v{APP_VERSION}</h2>
+            {remote ? (
+              <p className="mt-1 font-mono text-xs text-subtle">Live site · v{remote}</p>
+            ) : null}
 
-            {status === "checking" ? (
+            {status === "checking" || status === "idle" ? (
               <p className="mt-3 text-sm text-muted">Checking for an update…</p>
             ) : null}
             {status === "current" ? (
@@ -114,8 +124,9 @@ export function VersionBadge({ className }: { className?: string }) {
                   type="button"
                   onClick={() => void check()}
                   className="h-11 flex-1 rounded-xs border border-border px-4 text-sm text-fg"
+                  disabled={status === "checking"}
                 >
-                  Check again
+                  {status === "checking" ? "Checking…" : "Check again"}
                 </button>
               )}
               <button
