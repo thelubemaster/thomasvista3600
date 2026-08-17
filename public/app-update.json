@@ -1,8 +1,8 @@
 {
-  "version": "1.0.6",
-  "apkVersion": "1.0.6",
+  "version": "1.0.7",
+  "apkVersion": "1.0.7",
   "apkVersionCode": 6,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "3D shop viewer fills the screen. Hop chips sit on the shop, not stacked on the key."
+  "notes": "Circuit drawings pan and pinch on the phone."
 }

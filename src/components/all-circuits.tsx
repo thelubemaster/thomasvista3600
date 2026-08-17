@@ -33,7 +33,7 @@ export function AllCircuits({ query, focus }: { query: string; focus?: string | 
 
   return (
     <div className="grid min-w-0 gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <aside className="min-w-0 space-y-4">
+      <aside className="order-2 min-w-0 space-y-4 lg:order-none">
         <FollowPanel
           circuit={followId}
           hopWireId={hopWireId}
@@ -47,7 +47,7 @@ export function AllCircuits({ query, focus }: { query: string; focus?: string | 
         <Group title="Needed to run" items={crit} active={map.id} onPick={(next) => { setId(next); setHopWireId(null); }} />
         <Group title="Not needed to run" items={rest} active={map.id} onPick={(next) => { setId(next); setHopWireId(null); }} />
       </aside>
-      <div className="min-w-0">
+      <div className="order-1 min-w-0 lg:order-none">
         <FlowSchematic key={map.id} map={map} />
       </div>
     </div>

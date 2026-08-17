@@ -12,7 +12,7 @@ import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
 import { cn } from "@/lib/utils";
 
-const APP_VERSION = "1.0.6";
+const APP_VERSION = "1.0.7";
 const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
