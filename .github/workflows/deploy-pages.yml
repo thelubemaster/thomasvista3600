@@ -1,6 +1,4 @@
-# Live preview tracks GitHub main:
-# https://thelubemaster.github.io/thomasvista3600/
-# Install: https://thelubemaster.github.io/thomasvista3600/?install=1
+# Live site: https://thelubemaster.github.io/thomasvista3600/
 name: Deploy GitHub Pages
 
 on:
@@ -26,21 +24,12 @@ jobs:
       - name: Build static site from companion
         run: |
           set -e
-          mkdir -p _site/now
+          mkdir -p _site
           cp companion/index.html _site/index.html
-          cp companion/index.html _site/now/index.html
           for f in data.js manifest.webmanifest sw.js install.json icon-192.png icon-512.png apple-touch-icon.png 3600-wiring.apk apk.html; do
-            if [ -f "companion/$f" ]; then
-              cp "companion/$f" "_site/$f"
-              cp "companion/$f" "_site/now/$f"
-            fi
+            [ -f "companion/$f" ] && cp "companion/$f" "_site/$f"
           done
-          mkdir -p _site/downloads
-          [ -f companion/downloads/3600-wiring.apk ] && cp companion/downloads/3600-wiring.apk _site/downloads/3600-wiring.apk
-          [ -f companion/3600-wiring.apk ] && cp companion/3600-wiring.apk _site/3600-wiring.apk
-          date -u +%Y-%m-%dT%H:%M:%SZ > _site/BUILD.txt
           ls -la _site
-          grep -o 'v[0-9]\.[0-9]\.[0-9]' _site/index.html | head -1 || true
 
       - uses: actions/upload-pages-artifact@v3
         with:

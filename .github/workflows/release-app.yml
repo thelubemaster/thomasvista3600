@@ -89,8 +89,8 @@ jobs:
           path: artifacts
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.pack.outputs.version }}
-          name: 3600 Wiring v${{ needs.pack.outputs.version }}
+          tag_name: v1
+          name: 3600 Wiring
           body: |
             ## Install
 
@@ -98,11 +98,8 @@ jobs:
 
             | Device | How |
             | --- | --- |
-            | **Android** | Install page → **Download APK** → Install |
-            | **Any phone** | Browser menu → **Add to Home screen** |
-            | **Computer** | [3600-wiring.zip](https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.zip) |
-
-            Direct APK: [3600-wiring.apk](https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.apk)
+            | **Android** | [Download APK](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk) |
+            | **Any phone** | Install page → Add to Home screen |
           files: |
             artifacts/3600-wiring.zip
             artifacts/3600-wiring.apk

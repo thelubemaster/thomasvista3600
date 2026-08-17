@@ -1,7 +1,7 @@
 {
   "name": "thomasvista3600",
   "private": true,
-  "version": "0.5.2",
+  "version": "1.0.0",
   "type": "module",
   "description": "Thomas / International 3600 wiring companion \u2014 T444E 7.3, CTS-5123V",
   "homepage": "https://thelubemaster.github.io/thomasvista3600/",

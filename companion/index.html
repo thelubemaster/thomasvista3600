@@ -3,345 +3,384 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0b0d10" />
-<meta name="app-version" content="0.5.2" />
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
+<meta name="theme-color" content="#0d0c0b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="3600 Wiring" />
+<meta name="app-version" content="1.0.0" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
-<title>3600 / 7.3 Wiring v0.5.2</title>
-<script>
-(function(){
-  try{
-    if(navigator.serviceWorker){
-      navigator.serviceWorker.register("./sw.js");
-    }
-  }catch(e){}
-})();
-</script>
+<title>Electrical Circuit Diagrams · 3600 T444E</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#0b0d10;--raised:#12151a;--card:#171b21;--line:#2a3140;
-  --fg:#e8ecf2;--muted:#9aa3b5;--subtle:#6b7385;
-  --accent:#3ecf8e;--bat:#e85d5d;--ign:#e6a23c;--gnd:#d4c9a8;--sig:#7ec8e3;
+  --bg:#0d0c0b;--surface:#161412;--raised:#1e1b18;
+  --fg:#f0ebe3;--muted:#9a9288;--subtle:#6e675f;
+  --border:#2a2622;--line:#3a342e;
+  --accent:#c4783a;--steel:#8fa3b8;--ok:#7d9a78;
+  --hot:#d43c28;--key:#e09030;--gnd:#d8d4cc;--sig:#e6c44a;
   --safe:env(safe-area-inset-bottom,0px);
+  --font-sans:"Barlow",system-ui,sans-serif;
+  --font-display:"Barlow Condensed","Barlow",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,sans-serif;line-height:1.45}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-sans);line-height:1.45;overflow-x:hidden}
 button,input{font:inherit;color:inherit}
-button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;width:100%;text-align:left}
-button:active{transform:scale(.99)}
-.banner{background:#0f3d28;border-bottom:3px solid var(--accent);padding:14px 12px;text-align:center}
-.banner .ver{font-family:ui-monospace,monospace;font-size:28px;font-weight:800;color:#7dffb3;letter-spacing:.04em}
-.banner .build{font-size:13px;color:#b8f5d0;margin-top:4px}
-header{padding:12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,13,16,.96);z-index:20}
-header h1{margin:0;font-size:16px}
-.search{margin-top:8px;width:100%;background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--fg)}
-main{padding:12px;padding-bottom:calc(92px + var(--safe))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
-.muted{color:var(--muted)}.subtle{color:var(--subtle);font-size:12px}
+button{cursor:pointer}
+button:not(:disabled):active{transform:scale(.99)}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.display{font-family:var(--font-display);font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.mono{font-family:var(--font-mono)}
+.muted{color:var(--muted)}.subtle{color:var(--subtle)}
 .hidden{display:none!important}
+header.top{border-bottom:1px solid var(--border);padding:16px 16px 12px;position:sticky;top:0;z-index:20;background:rgba(13,12,11,.94);backdrop-filter:blur(8px)}
+header.top h1{margin:6px 0 4px;font-size:clamp(28px,8vw,40px)}
+.verchip{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--subtle);margin-top:6px}
+.verchip b{color:var(--muted);font-weight:500}
+.search{width:100%;margin-top:12px;height:44px;border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:0 14px;color:var(--fg)}
+.search::placeholder{color:var(--subtle)}
+.tabs-scroll{display:flex;gap:4px;overflow-x:auto;padding:10px 16px 12px;border-bottom:1px solid var(--border);background:var(--bg);-webkit-overflow-scrolling:touch}
+.tabs-scroll button{flex:0 0 auto;border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:4px;font-size:14px;font-weight:500}
+.tabs-scroll button.on{background:var(--raised);color:var(--fg)}
+main{padding:16px 16px calc(28px + var(--safe))}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px}
+.card h2,.card h3{font-family:var(--font-display);margin:0 0 6px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:11px;color:var(--muted)}
-.chip.crit{border-color:#5a2a2a;color:#ff9b9b;background:#2a1414}
-.chip.ok{border-color:#24523a;color:#7dffb3;background:#13281d}
-.chip.bat{color:#ffb3b3}.chip.ign{color:#ffd48a}.chip.gnd{color:#efe4bf}
-.label{font-weight:650}
-.list button{margin-bottom:8px}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:8px 4px calc(8px + var(--safe));background:rgba(11,13,16,.97);border-top:1px solid var(--line);z-index:30}
-nav.tabs button{border:0;background:transparent;font-size:10px;padding:8px 2px;margin:0;text-align:center;color:var(--muted)}
-nav.tabs button.active{color:var(--fg);background:var(--card)}
-.panel{display:none}.panel.active{display:block}
-.hop{margin-bottom:8px}
-.cav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:10px}
-.cav{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--raised);min-height:72px}
+.chip{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 9px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.chip.crit{border-color:color-mix(in oklab,var(--accent) 50%, transparent);color:var(--accent)}
+.chip.ok{color:var(--ok);border-color:color-mix(in oklab,var(--ok) 35%, transparent)}
+.chip.bat{color:var(--hot)}.chip.ign{color:var(--key)}.chip.gnd{color:var(--gnd)}
+.item{width:100%;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px}
+.item:hover{border-color:var(--line)}
+.item .k{font-family:var(--font-mono);font-size:11px;color:var(--subtle)}
+.item .t{font-family:var(--font-display);font-size:22px;font-weight:600}
+.back{width:auto;background:transparent;border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--muted);margin-bottom:12px}
+.fuse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fuse{min-height:72px;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+.fuse.on{border-color:var(--accent);background:var(--raised)}
+.fuse .id{font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+.fuse .name{font-family:var(--font-display);font-size:18px;font-weight:600;margin-top:4px}
+.fuse.span2{grid-column:span 2}
+.cav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;margin-top:10px}
+.cav{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--bg);min-height:76px}
 .cav.hit{outline:2px solid var(--accent)}
-.stage{position:relative;height:min(62vh,520px);overflow:hidden;touch-action:none;overscroll-behavior:none;background:#0a0c10;border:1px solid var(--line);border-radius:12px}
-.inner{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.stage{position:relative;height:min(58vh,480px);overflow:hidden;touch-action:none;overscroll-behavior:none;background:#100e0c;border:1px solid var(--border);border-radius:12px}
+.inner{position:absolute;left:0;top:0;transform-origin:0 0}
 .zoombar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-.zoombar button{text-align:center;min-height:44px}
+.zoombar button{min-height:44px;background:var(--raised);border:1px solid var(--border);border-radius:8px}
+.hop{width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
+.marks button{width:auto;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 12px;color:var(--muted)}
+.marks button.on{border-color:var(--accent);color:var(--fg)}
+#installPage{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;padding:20px}
+.primary{display:block;text-align:center;background:var(--accent);color:#1a120c;font-weight:600;padding:16px;border-radius:12px;text-decoration:none;min-height:48px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+<script>try{navigator.serviceWorker&&navigator.serviceWorker.register("./sw.js")}catch(e){}</script>
 </head>
 <body>
-<div class="banner">
-  <div class="ver">v0.5.2</div>
-  <div class="build">build 2026-08-17g · 91 circuits · 63 diagrams · installable app</div>
-</div>
-<header>
-  <h1>International 3600 · T444E 7.3</h1>
-  <p class="subtle">CTS-5123V · hyd brakes 004040 · official book names</p>
+<header class="top">
+  <p class="eyebrow">3600 · T444E 7.3 Power Stroke · W/004040 hyd brakes · AE-2811</p>
+  <h1 class="display">Electrical Circuit Diagrams</h1>
+  <p class="muted" style="margin:0;font-size:14px">CTS-5123V names. Locked to the 7.3. Job marks stay on this device.</p>
   <input id="q" class="search" type="search" placeholder="Search circuit, fuse, relay, connector, page…" autocomplete="off" />
 </header>
+<nav class="tabs-scroll" id="tabs">
+  <button type="button" data-tab="panel" class="on">Fuse panel</button>
+  <button type="button" data-tab="circuits">Circuits</button>
+  <button type="button" data-tab="relays">Relays</button>
+  <button type="button" data-tab="pins">Pin map</button>
+  <button type="button" data-tab="wall">Firewall</button>
+  <button type="button" data-tab="book">Book</button>
+  <button type="button" data-tab="job">Job</button>
+  <button type="button" data-tab="more">More</button>
+</nav>
 <main>
-  <section id="panel-circuits" class="panel active"><div id="circuitList" class="list"></div><div id="circuitDetail" class="hidden"></div></section>
-  <section id="panel-fuses" class="panel"><div id="fuseList" class="list"></div></section>
-  <section id="panel-relays" class="panel"><div id="relayList" class="list"></div><div id="relayDetail" class="hidden"></div></section>
-  <section id="panel-modules" class="panel"><div id="modList" class="list"></div><div id="modDetail" class="hidden"></div></section>
-  <section id="panel-wall" class="panel"><div id="wallList"></div></section>
-  <section id="panel-more" class="panel">
+  <section id="panel-panel"></section>
+  <section id="panel-circuits" class="hidden"></section>
+  <section id="panel-relays" class="hidden"></section>
+  <section id="panel-pins" class="hidden"></section>
+  <section id="panel-wall" class="hidden"></section>
+  <section id="panel-book" class="hidden"></section>
+  <section id="panel-job" class="hidden"></section>
+  <section id="panel-more" class="hidden">
     <div class="card">
-      <h2>Install this app</h2>
-      <p>Same idea as the cost tracker — put it on the home screen or download the file.</p>
-      <p><a href="?install=1" style="color:#7dffb3;font-weight:700">Open the install page</a></p>
-      <p><a href="https://github.com/thelubemaster/thomasvista3600/releases/latest" style="color:#7dffb3">GitHub download / release</a></p>
+      <p class="eyebrow">Install</p>
+      <h2 class="display" style="font-size:28px">Put it on the phone</h2>
+      <p class="muted">Same idea as the cost tracker. Home screen or APK.</p>
+      <p><a class="primary" href="?install=1">Open install page</a></p>
     </div>
     <div class="card">
-      <h2>About</h2>
-      <p>v0.5.2 · GitHub Pages wiring companion. Engine-critical circuits stay; the rest is optional for a skoolie rewire.</p>
-      <p class="muted">Book names match CTS-5123V. T444E 7.3 / hydraulic brakes.</p>
+      <p class="eyebrow">Chassis</p>
+      <h2 class="display" style="font-size:28px">International 3600</h2>
+      <p>Navistar T444E 7.3 HEUI. Hydraulic brakes 004040. Official book names only.</p>
     </div>
   </section>
 </main>
-<nav class="tabs">
-  <button type="button" data-tab="circuits" class="active">Circuits</button>
-  <button type="button" data-tab="fuses">Fuses</button>
-  <button type="button" data-tab="relays">Relays</button>
-  <button type="button" data-tab="modules">Modules</button>
-  <button type="button" data-tab="wall">Firewall</button>
-  <button type="button" data-tab="more">More</button>
-</nav>
-<div id="installPage" class="hidden" style="position:fixed;inset:0;z-index:80;background:#0b0d10;overflow:auto;padding:20px;padding-bottom:40px">
-  <div class="banner" style="border-radius:12px;margin-bottom:16px">
-    <div class="ver">v0.5.2</div>
-    <div class="build">Install 3600 Wiring</div>
+<div id="installPage" class="hidden">
+  <p class="eyebrow">Install</p>
+  <h1 class="display" style="font-size:40px;margin:8px 0 12px">3600 Wiring</h1>
+  <div class="card">
+    <h3>Android APK</h3>
+    <p class="muted">Direct file. 3.7 MB. Open it, tap Install.</p>
+    <a class="primary" href="3600-wiring.apk" download="3600-wiring.apk">Download APK</a>
   </div>
   <div class="card">
-    <h2>Android</h2>
-    <p>Tap the button, then open the file and tap <strong>Install</strong>. Allow unknown apps if asked.</p>
-    <p><a id="apkBtn" href="3600-wiring.apk" download="3600-wiring.apk" style="display:block;text-align:center;background:#1a5c2e;color:#7dffb3;font-weight:800;padding:16px;border-radius:12px;text-decoration:none;min-height:48px">Download APK · 3.7 MB</a></p>
-    <p class="subtle">Direct file from this site (not GitHub). If it still stalls, tap and hold → Open in new tab, or use Chrome.</p>
+    <h3>Home screen</h3>
+    <p class="muted">Samsung / Chrome: menu → Add to Home screen. iPhone: Safari Share → Add to Home Screen.</p>
+    <button type="button" id="pwaBtn" class="primary" style="width:100%;border:0">Install on this phone</button>
+    <p id="pwaMsg" class="subtle"></p>
   </div>
-  <div class="card">
-    <h2>Add to Home Screen (any phone)</h2>
-    <p><strong>Samsung / Chrome:</strong> menu (⋮) → <strong>Add to Home screen</strong> / <strong>Install app</strong>.</p>
-    <p><strong>iPhone:</strong> Safari → Share → <strong>Add to Home Screen</strong>.</p>
-    <p><button type="button" id="pwaBtn" style="text-align:center;background:#1a5c2e;color:#7dffb3;font-weight:800">Install on this phone</button></p>
-    <p id="pwaMsg" class="muted"></p>
-  </div>
-  <div class="card">
-    <h2>File download</h2>
-    <p><a href="https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.zip" style="color:#7dffb3">3600-wiring.zip</a> — open index.html if you want the files on a computer.</p>
-    <p><a href="./" style="color:#9aa3b5">Skip install — just use the site</a></p>
-  </div>
+  <p><a href="./" class="muted">Back to the diagrams</a></p>
 </div>
-<script src="data.js?v=051"></script>
+<script src="data.js"></script>
 <script>
 const D = window.DATA;
 const $ = (id) => document.getElementById(id);
 const qEl = $("q");
-function q(){ return (qEl.value||"").trim().toLowerCase(); }
-function hit(s){ const n=q(); if(!n) return true; return String(s||"").toLowerCase().includes(n); }
-function powerChip(p){
-  const t=String(p||"");
-  const cls = /batt/i.test(t)?"bat":/key|ign|start/i.test(t)?"ign":/ground/i.test(t)?"gnd":"";
-  return '<span class="chip '+cls+'">'+t+'</span>';
-}
-document.querySelectorAll("nav.tabs button").forEach((btn)=>{
-  btn.onclick=()=>{
-    document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    $("panel-"+btn.dataset.tab).classList.add("active");
-    if(btn.dataset.tab==="circuits") renderCircuits();
-    if(btn.dataset.tab==="fuses") renderFuses();
-    if(btn.dataset.tab==="relays") renderRelays();
-    if(btn.dataset.tab==="modules") renderMods();
-    if(btn.dataset.tab==="wall") renderWall();
+const FUSE_LAYOUT = [
+  ["A1","A2"],
+  ["G1"],
+  ["C1","C2","C3"],
+  ["D1","D2","D3"],
+  ["E1","E2","E3"],
+  ["F1","F2","F3"],
+  ["H1"],
+];
+function qv(){ return (qEl.value||"").trim().toLowerCase(); }
+function hit(s){ const n=qv(); return !n || String(s||"").toLowerCase().includes(n); }
+function srcLabel(s){ return s==="battery"?"Battery":s==="key"?"Key / IGN":s==="acc"?"Accessory":s; }
+function srcClass(s){ return /batt/i.test(s)?"bat":/key|ign|start/i.test(s)?"ign":/ground/i.test(s)?"gnd":""; }
+function chipPower(p){ return '<span class="chip '+srcClass(p)+'">'+p+'</span>'; }
+function chipCrit(on){ return '<span class="chip '+(on?"crit":"ok")+'">'+(on?"Engine critical":"Not required to run")+'</span>'; }
+
+let tab = "panel";
+document.querySelectorAll("#tabs button").forEach((b)=>{
+  b.onclick=()=>{
+    tab = b.dataset.tab;
+    document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on", x===b));
+    document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hidden", s.id!=="panel-"+tab));
+    draw();
   };
 });
-qEl.oninput=()=>{
-  const t=document.querySelector("nav.tabs button.active")?.dataset.tab;
-  if(t==="circuits") renderCircuits();
-  if(t==="fuses") renderFuses();
-  if(t==="relays") renderRelays();
-  if(t==="modules") renderMods();
-  if(t==="wall") renderWall();
-};
+qEl.oninput=draw;
+
+function draw(){
+  if(tab==="panel") renderPanel();
+  if(tab==="circuits") renderCircuits();
+  if(tab==="relays") renderRelays();
+  if(tab==="pins") renderPins();
+  if(tab==="wall") renderWall();
+  if(tab==="book") renderBook();
+  if(tab==="job") renderJob();
+}
+
+let fuseSel = "E3";
+function renderPanel(){
+  const el=$("panel-panel");
+  const rows=D.fuses.filter(f=>hit(f.id+" "+f.cover+" "+f.description+" "+f.notes+(f.relay||"")));
+  const by=Object.fromEntries(D.fuses.map(f=>[f.id,f]));
+  const active=by[fuseSel];
+  let grid='<div class="fuse-grid">';
+  FUSE_LAYOUT.forEach((row,i)=>{
+    row.forEach((id)=>{
+      const f=by[id]; if(!f) return;
+      if(!hit(f.id+" "+f.cover+" "+f.description)) return;
+      grid+='<button type="button" class="fuse'+(fuseSel===id?" on":"")+(row.length===1?" span2":"")+'" data-f="'+id+'"><div class="id"><span>'+f.id+'</span><span>'+f.size+'</span></div><div class="name">'+(f.cover==="—"?"B1":f.cover)+'</div><div class="mono subtle" style="font-size:10px;margin-top:2px;text-transform:uppercase">'+srcLabel(f.source)+'</div></button>';
+    });
+    if(row[0]==="H1") grid+='<div class="fuse" style="display:flex;align-items:center;justify-content:center;border-radius:999px"><span class="mono subtle" style="font-size:10px;letter-spacing:.14em">FLASHER</span></div>';
+  });
+  grid+='</div>';
+  grid+='<button type="button" class="fuse'+(fuseSel==="B1"?" on":"")+'" style="width:100%;margin-top:8px" data-f="B1"><div class="id"><span>B1 · 20A · Key</span></div><div class="name">Allison 92D / shutter (not on cover)</div></button>';
+  el.innerHTML =
+    '<div class="card"><p class="eyebrow">Cab fuse cover</p>'+grid+
+    '<p class="subtle" style="margin-top:12px">Cover labels IGN 15A and AUTO XMSN 15A are the same fuse (G1).</p></div>'+
+    (active? '<div class="card"><div class="row"><span class="mono subtle">'+active.id+' · '+active.size+'</span>'+chipCrit(active.engineCritical)+chipPower(srcLabel(active.source))+'</div><h2 class="display" style="font-size:36px;margin-top:8px">'+(active.cover==="—"?"B1":active.cover)+'</h2><p>'+active.description+'</p><p class="subtle">Relay: '+(active.relay||"None on this fuse")+'</p><p class="muted">'+active.notes+'</p></div>':"");
+  el.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ fuseSel=b.dataset.f; renderPanel(); });
+}
 
 function renderCircuits(){
-  const list=$("circuitList"), det=$("circuitDetail");
-  det.classList.add("hidden"); list.classList.remove("hidden");
+  const el=$("panel-circuits");
   const rows=D.circuits.filter(c=>hit(c.id+" "+c.name+" "+c.notes+" "+c.power));
   const crit=rows.filter(c=>c.engineCritical);
   const rest=rows.filter(c=>!c.engineCritical);
-  list.innerHTML =
-    '<div class="card"><div class="label">Engine critical · '+crit.length+'</div><p class="subtle">Needed to crank or keep the 7.3 running.</p></div>'+
-    crit.map(cBtn).join("")+
-    '<div class="card" style="margin-top:12px"><div class="label">Not required to run · '+rest.length+'</div></div>'+
-    rest.map(cBtn).join("");
-  list.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>openCircuit(b.dataset.id));
-}
-function cBtn(c){
-  return '<button type="button" data-id="'+c.id+'"><div class="label">'+(c.engineCritical?'🔴 ':'')+c.id+' · '+c.name+'</div><div class="subtle">'+c.power+' · '+(c.engineCritical?'ENGINE CRITICAL':'optional')+'</div></button>';
+  function btn(c){
+    return '<button type="button" class="item" data-id="'+c.id+'"><div class="k">Circuit '+c.id+' · '+c.power+'</div><div class="t">'+c.name+'</div><div class="row" style="margin-top:6px">'+chipCrit(c.engineCritical)+'</div></button>';
+  }
+  if(el.dataset.mode==="detail" && el.dataset.id){ openCircuit(el.dataset.id); return; }
+  el.innerHTML = '<div class="card"><p class="eyebrow">Needed to crank or keep the 7.3 running</p><h2 class="display" style="font-size:28px">Engine critical · '+crit.length+'</h2></div>'+
+    crit.map(btn).join("")+
+    '<div class="card" style="margin-top:8px"><p class="eyebrow">Optional on a skoolie</p><h2 class="display" style="font-size:28px">Not required to run · '+rest.length+'</h2></div>'+
+    rest.map(btn).join("");
+  el.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>openCircuit(b.dataset.id));
 }
 function mapFor(id){
   const fam=String(id).match(/^\d+/)?.[0] || id;
   return D.maps.find(m=>m.id===fam || m.number===fam || m.id===id) || D.maps.find(m=>String(m.title).includes(String(id)));
 }
 function openCircuit(id){
+  const el=$("panel-circuits");
   const c=D.circuits.find(x=>x.id===id); if(!c) return;
-  const list=$("circuitList"), det=$("circuitDetail");
-  list.classList.add("hidden"); det.classList.remove("hidden");
+  el.dataset.mode="detail"; el.dataset.id=id;
   const map=mapFor(id);
   const hops = map ? map.nodes.slice().sort((a,b)=>a.x-b.x||a.y-b.y) : [];
-  det.innerHTML =
-    '<button type="button" id="backC">← All circuits</button>'+
-    '<div class="card" style="margin-top:10px">'+
-    '<div class="row"><span class="chip '+(c.engineCritical?'crit':'ok')+'">'+(c.engineCritical?'ENGINE CRITICAL':'optional')+'</span>'+powerChip(c.power)+'</div>'+
-    '<h2>Circuit '+c.id+'</h2><p class="label">'+c.name+'</p><p class="muted">'+c.notes+'</p></div>'+
-    (map? renderMapCard(map, hops): '<div class="card"><p class="muted">No hop map for this family yet. Fuse / connector search still works.</p></div>');
-  $("backC").onclick=renderCircuits;
+  el.innerHTML = '<button type="button" class="back" id="backC">All circuits</button>'+
+    '<div class="card"><div class="row">'+chipCrit(c.engineCritical)+chipPower(c.power)+'</div><p class="eyebrow" style="margin-top:10px">Circuit '+c.id+'</p><h2 class="display" style="font-size:36px">'+c.name+'</h2><p class="muted">'+c.notes+'</p></div>'+
+    (map? mapBlock(map,hops): '<div class="card"><p class="muted">No hop map for this family. Search Pin map or Firewall.</p></div>');
+  $("backC").onclick=()=>{ el.dataset.mode=""; el.dataset.id=""; renderCircuits(); };
   if(map) bindMap(map);
-  det.querySelectorAll("[data-conn]").forEach(b=>b.onclick=()=>showConn(b.dataset.conn, b.dataset.cav||""));
+  el.querySelectorAll("[data-conn]").forEach(b=>b.onclick=()=>showConn(b.dataset.conn, b.dataset.cav||""));
 }
-function renderMapCard(map, hops){
-  return '<div class="card"><div class="label">Hop path · printed p.'+(map.nodes[0]?.page||'—')+'</div><p class="muted">'+map.blurb+'</p>'+
-    hops.map((h,i)=>'<button type="button" class="hop" data-conn="'+(h.relayId||h.id)+'" data-cav="'+(h.pins||'')+'"><strong>'+(i+1)+'. '+h.label+'</strong><br/><span class="subtle">'+(h.sub||'')+(h.pins?' · pins '+h.pins:'')+(h.page?' · p.'+h.page:'')+'</span><div class="muted" style="margin-top:4px">'+h.detail+'</div></button>').join("")+
+function mapBlock(map, hops){
+  return '<div class="card"><p class="eyebrow">Hop path · p.'+(map.nodes[0]?.page||"—")+'</p><p class="muted">'+map.blurb+'</p>'+
+    hops.map((h,i)=>'<button type="button" class="hop" data-conn="'+(h.relayId||h.id)+'" data-cav="'+(h.pins||'')+'"><div class="k">'+(i+1)+' · '+(h.sub||h.kind)+(h.page?" · p."+h.page:"")+(h.pins?" · "+h.pins:"")+'</div><div class="t" style="font-size:20px">'+h.label+'</div><p class="muted" style="margin:6px 0 0">'+h.detail+'</p></button>').join("")+
     '</div>'+
-    (map.legend&&map.legend.length?'<div class="card"><div class="label">Wires</div>'+map.legend.map(l=>'<p><strong>'+l.id+'</strong> · '+l.cavity+'<br/><span class="muted">'+l.note+'</span></p>').join("")+'</div>':'')+
-    '<div class="card"><div class="label">Diagram</div><div class="stage" id="stage"><div class="inner" id="inner">'+drawMap(map)+'</div></div><div class="zoombar"><button type="button" id="fit">Fit</button><button type="button" id="zm">−</button><button type="button" id="zp">+</button><button type="button" id="zpct">100%</button></div></div>';
+    (map.legend&&map.legend.length?'<div class="card"><p class="eyebrow">Wires</p>'+map.legend.map(l=>'<p><span class="mono">'+l.id+'</span> · '+l.cavity+'<br/><span class="muted">'+l.note+'</span></p>').join("")+'</div>':'')+
+    '<div class="card"><p class="eyebrow">Diagram</p><div class="stage" id="stage"><div class="inner" id="inner">'+drawMap(map)+'</div></div><div class="zoombar"><button type="button" id="fit">Fit</button><button type="button" id="zm">−</button><button type="button" id="zp">+</button><button type="button" id="zpct">100%</button></div></div>';
 }
 function drawMap(map){
   const w=map.width||1400,h=map.height||520;
   let svg='<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">';
   const node=Object.fromEntries(map.nodes.map(n=>[n.id,n]));
-  const col={bat:'#e85d5d',ign:'#e6a23c',acc:'#c9a227',a:'#7ec8e3',b:'#8fd3a8',c:'#c9a0ff',gnd:'#d4c9a8'};
+  const col={bat:"#d43c28",ign:"#e09030",acc:"#c4a15a",a:"#d4a574",b:"#8eb0c4",c:"#c4b48e",gnd:"#d8d4cc"};
   for(const wr of map.wires){
     const a=node[wr.from],b=node[wr.to]; if(!a||!b) continue;
-    const x1=a.x+85,y1=a.y+28,x2=b.x+85,y2=b.y+28;
-    svg+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(col[wr.color]||'#7ec8e3')+'" stroke-width="3" />';
-    if(wr.label) svg+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-6)+'" fill="#9aa3b5" font-size="11">'+wr.circuit+(wr.label?(' '+wr.label):'')+'</text>';
+    svg+='<line x1="'+(a.x+85)+'" y1="'+(a.y+28)+'" x2="'+(b.x+85)+'" y2="'+(b.y+28)+'" stroke="'+(col[wr.color]||"#8eb0c4")+'" stroke-width="3"/>';
+    if(wr.circuit) svg+='<text x="'+((a.x+b.x)/2+85)+'" y="'+((a.y+b.y)/2+18)+'" fill="#6e675f" font-size="11" font-family="IBM Plex Mono,monospace">'+wr.circuit+(wr.label?(" "+wr.label):"")+'</text>';
   }
   for(const n of map.nodes){
-    svg+='<rect x="'+n.x+'" y="'+n.y+'" width="170" height="56" rx="8" fill="#141820" stroke="#2a3140"/>';
-    svg+='<text x="'+(n.x+8)+'" y="'+(n.y+18)+'" fill="#e8ecf2" font-size="11" font-weight="700">'+esc(n.label).slice(0,22)+'</text>';
-    svg+='<text x="'+(n.x+8)+'" y="'+(n.y+36)+'" fill="#9aa3b5" font-size="10">'+esc(n.sub||n.kind)+'</text>';
+    svg+='<rect x="'+n.x+'" y="'+n.y+'" width="170" height="56" rx="8" fill="#161412" stroke="#3a342e"/>';
+    svg+='<text x="'+(n.x+8)+'" y="'+(n.y+20)+'" fill="#f0ebe3" font-size="12" font-weight="600" font-family="Barlow Condensed,sans-serif">'+esc(n.label).slice(0,24)+'</text>';
+    svg+='<text x="'+(n.x+8)+'" y="'+(n.y+38)+'" fill="#9a9288" font-size="10" font-family="IBM Plex Mono,monospace">'+esc(n.sub||n.kind)+'</text>';
   }
-  if(map.firewallX) svg+='<line x1="'+map.firewallX+'" y1="0" x2="'+map.firewallX+'" y2="'+h+'" stroke="#3a5a8a" stroke-dasharray="6 6"/>';
-  return svg+'</svg>';
+  if(map.firewallX) svg+='<line x1="'+map.firewallX+'" y1="8" x2="'+map.firewallX+'" y2="'+(h-8)+'" stroke="#8fa3b8" stroke-dasharray="5 6" opacity=".7"/>';
+  return svg+"</svg>";
 }
-function esc(s){ return String(s).replace(/[<>&]/g,function(c){return {'<':'<','>':'>','&':'&'}[c];}); }
+function esc(s){ return String(s).replace(/[<>&]/g,c=>({"<":"<",">":">","&":"&"}[c])); }
 function bindMap(map){
   const stage=$("stage"), inner=$("inner"); if(!stage||!inner) return;
-  let x=12,y=12,s=0.55;
-  const apply=()=>{ inner.style.transform='translate('+x+'px,'+y+'px) scale('+s+')'; const p=$("zpct"); if(p) p.textContent=Math.round(s*100)+'%'; };
+  let x=12,y=12,s=0.52;
+  const apply=()=>{ inner.style.transform="translate("+x+"px,"+y+"px) scale("+s+")"; const p=$("zpct"); if(p) p.textContent=Math.round(s*100)+"%"; };
   apply();
-  $("fit").onclick=()=>{ const sw=stage.clientWidth, sh=stage.clientHeight; s=Math.min((sw-24)/(map.width||1400),(sh-24)/(map.height||520),2); x=(sw-(map.width||1400)*s)/2; y=20; apply(); };
-  $("zm").onclick=()=>{ s=Math.max(.25,s*0.75); apply(); };
+  $("fit").onclick=()=>{ s=Math.min((stage.clientWidth-24)/(map.width||1400),(stage.clientHeight-24)/(map.height||520),2); x=(stage.clientWidth-(map.width||1400)*s)/2; y=16; apply(); };
+  $("zm").onclick=()=>{ s=Math.max(.25,s*.75); apply(); };
   $("zp").onclick=()=>{ s=Math.min(6,s*1.35); apply(); };
   let mode=null,sx,sy,ox,oy,ld,lm;
-  const start=(e)=>{ e.preventDefault(); const t=e.touches; if(t.length===1){ mode='pan'; sx=t[0].clientX; sy=t[0].clientY; ox=x; oy=y; } else if(t.length>=2){ mode='pinch'; ld=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1; lm={x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}; } };
-  const move=(e)=>{ e.preventDefault(); const t=e.touches; if(mode==='pan'&&t.length===1){ x=ox+(t[0].clientX-sx); y=oy+(t[0].clientY-sy); apply(); } else if(t.length>=2){ const d=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1; const m={x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}; const f=d/ld; const r=stage.getBoundingClientRect(); const px=m.x-r.left, py=m.y-r.top; const wx=(px-x)/s, wy=(py-y)/s; s=Math.min(6,Math.max(.25,s*f)); x=px-wx*s; y=py-wy*s; x += (m.x-lm.x); y += (m.y-lm.y); ld=d; lm=m; apply(); } };
-  const end=(e)=>{ if(!e.touches.length) mode=null; };
-  stage.addEventListener('touchstart',start,{passive:false});
-  document.addEventListener('touchmove',move,{passive:false});
-  document.addEventListener('touchend',end,{passive:false});
-  stage.addEventListener('wheel',function(e){ e.preventDefault(); const f=e.deltaY<0?1.12:0.9; const r=stage.getBoundingClientRect(); const px=e.clientX-r.left, py=e.clientY-r.top; const wx=(px-x)/s, wy=(py-y)/s; s=Math.min(6,Math.max(.25,s*f)); x=px-wx*s; y=py-wy*s; apply(); },{passive:false});
+  stage.addEventListener("touchstart",(e)=>{ e.preventDefault(); const t=e.touches; if(t.length===1){ mode="pan"; sx=t[0].clientX; sy=t[0].clientY; ox=x; oy=y; } else if(t.length>=2){ mode="pinch"; ld=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1; lm={x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}; }},{passive:false});
+  document.addEventListener("touchmove",(e)=>{ if(!mode) return; e.preventDefault(); const t=e.touches; if(mode==="pan"&&t.length===1){ x=ox+(t[0].clientX-sx); y=oy+(t[0].clientY-sy); apply(); } else if(t.length>=2){ const d=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1; const m={x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}; const f=d/ld; const r=stage.getBoundingClientRect(); const px=m.x-r.left, py=m.y-r.top; const wx=(px-x)/s, wy=(py-y)/s; s=Math.min(6,Math.max(.25,s*f)); x=px-wx*s; y=py-wy*s; x+=(m.x-lm.x); y+=(m.y-lm.y); ld=d; lm=m; apply(); }},{passive:false});
+  document.addEventListener("touchend",(e)=>{ if(!e.touches.length) mode=null; },{passive:false});
+  stage.addEventListener("wheel",(e)=>{ e.preventDefault(); const f=e.deltaY<0?1.12:.9; const r=stage.getBoundingClientRect(); const px=e.clientX-r.left, py=e.clientY-r.top; const wx=(px-x)/s, wy=(py-y)/s; s=Math.min(6,Math.max(.25,s*f)); x=px-wx*s; y=py-wy*s; apply(); },{passive:false});
 }
 
-function renderFuses(){
-  const el=$("fuseList");
-  const rows=D.fuses.filter(f=>hit(f.id+" "+f.cover+" "+f.description+" "+f.notes+(f.relay||"")));
-  el.innerHTML = rows.map(f=>'<div class="card"><div class="row"><span class="label">FUSE '+f.id+' · '+f.size+' '+(f.cover&&f.cover!=='—'?'· '+f.cover:'')+'</span>'+
-    '<span class="chip '+(f.engineCritical?'crit':'ok')+'">'+(f.engineCritical?'ENGINE CRITICAL':'optional')+'</span>'+powerChip(f.source==='battery'?'Battery':f.source==='key'?'Key / IGN':f.source==='acc'?'Accessory':f.source)+'</div>'+
-    '<p>'+f.description+'</p>'+(f.relay?'<p class="subtle">Relay: '+f.relay+'</p>':'')+'<p class="muted">'+f.notes+'</p></div>').join("");
-}
 function renderRelays(){
-  const list=$("relayList"), det=$("relayDetail");
-  det.classList.add("hidden"); list.classList.remove("hidden");
+  const el=$("panel-relays");
+  if(el.dataset.mode==="detail"){ showRelay(el.dataset.id); return; }
   const rows=D.relays.filter(r=>hit(r.id+" "+r.name+" "+r.notes+" "+r.fused));
-  list.innerHTML=rows.map(r=>'<button type="button" data-id="'+r.id+'"><div class="label">'+(r.engineCritical?'🔴 ':'')+r.name+'</div><div class="subtle">Fused '+r.fused+' · load '+r.loadSide+' · coil '+r.coilSide+'</div></button>').join("");
-  list.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>showRelay(b.dataset.id));
+  el.innerHTML = rows.map(r=>'<button type="button" class="item" data-id="'+r.id+'"><div class="k">Fused '+r.fused+' · load '+r.loadSide+'</div><div class="t">'+r.name+'</div><div class="row" style="margin-top:6px">'+chipCrit(r.engineCritical)+'</div></button>').join("");
+  el.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>showRelay(b.dataset.id));
 }
 function showRelay(id){
+  tab="relays";
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on", x.dataset.tab==="relays"));
+  document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hidden", s.id!=="panel-relays"));
+  const el=$("panel-relays");
+  el.dataset.mode="detail"; el.dataset.id=id;
   const face=D.relayFaces.find(r=>r.id===id);
   const basic=D.relays.find(r=>r.id===id);
-  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab==="relays"));
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-  $("panel-relays").classList.add("active");
-  const list=$("relayList"), det=$("relayDetail");
-  list.classList.add("hidden"); det.classList.remove("hidden");
-  if(!face && !basic){ det.innerHTML='<button type="button" id="backR">← Relays</button><div class="card" style="margin-top:10px"><p>No pinout for '+id+'</p></div>'; $("backR").onclick=renderRelays; return; }
-  det.innerHTML='<button type="button" id="backR">← Relays</button><div class="card" style="margin-top:10px">'+
-    '<div class="row"><span class="chip '+( (face&&face.engineCritical||basic&&basic.engineCritical)?'crit':'ok')+'">'+((face&&face.engineCritical||basic&&basic.engineCritical)?'ENGINE CRITICAL':'optional')+'</span></div>'+
-    '<h2>'+((face&&face.name)||(basic&&basic.name))+'</h2>'+
-    '<p class="muted">'+((face&&face.where)||'')+((face&&face.page)?' · p.'+face.page:'')+'</p>'+
-    '<p>'+((face&&face.look)||(basic&&basic.notes)||'')+'</p>'+
-    '<p class="subtle">Fused: '+((face&&face.fused)||(basic&&basic.fused)||'')+'</p>'+
-    (face&&face.pins? '<div class="cav-grid">'+face.pins.map(p=>'<div class="cav"><div class="label">'+p.iso+' · cav '+p.id+'</div><div>'+p.circuit+' · '+p.role+'</div><div class="subtle">'+p.goes+'</div><div class="chip">'+p.power+'</div></div>').join("")+'</div>':'')+
-    (face&&face.more?'<p class="muted" style="margin-top:10px">'+face.more+'</p>':'')+
+  el.innerHTML='<button type="button" class="back" id="backR">All relays</button><div class="card">'+
+    '<div class="row">'+chipCrit((face&&face.engineCritical)||(basic&&basic.engineCritical))+'</div>'+
+    '<p class="eyebrow" style="margin-top:10px">'+(face&&face.where?face.where:"Relay")+(face&&face.page?" · p."+face.page:"")+'</p>'+
+    '<h2 class="display" style="font-size:32px">'+((face&&face.name)||(basic&&basic.name))+'</h2>'+
+    '<p>'+((face&&face.look)||(basic&&basic.notes)||"")+'</p>'+
+    '<p class="subtle">Fused: '+((face&&face.fused)||(basic&&basic.fused)||"")+'</p>'+
+    (face&&face.pins?'<div class="cav-grid">'+face.pins.map(p=>'<div class="cav"><div class="k">'+p.iso+' · cav '+p.id+'</div><div class="t" style="font-size:20px">'+p.circuit+'</div><div class="subtle">'+p.role+'</div><p class="muted" style="margin:4px 0 0">'+p.goes+'</p>'+chipPower(p.power)+'</div>').join("")+'</div>':'')+
+    (face&&face.more?'<p class="muted" style="margin-top:12px">'+face.more+'</p>':'')+
     '</div>';
-  $("backR").onclick=renderRelays;
+  $("backR").onclick=()=>{ el.dataset.mode=""; renderRelays(); };
 }
-function renderMods(){
-  const list=$("modList"), det=$("modDetail");
-  det.classList.add("hidden"); list.classList.remove("hidden");
+
+function renderPins(){
+  const el=$("panel-pins");
+  if(el.dataset.mode==="detail"){ showConn(el.dataset.id, el.dataset.cav||""); return; }
   const rows=D.connectors.filter(c=>hit(c.name+" "+c.tag+" "+c.harness+" "+c.page+" "+c.pins.map(p=>p.circuit+" "+p.dest+" "+p.cavity).join(" ")));
-  list.innerHTML=rows.map(c=>'<button type="button" data-id="'+c.id+'"><div class="label">'+c.name+'</div><div class="subtle">'+c.harness+' · p.'+c.page+' · '+c.pins.length+' cavities</div></button>').join("");
-  list.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>showConn(b.dataset.id,""));
+  el.innerHTML = rows.map(c=>'<button type="button" class="item" data-id="'+c.id+'"><div class="k">'+c.harness+' · p.'+c.page+' · '+c.pins.length+' cavities</div><div class="t">'+c.name+'</div></button>').join("");
+  el.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>showConn(b.dataset.id,""));
 }
 function showConn(id, cav){
   let c=D.connectors.find(x=>x.id===id);
   if(!c) c=D.connectors.find(x=>x.tag===id || x.name.toLowerCase().includes(String(id).toLowerCase()));
-  if(!c){
-    const face=D.relayFaces.find(r=>r.id===id);
-    if(face) return showRelay(id);
-    return;
-  }
-  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab==="modules"));
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-  $("panel-modules").classList.add("active");
-  const list=$("modList"), det=$("modDetail");
-  list.classList.add("hidden"); det.classList.remove("hidden");
+  if(!c){ const face=D.relayFaces.find(r=>r.id===id); if(face) return showRelay(id); return; }
+  tab="pins";
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on", x.dataset.tab==="pins"));
+  document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hidden", s.id!=="panel-pins"));
+  const el=$("panel-pins");
+  el.dataset.mode="detail"; el.dataset.id=c.id; el.dataset.cav=cav||"";
   const want=String(cav||"").split(/\s+/).filter(Boolean);
-  det.innerHTML='<button type="button" id="backM">← Modules / connectors</button><div class="card" style="margin-top:10px">'+
-    '<h2>'+c.name+'</h2><p class="muted">'+c.harness+' · printed page '+c.page+(c.hyd?' · hyd brakes':'')+'</p>'+
-    '<div class="cav-grid">'+c.pins.map(p=>{
-      const on=want.includes(p.cavity);
-      return '<div class="cav'+(on?' hit':'')+'"><div class="label">'+p.cavity+'</div><div>'+p.circuit+'</div><div class="subtle">'+p.dest+'</div></div>';
-    }).join("")+'</div></div>';
-  $("backM").onclick=renderMods;
+  el.innerHTML='<button type="button" class="back" id="backM">All connectors</button><div class="card">'+
+    '<p class="eyebrow">'+c.harness+' · printed page '+c.page+(c.hyd?" · hyd brakes":"")+'</p>'+
+    '<h2 class="display" style="font-size:28px">'+c.name+'</h2>'+
+    '<div class="cav-grid">'+c.pins.map(p=>'<div class="cav'+(want.includes(p.cavity)?" hit":"")+'"><div class="k">'+p.cavity+'</div><div class="t" style="font-size:20px">'+p.circuit+'</div><div class="muted">'+p.dest+'</div></div>').join("")+'</div></div>';
+  $("backM").onclick=()=>{ el.dataset.mode=""; renderPins(); };
 }
+
 function renderWall(){
   const others=D.connectors.filter(c=>/firewall|bulkhead|dash connector|engine connector|front end/i.test(c.name+" "+c.harness));
-  $("wallList").innerHTML =
-    '<div class="card"><p class="label">Firewall / bulkhead plugs</p><p class="muted">Tap a hop on a circuit to jump to the cavity. These are the book names.</p></div>'+
-    others.map(c=>'<div class="card"><div class="label">'+c.name+'</div><p class="subtle">'+c.harness+' · p.'+c.page+'</p><div class="cav-grid">'+
-      c.pins.map(p=>'<div class="cav"><div class="label">'+p.cavity+'</div><div>'+p.circuit+'</div><div class="subtle">'+p.dest+'</div></div>').join("")+
+  $("panel-wall").innerHTML =
+    '<div class="card"><p class="eyebrow">Firewall</p><h2 class="display" style="font-size:32px">Bulkhead plugs</h2><p class="muted">Book names. Tap a circuit hop to jump a cavity.</p></div>'+
+    others.map(c=>'<div class="card"><p class="eyebrow">'+c.harness+' · p.'+c.page+'</p><h3 class="display" style="font-size:24px">'+c.name+'</h3><div class="cav-grid">'+
+      c.pins.map(p=>'<div class="cav"><div class="k">'+p.cavity+'</div><div class="t" style="font-size:18px">'+p.circuit+'</div><div class="muted">'+p.dest+'</div></div>').join("")+
     '</div></div>').join("");
 }
-if(!D){ document.body.insertAdjacentHTML("beforeend",'<div class="card"><p>data.js failed to load. Open the /now/ link.</p></div>'); }
-else renderCircuits();
+
+function renderBook(){
+  const maps=D.maps.filter(m=>hit(m.number+" "+m.title+" "+m.blurb+" "+m.power));
+  $("panel-book").innerHTML =
+    '<div class="card"><p class="eyebrow">CTS-5123V</p><h2 class="display" style="font-size:32px">Diagrams in the book</h2><p class="muted">Official titles. Open a family to follow hops.</p></div>'+
+    maps.map(m=>'<button type="button" class="item" data-map="'+m.id+'"><div class="k">Circuit '+m.number+' · '+m.power+(m.engineCritical?" · engine critical":"")+'</div><div class="t">'+m.title+'</div><p class="muted" style="margin:6px 0 0">'+m.blurb+'</p></button>').join("");
+  $("panel-book").querySelectorAll("[data-map]").forEach(b=>b.onclick=()=>{
+    tab="circuits";
+    document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on", x.dataset.tab==="circuits"));
+    document.querySelectorAll("main > section").forEach(s=>s.classList.toggle("hidden", s.id!=="panel-circuits"));
+    const c=D.circuits.find(x=>x.id===b.dataset.map || x.id.startsWith(b.dataset.map));
+    openCircuit(c?c.id:b.dataset.map);
+  });
+}
+
+const JOBKEY="ih-3600-job-v1";
+function jobLoad(){ try{return JSON.parse(localStorage.getItem(JOBKEY)||"{}")}catch(e){return {}} }
+function jobSave(j){ localStorage.setItem(JOBKEY, JSON.stringify(j)); }
+function renderJob(){
+  const marks=jobLoad();
+  const items=[
+    ...D.circuits.filter(c=>c.engineCritical).map(c=>({id:"c-"+c.id,label:c.id+"  "+c.name,sub:"Circuit",crit:true})),
+    ...D.fuses.map(f=>({id:"f-"+f.id,label:f.id+"  "+(f.cover==="—"?"B1":f.cover),sub:f.size+" · "+srcLabel(f.source),crit:f.engineCritical})),
+  ].filter(i=>hit(i.label+" "+i.sub));
+  $("panel-job").innerHTML =
+    '<div class="card"><p class="eyebrow">Rewire job</p><h2 class="display" style="font-size:32px">Keep / cut / done</h2><p class="muted">Marks stay on this phone.</p></div>'+
+    items.map(i=>{
+      const m=marks[i.id]||"todo";
+      return '<div class="card"><div class="k">'+i.sub+'</div><div class="t" style="font-size:22px">'+i.label+'</div><div class="row" style="margin:8px 0">'+chipCrit(i.crit)+'</div><div class="marks row">'+
+        ["todo","keep","cut","done"].map(k=>'<button type="button" class="'+(m===k?"on":"")+'" data-j="'+i.id+'" data-m="'+k+'">'+k+'</button>').join("")+
+      '</div></div>';
+    }).join("");
+  $("panel-job").querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{
+    const j=jobLoad(); j[b.dataset.j]=b.dataset.m; jobSave(j); renderJob();
+  });
+}
+
+draw();
 
 (function installFlow(){
-  var want = /(?:\?|&)install=1(?:&|$)/.test(location.search) || location.hash === "#install";
-  var page = document.getElementById("installPage");
-  if(want && page) page.classList.remove("hidden");
-  var deferred = null;
-  window.addEventListener("beforeinstallprompt", function(e){
-    e.preventDefault();
-    deferred = e;
-    var m = document.getElementById("pwaMsg");
-    if(m) m.textContent = "Tap Install on this phone.";
-  });
-  var btn = document.getElementById("pwaBtn");
-  if(btn) btn.onclick = function(){
-    if(deferred){
-      deferred.prompt();
-      deferred.userChoice.then(function(){ deferred = null; });
-      return;
-    }
-    var ua = navigator.userAgent || "";
-    var msg = document.getElementById("pwaMsg");
-    if(/iPhone|iPad|iPod/i.test(ua)){
-      msg.textContent = "Safari → Share (square with arrow) → Add to Home Screen.";
-    } else {
-      msg.textContent = "Browser menu (⋮) → Add to Home screen / Install app.";
-    }
+  const want=/(?:\?|&)install=1(?:&|$)/.test(location.search);
+  if(want) $("installPage").classList.remove("hidden");
+  let deferred=null;
+  window.addEventListener("beforeinstallprompt",(e)=>{ e.preventDefault(); deferred=e; });
+  $("pwaBtn").onclick=()=>{
+    if(deferred){ deferred.prompt(); return; }
+    const ua=navigator.userEntry||navigator.userAgent||"";
+    $("pwaMsg").textContent=/iPhone|iPad/i.test(ua)?"Safari → Share → Add to Home Screen.":"Menu → Add to Home screen / Install app.";
   };
 })();
 </script>
