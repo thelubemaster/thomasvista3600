@@ -1,6 +1,5 @@
-# Auto-deploy companion whenever main is pushed.
-# Live preview: https://thelubemaster.github.io/thomasvista3600/
-#
+# Live preview tracks GitHub main:
+# https://thelubemaster.github.io/thomasvista3600/
 # One-time: Settings → Pages → Source = GitHub Actions
 name: Deploy GitHub Pages
 
@@ -30,13 +29,16 @@ jobs:
           mkdir -p _site
           if [ -f companion/index.html ]; then
             cp companion/index.html _site/index.html
+            [ -f companion/data.js ] && cp companion/data.js _site/data.js
+            [ -f companion/app.js ] && cp companion/app.js _site/app.js
             [ -d companion/public ] && cp -r companion/public _site/public || true
-            [ -d companion/pages ] && cp -r companion/pages _site/pages || true
+          elif [ -f index.html ]; then
+            cp index.html _site/index.html
           else
-            printf '%s\n' '<!DOCTYPE html><html><body><h1>Thomas Vista 3600</h1><p>Push companion/index.html</p></body></html>' > _site/index.html
+            echo '<!DOCTYPE html><html><body><h1>v0.4.1</h1><p>Push companion/</p></body></html>' > _site/index.html
           fi
-          grep -o 'v[0-9]\.[0-9]\.[0-9]' _site/index.html | head -1 || true
           ls -la _site
+          grep -o 'v[0-9]\.[0-9]\.[0-9]' _site/index.html | head -1 || true
 
       - uses: actions/upload-pages-artifact@v3
         with:
