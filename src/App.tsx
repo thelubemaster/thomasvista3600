@@ -97,9 +97,11 @@ export default function App() {
         }
         const res = await fetch(ORIGIN + "/version.json?t=" + Date.now(), { cache: "no-store" });
         if (!res.ok) return;
-        const j = (await res.json()) as { version?: string };
+        const j = (await res.json()) as { version?: string; notes?: string };
         const remote = String(j.version || "").replace(/^v/i, "");
-        if (!gone && cmpVer(remote, APP_VERSION) > 0) setUpdate(remote);
+        if (!gone && cmpVer(remote, APP_VERSION) > 0) {
+          setUpdate(remote);
+        }
       } catch {
         /* offline */
       }
@@ -156,7 +158,17 @@ export default function App() {
               Download the app
             </a>
           ) : null}
-          <button type="button" className="mt-3 w-full min-h-12 rounded-md border border-border bg-raised" onClick={skipInstall}>
+          <button
+            type="button"
+            className="mt-3 w-full min-h-12 rounded-md border border-border bg-raised"
+            onClick={() => {
+              const ev = (window as Window & { deferredInstall?: { prompt: () => void } }).deferredInstall;
+              if (ev) ev.prompt();
+            }}
+          >
+            Add to Home Screen
+          </button>
+          <button type="button" className="mt-6 text-sm text-subtle underline" onClick={skipInstall}>
             Continue without installing
           </button>
         </div>
@@ -175,6 +187,13 @@ export default function App() {
             <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Electrical Circuit Diagrams</h1>
             <p className="mt-1 text-sm text-muted">Locked to the 7.3 T444E. Press Ctrl+K to jump. Job saves keep / cut / done on this device.</p>
           </div>
+          <button
+            type="button"
+            onClick={() => setJumpOpen(true)}
+            className="hidden h-10 items-center rounded-xs border border-border px-3 font-mono text-[11px] text-muted sm:inline-flex"
+          >
+            Ctrl+K
+          </button>
         </div>
         {update ? (
           <div className="mx-auto max-w-6xl px-4 pb-3 sm:px-6">
@@ -210,13 +229,24 @@ export default function App() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search…"
+                placeholder={
+                  tab === "pins"
+                    ? "Search pin, circuit, connector…"
+                    : tab === "book"
+                      ? "Search any page in the book…"
+                      : tab === "circuits"
+                        ? "Search circuit number…"
+                        : tab === "job"
+                          ? "Search the job…"
+                          : "Search fuse or relay…"
+                }
                 className="h-11 w-full rounded-sm border border-border bg-surface pr-3 pl-10 text-sm text-fg placeholder:text-subtle"
               />
             </label>
           ) : null}
         </div>
       </header>
+
       <main className={cn("mx-auto min-w-0 px-4 py-6 sm:px-6 sm:py-8", tab === "shop" ? "max-w-7xl" : "max-w-6xl")}>
         {tab === "shop" ? <Shop3D /> : null}
         {tab === "job" ? <JobBook query={query} /> : null}
@@ -228,6 +258,7 @@ export default function App() {
         {tab === "panel" ? <FusePanel selected={fuse} onSelect={setFuse} /> : null}
         {tab === "all" ? <CircuitTable query={query} /> : null}
       </main>
+
       <CommandJump open={jumpOpen} onOpen={setJumpOpen} onJump={jump} />
     </div>
   );
