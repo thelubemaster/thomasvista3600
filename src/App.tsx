@@ -3,7 +3,6 @@ import { Search } from "lucide-react";
 import { AllCircuits } from "@/components/all-circuits";
 import { CircuitTable } from "@/components/circuit-table";
 import { CommandJump, type JumpTab } from "@/components/command-jump";
-import { Firewall } from "@/components/firewall";
 import { FusePanel } from "@/components/fuse-panel";
 import { JobBook } from "@/components/job-book";
 import { Manual } from "@/components/manual";
@@ -12,33 +11,21 @@ import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
 import { cn } from "@/lib/utils";
 
-const APP_VERSION = "1.0.8";
+const APP_VERSION = "1.0.9";
 const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
 const TABS = [
-  { id: "shop", label: "3D shop", short: "Shop" },
-  { id: "job", label: "Job", short: "Job" },
-  { id: "book", label: "Book", short: "Book" },
-  { id: "wall", label: "Firewall", short: "Wall" },
-  { id: "relays", label: "Relays", short: "Relays" },
-  { id: "circuits", label: "All circuits", short: "Circuits" },
-  { id: "pins", label: "Pin map", short: "Pins" },
-  { id: "panel", label: "Fuse panel", short: "Fuses" },
-  { id: "all", label: "Fuses & relays", short: "Table" },
+  { id: "shop", label: "Shop" },
+  { id: "circuits", label: "Circuits" },
+  { id: "fuses", label: "Fuses" },
+  { id: "book", label: "Book" },
+  { id: "job", label: "Job" },
 ] as const;
 
 type Tab = (typeof TABS)[number]["id"];
-
-const SEARCH_TABS: Tab[] = ["pins", "all", "circuits", "book", "job"];
-
-function searchPlaceholder(tab: Tab) {
-  if (tab === "pins") return "Pin, circuit, connector…";
-  if (tab === "book") return "Any page in the book…";
-  if (tab === "circuits") return "Circuit number…";
-  if (tab === "job") return "Search the job…";
-  return "Fuse or relay…";
-}
+type CircuitView = "draw" | "plugs";
+type FuseView = "cover" | "relays" | "table";
 
 function isAndroid() {
   return /Android/i.test(navigator.userAgent);
@@ -85,6 +72,8 @@ export default function App() {
   const [hint, setHint] = useState<string | null>(null);
   const [jumpOpen, setJumpOpen] = useState(false);
   const [banner, setBanner] = useState(false);
+  const [circuitView, setCircuitView] = useState<CircuitView>("draw");
+  const [fuseView, setFuseView] = useState<FuseView>("cover");
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -143,10 +132,29 @@ export default function App() {
   }, []);
 
   function jump(next: JumpTab, nextHint?: string) {
-    setTab(next);
     setHint(nextHint ?? null);
-    if (next === "panel" && nextHint) setFuse(nextHint);
-    if (next === "circuits" && nextHint) setQuery(nextHint);
+    setQuery("");
+    if (next === "shop") setTab("shop");
+    else if (next === "job") setTab("job");
+    else if (next === "book") setTab("book");
+    else if (next === "circuits") {
+      setTab("circuits");
+      setCircuitView("draw");
+      if (nextHint) setQuery(nextHint);
+    } else if (next === "wall" || next === "pins") {
+      setTab("circuits");
+      setCircuitView("plugs");
+    } else if (next === "relays") {
+      setTab("fuses");
+      setFuseView("relays");
+    } else if (next === "all") {
+      setTab("fuses");
+      setFuseView("table");
+    } else {
+      setTab("fuses");
+      setFuseView("cover");
+      if (nextHint) setFuse(nextHint);
+    }
   }
 
   function dismissBanner() {
@@ -187,10 +195,9 @@ export default function App() {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="flex items-center gap-2 px-3 py-2 sm:hidden">
-          <div className="min-w-0 flex-1">
-            <p className="font-mono text-[10px] tracking-[0.16em] text-accent uppercase">3600 · T444E 7.3</p>
-            <h1 className="truncate font-display text-lg font-semibold leading-tight">Circuit diagrams</h1>
-          </div>
+          <p className="min-w-0 flex-1 truncate font-mono text-[11px] tracking-[0.16em] text-accent uppercase">
+            3600 · T444E 7.3
+          </p>
           <button
             type="button"
             onClick={() => setJumpOpen(true)}
@@ -206,8 +213,7 @@ export default function App() {
             <p className="font-mono text-[11px] tracking-[0.18em] text-accent uppercase">
               3600 · T444E 7.3 POWER STROKE · W/004040 HYD BRAKES · AE-2811
             </p>
-            <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Electrical Circuit Diagrams</h1>
-            <p className="mt-1 text-sm text-muted">Locked to the 7.3 T444E. Press Ctrl+K to jump. Job saves keep / cut / done on this device.</p>
+            <h1 className="font-display text-3xl font-semibold tracking-tight">Electrical Circuit Diagrams</h1>
           </div>
           <button
             type="button"
@@ -218,37 +224,32 @@ export default function App() {
           </button>
         </div>
 
-        <div className="sm:mx-auto sm:flex sm:max-w-6xl sm:flex-wrap sm:items-center sm:gap-2 sm:px-6 sm:pb-4">
-          <nav className="tab-strip flex gap-1 overflow-x-auto px-3 py-1.5 sm:flex-wrap sm:rounded-sm sm:border sm:border-border sm:bg-surface sm:p-1 sm:px-1">
-            {TABS.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                className={cn(
-                  "relative h-11 shrink-0 rounded-xs px-3 text-sm font-medium transition-colors sm:h-auto sm:py-2",
-                  tab === t.id
-                    ? "bg-raised text-fg after:absolute after:inset-x-2 after:bottom-1 after:h-0.5 after:rounded-full after:bg-accent sm:after:hidden"
-                    : "text-muted hover:text-fg",
-                )}
-              >
-                <span className="sm:hidden">{t.short}</span>
-                <span className="hidden sm:inline">{t.label}</span>
-              </button>
-            ))}
-          </nav>
-          {SEARCH_TABS.includes(tab) ? (
-            <label className="relative mx-3 mb-2 block sm:mx-0 sm:mb-0 sm:min-w-48 sm:flex-1">
-              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={searchPlaceholder(tab)}
-                className="h-11 w-full rounded-sm border border-border bg-surface pr-3 pl-10 text-sm text-fg placeholder:text-subtle"
-              />
-            </label>
-          ) : null}
-        </div>
+        <nav className="grid grid-cols-5 gap-0.5 px-2 pb-2 sm:mx-auto sm:flex sm:max-w-6xl sm:gap-1 sm:px-6 sm:pb-4">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "h-11 rounded-xs text-sm font-medium sm:h-auto sm:px-4 sm:py-2",
+                tab === t.id ? "bg-raised text-fg" : "text-muted hover:text-fg",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
+        {tab === "book" || tab === "job" ? (
+          <label className="mx-3 mb-2 block sm:mx-auto sm:max-w-6xl sm:px-6">
+            <span className="sr-only">Search</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={tab === "book" ? "Page, circuit, title…" : "Job item…"}
+              className="h-11 w-full rounded-sm border border-border bg-surface px-3 text-sm text-fg placeholder:text-subtle"
+            />
+          </label>
+        ) : null}
       </header>
 
       <main
@@ -256,17 +257,68 @@ export default function App() {
         style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
       >
         {tab === "shop" ? <Shop3D /> : null}
-        {tab === "job" ? <JobBook query={query} /> : null}
+        {tab === "circuits" ? (
+          <div className="space-y-3">
+            <Seg
+              value={circuitView}
+              onChange={setCircuitView}
+              items={[
+                ["draw", "Drawings"],
+                ["plugs", "Plugs"],
+              ]}
+            />
+            {circuitView === "draw" ? <AllCircuits query={query} focus={hint} /> : <PinMap query={query} />}
+          </div>
+        ) : null}
+        {tab === "fuses" ? (
+          <div className="space-y-3">
+            <Seg
+              value={fuseView}
+              onChange={setFuseView}
+              items={[
+                ["cover", "Cover"],
+                ["relays", "Relays"],
+                ["table", "Table"],
+              ]}
+            />
+            {fuseView === "cover" ? <FusePanel selected={fuse} onSelect={setFuse} /> : null}
+            {fuseView === "relays" ? <RelayPanel focus={hint} /> : null}
+            {fuseView === "table" ? <CircuitTable query={query} /> : null}
+          </div>
+        ) : null}
         {tab === "book" ? <Manual query={query} /> : null}
-        {tab === "wall" ? <Firewall focus={hint} /> : null}
-        {tab === "relays" ? <RelayPanel focus={hint} /> : null}
-        {tab === "circuits" ? <AllCircuits query={query} focus={hint} /> : null}
-        {tab === "pins" ? <PinMap query={query} /> : null}
-        {tab === "panel" ? <FusePanel selected={fuse} onSelect={setFuse} /> : null}
-        {tab === "all" ? <CircuitTable query={query} /> : null}
+        {tab === "job" ? <JobBook query={query} /> : null}
       </main>
 
       <CommandJump open={jumpOpen} onOpen={setJumpOpen} onJump={jump} />
+    </div>
+  );
+}
+
+function Seg<T extends string>({
+  value,
+  onChange,
+  items,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  items: readonly (readonly [T, string])[];
+}) {
+  return (
+    <div className="flex gap-1 rounded-sm border border-border bg-surface p-1">
+      {items.map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => onChange(id)}
+          className={cn(
+            "h-10 flex-1 rounded-xs text-sm font-medium",
+            value === id ? "bg-raised text-fg" : "text-muted hover:text-fg",
+          )}
+        >
+          {label}
+        </button>
+      ))}
     </div>
   );
 }

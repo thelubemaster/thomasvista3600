@@ -1,6 +1,6 @@
 {
-  "version": "1.0.8",
+  "version": "1.0.9",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Phone chrome: one-row tabs, search sheet, drawings first."
+  "notes": "Five tabs. Shop, Circuits, Fuses, Book, Job."
 }

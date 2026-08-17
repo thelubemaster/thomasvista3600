@@ -58,14 +58,11 @@ export function CommandJump({
           <Command.Group heading="Places" className="px-2 py-1 font-mono text-[10px] tracking-widest text-subtle uppercase">
             {(
               [
-                ["shop", "3D shop"],
-                ["job", "Rewire job"],
-                ["wall", "Firewall plugs"],
-                ["circuits", "All circuits"],
-                ["relays", "Relays"],
-                ["panel", "Fuse panel"],
-                ["pins", "Pin map"],
+                ["shop", "Shop"],
+                ["circuits", "Circuits"],
+                ["panel", "Fuses"],
                 ["book", "Book"],
+                ["job", "Job"],
               ] as const
             ).map(([id, label]) => (
               <Item key={id} value={label} onSelect={() => { onJump(id); onOpen(false); }}>

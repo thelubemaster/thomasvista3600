@@ -44,8 +44,10 @@ export function AllCircuits({ query, focus }: { query: string; focus?: string | 
           }}
           onHop={(h) => setHopWireId(h.wireId)}
         />
-        <Group title="Needed to run" items={crit} active={map.id} onPick={(next) => { setId(next); setHopWireId(null); }} />
-        <Group title="Not needed to run" items={rest} active={map.id} onPick={(next) => { setId(next); setHopWireId(null); }} />
+        <div className="hidden space-y-4 lg:block">
+          <Group title="Needed to run" items={crit} active={map.id} onPick={(next) => { setId(next); setHopWireId(null); }} />
+          <Group title="Not needed to run" items={rest} active={map.id} onPick={(next) => { setId(next); setHopWireId(null); }} />
+        </div>
       </aside>
       <div className="order-1 min-w-0 lg:order-none">
         <FlowSchematic key={map.id} map={map} />
