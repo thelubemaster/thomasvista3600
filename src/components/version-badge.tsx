@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const APP_VERSION = "1.1.7";
+export const APP_VERSION = "1.1.8";
 const LIVE = "https://thelubemaster.github.io/thomasvista3600";
 
 function cmpVer(a: string, b: string) {
@@ -21,24 +21,21 @@ type Status = "idle" | "checking" | "current" | "available" | "error";
 export function VersionBadge({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
-  const [remote, setRemote] = useState("");
-  const [notes, setNotes] = useState("");
+  const [live, setLive] = useState<string | null>(null);
+  const [notes, setNotes] = useState<string | null>(null);
 
   async function check() {
     setStatus("checking");
-    setRemote("");
-    setNotes("");
+    setLive(null);
+    setNotes(null);
     try {
-      if (navigator.serviceWorker) {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map((r) => r.update()));
-      }
       const res = await fetch(`${LIVE}/version.json?t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) throw new Error("bad");
       const j = (await res.json()) as { version?: string; notes?: string };
       const v = String(j.version || "").replace(/^v/i, "");
-      setRemote(v);
-      setNotes(String(j.notes || ""));
+      if (!v) throw new Error("empty");
+      setLive(v);
+      setNotes(j.notes || null);
       setStatus(cmpVer(v, APP_VERSION) > 0 ? "available" : "current");
     } catch {
       setStatus("error");
@@ -50,13 +47,14 @@ export function VersionBadge({ className }: { className?: string }) {
     void check();
   }
 
-  function apply() {
-    try {
-      navigator.serviceWorker?.controller?.postMessage({ type: "SKIP_WAITING" });
-    } catch {
-      /* ignore */
+  function updateNow() {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
+      });
     }
-    window.location.replace(`${LIVE}/?updated=${Date.now()}`);
+    const url = `${LIVE}/?updated=${Date.now()}`;
+    window.location.replace(url);
   }
 
   return (
@@ -65,74 +63,72 @@ export function VersionBadge({ className }: { className?: string }) {
         type="button"
         onClick={openSheet}
         className={cn(
-          "inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xs border border-accent/50 bg-raised px-2.5 font-mono text-xs text-fg sm:px-3 sm:text-sm",
+          "inline-flex min-h-11 items-center gap-1.5 rounded-xs border border-border bg-surface px-2.5 font-mono text-xs text-muted hover:border-accent hover:text-fg",
           className,
         )}
         aria-label={`Version ${APP_VERSION}. Check for update`}
       >
-        <RefreshCw className="size-3.5 text-accent" aria-hidden />
+        <RefreshCw className="size-3.5 shrink-0 opacity-70" aria-hidden />
         v{APP_VERSION}
       </button>
 
       {open ? (
-        <div
-          className="fixed inset-0 z-[60] grid place-items-end bg-bg/70 sm:place-items-center"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="w-full rounded-t-lg border border-border bg-surface p-5 shadow-lg sm:max-w-sm sm:rounded-md"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-labelledby="update-title"
-          >
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line sm:hidden" aria-hidden />
-            <p id="update-title" className="font-mono text-[10px] tracking-widest text-accent uppercase">
-              This copy
-            </p>
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/60"
+            aria-label="Close"
+            onClick={() => setOpen(false)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-t-lg border border-border bg-bg p-4 shadow-xl sm:rounded-lg">
+            <p className="font-mono text-[10px] tracking-widest text-subtle uppercase">App version</p>
             <h2 className="mt-1 font-display text-2xl font-semibold">v{APP_VERSION}</h2>
-            {remote ? (
-              <p className="mt-1 font-mono text-xs text-subtle">Live site · v{remote}</p>
-            ) : null}
+            <p className="mt-1 text-sm text-muted">This device</p>
 
-            {status === "checking" || status === "idle" ? (
-              <p className="mt-3 text-sm text-muted">Checking for an update…</p>
-            ) : null}
-            {status === "current" ? (
-              <p className="mt-3 text-sm text-muted">You’re on the latest.</p>
-            ) : null}
-            {status === "available" ? (
-              <p className="mt-3 text-sm text-muted">
-                Update available: <span className="font-mono text-fg">v{remote}</span>
-                {notes ? <span className="mt-1 block">{notes}</span> : null}
-              </p>
-            ) : null}
-            {status === "error" ? (
-              <p className="mt-3 text-sm text-muted">Couldn’t reach the update check. Try again when you’re online.</p>
-            ) : null}
-
-            <div className="mt-5 flex gap-2">
+            <div className="mt-4 rounded-md border border-border bg-surface p-3">
+              {status === "checking" ? (
+                <p className="text-sm text-muted">Checking live site…</p>
+              ) : null}
+              {status === "current" ? (
+                <p className="text-sm text-fg">
+                  Live site · v{live}
+                  <span className="mt-1 block text-muted">You are up to date.</span>
+                </p>
+              ) : null}
               {status === "available" ? (
-                <button
-                  type="button"
-                  onClick={apply}
-                  className="h-11 flex-1 rounded-xs bg-accent px-4 text-sm font-semibold text-accent-fg"
-                >
-                  Update now
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => void check()}
-                  className="h-11 flex-1 rounded-xs border border-border px-4 text-sm text-fg"
-                  disabled={status === "checking"}
-                >
-                  {status === "checking" ? "Checking…" : "Check again"}
-                </button>
-              )}
+                <div className="space-y-2">
+                  <p className="text-sm text-fg">
+                    Live site · v{live}
+                    <span className="mt-1 block text-accent">Update available.</span>
+                  </p>
+                  {notes ? <p className="text-xs text-muted">{notes}</p> : null}
+                  <button
+                    type="button"
+                    onClick={updateNow}
+                    className="h-11 w-full rounded-xs bg-accent font-medium text-accent-fg"
+                  >
+                    Update now
+                  </button>
+                </div>
+              ) : null}
+              {status === "error" ? (
+                <p className="text-sm text-muted">Could not reach the live site. Try again later.</p>
+              ) : null}
+              {status === "idle" ? <p className="text-sm text-muted">Tap check.</p> : null}
+            </div>
+
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => void check()}
+                className="h-11 flex-1 rounded-xs border border-border bg-surface text-sm text-fg"
+              >
+                Check again
+              </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="h-11 rounded-xs border border-border px-4 text-sm text-muted"
+                className="h-11 flex-1 rounded-xs border border-border bg-raised text-sm text-muted"
               >
                 Close
               </button>
