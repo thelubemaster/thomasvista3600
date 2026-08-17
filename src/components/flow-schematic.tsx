@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
 import { relayFaces } from "@/data/relay-pins";
+import { routeWire } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
 import { cn } from "@/lib/utils";
 
@@ -13,13 +14,6 @@ const strokeFor: Record<string, string> = {
   c: "var(--color-wire-c)",
   gnd: "var(--color-wire-gnd)",
 };
-
-function pathBetween(from: FlowNode, to: FlowNode, offset = 0) {
-  const y1 = from.y + offset;
-  const y2 = to.y + offset;
-  const mid = (from.x + to.x) / 2;
-  return `M ${from.x + 64} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${to.x - 64} ${y2}`;
-}
 
 function NodeCard({
   node,
@@ -204,22 +198,23 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             const a = byId[w.from];
             const b = byId[w.to];
             if (!a || !b) return null;
-            const off = (i % 5) - 2;
+            const siblings = map.wires.filter((x) => x.from === w.from && x.to === w.to);
+            const lane = siblings.length > 1 ? (siblings.indexOf(w) - (siblings.length - 1) / 2) * 12 : 0;
+            const d = routeWire(a, b, map.nodes, lane, { w: W, h: H });
             const active = related.has(w.id) || related.has(w.from) || related.has(w.to);
             const dim = selected !== map.defaultId && !active;
             return (
-              <path
+              <g
                 key={w.id}
-                d={pathBetween(a, b, off * 3)}
-                fill="none"
-                stroke={strokeFor[w.color]}
-                strokeWidth={active ? 3.2 : 2.1}
                 className={cn("cursor-pointer", dim && "opacity-25")}
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelected(w.id);
                 }}
-              />
+              >
+                <path d={d} fill="none" stroke="transparent" strokeWidth={16} />
+                <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active ? 3.2 : 2.1} />
+              </g>
             );
           })}
 
