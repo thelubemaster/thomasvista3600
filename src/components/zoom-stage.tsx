@@ -180,7 +180,7 @@ export function ZoomStage({
       <div
         ref={viewport}
         className={cn(
-          "h-[min(68svh,40rem)] touch-none overflow-hidden overscroll-none select-none",
+          "h-[min(58svh,36rem)] touch-none overflow-hidden overscroll-none select-none sm:h-[min(68svh,40rem)]",
           panning ? "cursor-grabbing" : "cursor-grab",
         )}
         style={{ touchAction: "none", WebkitUserSelect: "none" }}

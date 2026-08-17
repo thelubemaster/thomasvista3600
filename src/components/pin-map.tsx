@@ -69,7 +69,7 @@ export function PinMap({ query }: { query: string }) {
 
   return (
     <div className="grid min-w-0 gap-5 lg:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="min-w-0 space-y-4">
+      <aside className="order-2 min-w-0 space-y-4 lg:order-none">
         {GROUPS.map((g) => {
           const items = filtered.filter(g.match);
           if (items.length === 0) return null;
@@ -102,12 +102,12 @@ export function PinMap({ query }: { query: string }) {
         })}
       </aside>
 
-      <div className="min-w-0 space-y-4">
+      <div className="order-1 min-w-0 space-y-4 lg:order-none">
         <header>
           <p className="font-mono text-xs tracking-widest text-accent uppercase">
             Connector {conn.tag} · printed page {conn.page}
           </p>
-          <h2 className="font-display text-3xl font-semibold tracking-tight">{conn.name}</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight sm:text-3xl">{conn.name}</h2>
           <p className="mt-1 text-sm text-muted">{conn.harness}</p>
           {conn.optional ? <p className="mt-1 text-xs text-warn">{conn.optional}</p> : null}
         </header>

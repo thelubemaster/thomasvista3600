@@ -118,7 +118,7 @@ export function Shop3D() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4 lg:flex-row">
-      <div className="relative isolate h-[min(48svh,420px)] w-full overflow-hidden rounded-md border border-border bg-bg sm:h-[min(60svh,540px)] lg:h-[min(78vh,680px)]">
+      <div className="relative isolate h-[min(62svh,520px)] w-full overflow-hidden rounded-md border border-border bg-bg sm:h-[min(60svh,540px)] lg:h-[min(78vh,680px)]">
         <div className="absolute inset-0">
           {ready ? (
             <Suspense fallback={<p className="p-6 font-mono text-sm text-muted">Loading shop…</p>}>
@@ -166,7 +166,7 @@ export function Shop3D() {
                     type="button"
                     onClick={() => walkHop(h)}
                     className={cn(
-                      "flex min-h-9 shrink-0 items-center gap-1.5 rounded-xs border px-2 font-mono text-[11px]",
+                      "flex min-h-11 shrink-0 items-center gap-1.5 rounded-xs border px-2.5 font-mono text-[11px]",
                       active
                         ? "border-accent bg-accent text-accent-fg"
                         : "border-border bg-raised/95 text-fg",
@@ -189,20 +189,20 @@ export function Shop3D() {
           <p className="mt-3 font-mono text-[10px] tracking-widest text-subtle uppercase">Circuits on</p>
           <p className="mt-1 font-display text-2xl">{count}</p>
           <div className="mt-3 flex flex-wrap gap-1">
-            <button type="button" className="rounded-xs border border-border px-2 py-1.5 text-xs hover:bg-raised" onClick={() => setOn(defaultCrit())}>
+            <button type="button" className="min-h-11 rounded-xs border border-border px-3 text-sm hover:bg-raised" onClick={() => setOn(defaultCrit())}>
               Engine only
             </button>
             <button
               type="button"
-              className="rounded-xs border border-border px-2 py-1.5 text-xs hover:bg-raised"
+              className="min-h-11 rounded-xs border border-border px-3 text-sm hover:bg-raised"
               onClick={() => setMany(["90"], true)}
             >
               + Hyd
             </button>
-            <button type="button" className="rounded-xs border border-border px-2 py-1.5 text-xs hover:bg-raised" onClick={() => setOn(new Set(circuitToggles.map((c) => c.id)))}>
+            <button type="button" className="min-h-11 rounded-xs border border-border px-3 text-sm hover:bg-raised" onClick={() => setOn(new Set(circuitToggles.map((c) => c.id)))}>
               All
             </button>
-            <button type="button" className="rounded-xs border border-border px-2 py-1.5 text-xs hover:bg-raised" onClick={() => setOn(new Set())}>
+            <button type="button" className="min-h-11 rounded-xs border border-border px-3 text-sm hover:bg-raised" onClick={() => setOn(new Set())}>
               None
             </button>
           </div>

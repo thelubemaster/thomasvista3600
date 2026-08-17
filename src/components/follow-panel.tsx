@@ -24,7 +24,7 @@ export function FollowPanel({
         <label className="mt-2 block">
           <span className="sr-only">Circuit</span>
           <select
-            className="h-10 w-full rounded-xs border border-border bg-raised px-2 font-mono text-xs text-fg"
+            className="h-11 w-full rounded-xs border border-border bg-raised px-2 font-mono text-sm text-fg"
             value={circuit ?? ""}
             onChange={(e) => onCircuit(e.target.value)}
           >

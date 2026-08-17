@@ -107,7 +107,7 @@ export function FusePanel({
                 {active.engineCritical ? "Engine critical" : "Not required to run"}
               </span>
             </div>
-            <h3 className="mt-2 font-display text-3xl font-semibold tracking-tight">{active.cover}</h3>
+            <h3 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-3xl">{active.cover}</h3>
             <p className="mt-1 text-sm text-fg">{active.description}</p>
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div>

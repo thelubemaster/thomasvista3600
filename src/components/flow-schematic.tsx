@@ -151,20 +151,20 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
   const legend = map.legend?.find((l) => l.id === selected);
 
   return (
-    <section className="space-y-5">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="font-mono text-xs tracking-widest text-accent uppercase">
+    <section className="space-y-3 sm:space-y-5">
+      <header className="flex flex-wrap items-end justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
+          <p className="font-mono text-[10px] tracking-widest text-accent uppercase sm:text-xs">
             Circuit {map.number}
             {map.engineCritical ? " · engine critical" : " · not needed to run"}
           </p>
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-fg">{map.title}</h2>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{map.blurb}</p>
+          <h2 className="font-display text-xl font-semibold tracking-tight text-fg sm:text-3xl">{map.title}</h2>
+          <p className="mt-1 line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted sm:line-clamp-none">{map.blurb}</p>
         </div>
         <button
           type="button"
           onClick={() => setSelected(map.defaultId)}
-          className="rounded-sm border border-line px-3 py-2 text-xs font-medium text-muted hover:border-accent hover:text-fg"
+          className="h-11 shrink-0 rounded-sm border border-line px-3 text-sm font-medium text-muted hover:border-accent hover:text-fg sm:h-auto sm:py-2 sm:text-xs"
         >
           Reset
         </button>

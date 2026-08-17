@@ -72,10 +72,12 @@
   white-space: nowrap;
 }
 
-.hop-strip {
+.hop-strip,
+.tab-strip {
   scrollbar-width: none;
 }
-.hop-strip::-webkit-scrollbar {
+.hop-strip::-webkit-scrollbar,
+.tab-strip::-webkit-scrollbar {
   display: none;
 }
 
@@ -98,4 +100,13 @@
     background: #fff;
     color: #1a1814;
   }
+}
+
+[cmdk-group-heading] {
+  padding: 10px 12px 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
 }

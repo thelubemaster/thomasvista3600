@@ -103,8 +103,8 @@ export function JobBook({ query = "" }: { query?: string }) {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-[10px] tracking-widest text-subtle uppercase">Rewire job</p>
-          <h2 className="font-display text-3xl font-semibold">Keep · cut · done</h2>
-          <p className="mt-1 max-w-xl text-sm text-muted">
+          <h2 className="font-display text-xl font-semibold sm:text-3xl">Keep · cut · done</h2>
+          <p className="mt-1 hidden max-w-xl text-sm text-muted sm:block">
             Mark every circuit, fuse, and relay. Notes stay on this device. Export a file if you switch machines.
           </p>
         </div>
@@ -167,7 +167,7 @@ export function JobBook({ query = "" }: { query?: string }) {
               } else setKind(k);
             }}
             className={cn(
-              "h-9 rounded-xs border px-3 text-xs",
+              "h-11 rounded-xs border px-3 text-sm",
               (k === "run" && filter === "run") || (k !== "run" && kind === k && filter !== "run")
                 ? "border-accent text-accent"
                 : "border-border text-muted hover:text-fg",

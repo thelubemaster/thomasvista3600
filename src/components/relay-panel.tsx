@@ -30,18 +30,18 @@ export function RelayPanel({ focus }: { focus?: string | null }) {
 
   return (
     <div className="grid min-w-0 gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
-      <aside className="space-y-4">
+      <aside className="order-2 space-y-4 lg:order-none">
         <Group title="Needed to run / start" items={crit} active={face.id} onPick={(rid) => { setId(rid); setPinId(relayFaces.find((r) => r.id === rid)?.pins[0].id ?? "4"); }} />
         <Group title="Not needed to run" items={rest} active={face.id} onPick={(rid) => { setId(rid); setPinId(relayFaces.find((r) => r.id === rid)?.pins[0].id ?? "4"); }} />
       </aside>
 
-      <div className="min-w-0 space-y-5">
+      <div className="order-1 min-w-0 space-y-5 lg:order-none">
         <header>
-          <p className="font-mono text-xs tracking-widest text-accent uppercase">
+          <p className="font-mono text-[10px] tracking-widest text-accent uppercase sm:text-xs">
             Relay {face.tag} · printed page {face.page}
             {face.engineCritical ? " · engine critical" : ""}
           </p>
-          <h2 className="font-display text-3xl font-semibold tracking-tight">{face.name}</h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight sm:text-3xl">{face.name}</h2>
           <p className="mt-1 text-sm text-muted">{face.where}. {face.look}</p>
         </header>
 

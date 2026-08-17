@@ -1,8 +1,8 @@
 {
-  "version": "1.0.7",
-  "apkVersion": "1.0.7",
+  "version": "1.0.8",
+  "apkVersion": "1.0.8",
   "apkVersionCode": 6,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit drawings pan and pinch on the phone."
+  "notes": "Phone chrome: one-row tabs, search sheet, drawings first."
 }

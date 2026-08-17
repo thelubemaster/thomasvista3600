@@ -95,8 +95,8 @@ export function Firewall({ focus }: { focus?: string | null }) {
         <p className="font-mono text-xs tracking-widest text-accent uppercase">
           CONNECTOR BODY COMPOSITE — VIEWED FROM MATING ENDS
         </p>
-        <h2 className="font-display text-3xl font-semibold tracking-tight">Find the plug</h2>
-        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">
+        <h2 className="font-display text-xl font-semibold tracking-tight sm:text-3xl">Find the plug</h2>
+        <p className="mt-1 hidden max-w-2xl text-sm leading-relaxed text-muted sm:block">
           Same drawings as the book. Cream plate, black outline, mating end. Tap a hole — that circuit lights on every plug.
         </p>
       </header>

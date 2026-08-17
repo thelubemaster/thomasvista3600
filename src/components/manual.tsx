@@ -31,9 +31,9 @@ export function Manual({ query }: { query: string }) {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="font-mono text-xs tracking-widest text-accent uppercase">CTS-5123V · AE-2811</p>
-        <h2 className="font-display text-3xl font-semibold tracking-tight">Every page in the book</h2>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
+        <p className="font-mono text-[10px] tracking-widest text-accent uppercase sm:text-xs">CTS-5123V · AE-2811</p>
+        <h2 className="font-display text-xl font-semibold tracking-tight sm:text-3xl">Every page in the book</h2>
+        <p className="hidden max-w-2xl text-sm leading-relaxed text-muted sm:block">
           Full Electrical Circuit Diagrams index. Tap a line. If we have the path drawn, it opens like circuit 19.
         </p>
         <div className="flex flex-wrap gap-1">

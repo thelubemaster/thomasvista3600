@@ -36,20 +36,24 @@ export function CommandJump({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-start bg-bg/70 px-3 pt-[12vh]" onClick={() => onOpen(false)}>
+    <div
+      className="fixed inset-0 z-50 grid place-items-end bg-bg/80 sm:place-items-start sm:px-3 sm:pt-[12vh]"
+      onClick={() => onOpen(false)}
+    >
       <Command
         label="Jump"
-        className="mx-auto w-full max-w-xl overflow-hidden rounded-md border border-border bg-surface shadow-lg"
+        className="flex h-[min(88dvh,40rem)] w-full flex-col overflow-hidden rounded-t-lg border border-border bg-surface shadow-lg sm:mx-auto sm:h-auto sm:max-w-xl sm:rounded-md"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="mx-auto mt-2 mb-1 h-1 w-10 rounded-full bg-line sm:hidden" aria-hidden />
         <Command.Input
           autoFocus
           value={q}
           onValueChange={setQ}
-          placeholder="Jump to circuit, fuse, relay, plug…"
-          className="h-12 w-full border-b border-border bg-transparent px-4 font-mono text-sm text-fg outline-none placeholder:text-subtle"
+          placeholder="Circuit, fuse, relay, plug…"
+          className="h-14 w-full border-b border-border bg-transparent px-4 font-mono text-base text-fg outline-none placeholder:text-subtle sm:h-12 sm:text-sm"
         />
-        <Command.List className="max-h-80 overflow-y-auto p-1">
+        <Command.List className="min-h-0 flex-1 overflow-y-auto p-1 sm:max-h-80 sm:flex-none">
           <Command.Empty className="px-3 py-6 text-sm text-muted">Nothing matches.</Command.Empty>
           <Command.Group heading="Places" className="px-2 py-1 font-mono text-[10px] tracking-widest text-subtle uppercase">
             {(
@@ -158,7 +162,7 @@ function Item({
     <Command.Item
       value={value}
       onSelect={onSelect}
-      className="flex cursor-pointer items-center gap-2 rounded-xs px-2 py-2 text-sm text-muted data-[selected=true]:bg-raised data-[selected=true]:text-fg"
+      className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xs px-3 py-2.5 text-sm text-muted data-[selected=true]:bg-raised data-[selected=true]:text-fg"
     >
       {children}
     </Command.Item>
