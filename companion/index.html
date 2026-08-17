@@ -5,69 +5,155 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0f1115" />
 <meta name="app-version" content="0.4.1" />
-<meta name="app-build" content="2026-08-17c" />
 <title>3600 / 7.3 Wiring v0.4.1</title>
 <style>
-:root{--bg:#0f1115;--raised:#171a21;--card:#1c2029;--line:#2a3140;--fg:#e8ecf4;--muted:#9aa3b5;--subtle:#6b7385;--accent:#5b8def;--ok:#3ecf8e;--warn:#e6b84d;--bat:#e85d5d;--ign:#e6a23c;--gnd:#d4c9a8;--sig:#7ec8e3;--safe:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.4;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
-button,input,select{font:inherit;color:inherit}button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer}button.primary{background:var(--accent);border-color:transparent;color:#fff;font-weight:600}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:12px;color:var(--muted)}
-.app{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
-header{position:sticky;top:0;z-index:20;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 12px 8px}
-header h1{margin:0;font-size:15px;font-weight:650}.ver{display:inline-flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}.ver .badge{font-family:ui-monospace,monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1a2740;border:1px solid #3a5a8a;color:#9ec1ff}.ver .build{font-size:11px;color:var(--subtle)}
-header p{margin:2px 0 0;font-size:12px;color:var(--muted)}
-.search{margin-top:8px;width:100%;background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--fg)}
-main{overflow:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:calc(88px + var(--safe))}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 6px calc(8px + var(--safe));background:rgba(15,17,21,.96);border-top:1px solid var(--line)}
-nav.tabs button{font-size:11px;padding:8px 4px;border:none;background:transparent;color:var(--muted)}nav.tabs button.active{color:var(--fg);background:var(--card)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.panel{display:none}.panel.active{display:block}
-.muted{color:var(--muted)}.hidden{display:none!important}
-.map-sheet{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;flex-direction:column}.map-sheet.open{display:flex;height:100dvh}
-.map-stage{flex:1;min-height:0;position:relative;touch-action:none!important;overscroll-behavior:none;overflow:hidden;background:#0a0c10}
-.map-stage .zoom-inner{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;pointer-events:none}
-.list button{display:block;width:100%;text-align:left;margin-bottom:8px}
+:root{--bg:#0f1115;--card:#1c2029;--line:#2a3140;--fg:#e8ecf4;--muted:#9aa3b5;--safe:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif}
+button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:inherit;font:inherit;cursor:pointer;width:100%;text-align:left;margin-bottom:8px}
+header{padding:12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(15,17,21,.95)}
+header h1{margin:0;font-size:15px}.badge{font-family:ui-monospace,monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1a2740;border:1px solid #3a5a8a;color:#9ec1ff}
+main{padding:12px;padding-bottom:80px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.panel{display:none}.panel.active{display:block}.muted{color:var(--muted)}.hidden{display:none!important}
+.hint{font-size:12px;color:var(--muted)}.label{font-weight:600}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:#0f1115;border-top:1px solid var(--line);padding:8px 4px calc(8px + var(--safe))}
+nav.tabs button{border:none;background:transparent;font-size:11px;padding:8px 2px;margin:0;text-align:center;color:var(--muted)}
+nav.tabs button.active{color:var(--fg);background:var(--card)}
 </style>
 </head>
 <body>
-<div class="app">
 <header>
-<h1>International 3600 · T444E 7.3</h1>
-<div class="ver"><span class="badge" id="appVersion">v0.4.1</span><span class="build" id="appBuild">build 2026-08-17c · github</span></div>
-<p>CTS-5123V wiring companion · matches GitHub main</p>
-<input id="globalSearch" class="search" type="search" placeholder="Search circuit, fuse, page…" autocomplete="off" />
+  <h1>International 3600 · T444E 7.3</h1>
+  <div style="margin-top:6px"><span class="badge">v0.4.1</span> <span class="muted" style="font-size:11px">build 2026-08-17c · GitHub source</span></div>
 </header>
 <main>
-<section id="panel-book" class="panel active">
-<div class="card"><h2>Book</h2><p class="muted">Open the PDF from your device or use Circuits / Skills for the interactive maps.</p>
-<p><strong>This page is the live GitHub preview.</strong> Version badge must show <code>v0.4.1</code>.</p></div>
-</section>
-<section id="panel-circuits" class="panel"><div id="circuitListView" class="list"></div><div id="circuitDetailView" class="hidden"></div></section>
-<section id="panel-job" class="panel"><div class="card"><h2>Job list</h2><div id="jobList"></div></div></section>
-<section id="panel-skills" class="panel"><div class="list" id="skillsList"></div></section>
-<section id="panel-more" class="panel"><div class="card"><h2>About</h2><p class="muted">v0.4.1 · auto-updates when GitHub main changes (Pages + Actions).</p></div></section>
+  <section id="panel-book" class="panel active"><div class="card"><h2>Book</h2><p class="muted">Circuits tab has engine-critical paths 13, 14, 17, 19.</p></div></section>
+  <section id="panel-circuits" class="panel"><div id="circuitListView"></div><div id="circuitDetailView" class="hidden"></div></section>
+  <section id="panel-job" class="panel"><div class="card"><h2>Job</h2><div id="jobList"></div></div></section>
+  <section id="panel-skills" class="panel"><div id="skillsList"></div></section>
+  <section id="panel-more" class="panel"><div class="card"><p class="muted">v0.4.1 — files on GitHub are the source of truth for this preview.</p></div></section>
 </main>
-<nav class="tabs" aria-label="Main">
-<button type="button" data-tab="book" class="active"><span class="icon">📖</span>Book</button>
-<button type="button" data-tab="circuits"><span class="icon">⚡</span>Circuits</button>
-<button type="button" data-tab="job"><span class="icon">✅</span>Job</button>
-<button type="button" data-tab="skills"><span class="icon">🧰</span>Skills</button>
-<button type="button" data-tab="more"><span class="icon">···</span>More</button>
+<nav class="tabs">
+  <button type="button" data-tab="book" class="active">Book</button>
+  <button type="button" data-tab="circuits">Circuits</button>
+  <button type="button" data-tab="job">Job</button>
+  <button type="button" data-tab="skills">Skills</button>
+  <button type="button" data-tab="more">More</button>
 </nav>
-</div>
-<script src="data.js"></script>
-<script src="app.js"></script>
 <script>
-// Fallback if data/app not yet deployed: still show version
-document.querySelectorAll('nav.tabs button').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.remove('active')});
-    btn.classList.add('active');
-    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
-    var id='panel-'+btn.dataset.tab;
-    var el=document.getElementById(id); if(el) el.classList.add('active');
+const APP_VERSION = "0.4.1";
+const APP_BUILD = "2026-08-17c";
+const CIRCUITS = [
+  { id: "13", title: "IGNITION FEED", power: "Key", crit: true, page: 10,
+    blurb: "Key ON powers every IGN fuse.", notes: "Engine critical.",
+    hops: [
+      { at: "KEY SWITCH (63) IGN", wire: "13", gauge: "12 AWG", color: "GY", kind: "ign", note: "Key-on" },
+      { at: "FUSE B1 20A", wire: "13", gauge: "12 AWG", color: "GY", kind: "ign", note: "Main IGN" }
+    ]},
+  { id: "14", title: "BATTERY FEED", power: "Battery", crit: true, page: 8,
+    blurb: "Always hot. C2 keeps CEC alive.", notes: "Engine critical.",
+    hops: [
+      { at: "J1 BATTERY STUD", wire: "15", gauge: "10 AWG", color: "RD", kind: "bat", note: "Always hot" },
+      { at: "FUSE C2 10A", wire: "14B", gauge: "18 AWG", color: "VT", kind: "bat", note: "Module power" }
+    ]},
+  { id: "17", title: "STARTER CONTROL", power: "Key START", crit: true, page: 20,
+    blurb: "Needed to crank.", notes: "Critical.",
+    hops: [
+      { at: "KEY START (63)", wire: "17", gauge: "16 AWG", color: "PK", kind: "ign", note: "Crank" },
+      { at: "FUSE H1 10A START", wire: "97P", gauge: "18 AWG", color: "GY", kind: "ign", note: "Start fuse" },
+      { at: "START RELAY (387)", conn: "start_387", cavity: "30", wire: "17B", gauge: "10 AWG", color: "RD", kind: "bat", note: "High current" }
+    ]},
+  { id: "19", title: "FUEL FILTER / SHUTOFF", power: "Battery + Key", crit: true, page: 50,
+    blurb: "Fuel heater and shutoff family.", notes: "19A/B/C through firewall.",
+    hops: [
+      { at: "FUSE D2 20A", wire: "19D", gauge: "10 AWG", color: "GY", kind: "bat", note: "Battery" },
+      { at: "FUEL FILTER HEATER RELAY (431)", conn: "heater_431", cavity: "30", wire: "19D", gauge: "10 AWG", color: "GY", kind: "bat", note: "Cab relay" },
+      { at: "DASH CONNECTOR (2) H5", conn: "dash2", cavity: "H5", wire: "19A", gauge: "18 AWG", color: "GY", kind: "sig", note: "Firewall" }
+    ]}
+];
+const FUSES = [
+  { id: "B1", size: "20A", power: "Key", name: "IGN", page: 76 },
+  { id: "A2", size: "5A", power: "Key", name: "INST", page: 76 },
+  { id: "D2", size: "20A", power: "Battery", name: "FUEL HTR", page: 76 },
+  { id: "C2", size: "10A", power: "Battery", name: "MODULE", page: 76 },
+  { id: "H1", size: "10A", power: "Key", name: "START", page: 76 },
+  { id: "E3", size: "10A", power: "Key", name: "BRAKE", page: 76 }
+];
+const RELAYS = [
+  { id: "387", name: "START RELAY", page: 20 },
+  { id: "431", name: "FUEL FILTER HEATER RELAY", page: 50 },
+  { id: "662", name: "CEC MODULE PWR RELAY W/T444E", page: 70 }
+];
+const CONNECTORS = {
+  dash2: { id: "dash2", name: "DASH CONNECTOR (2)", page: 78, view: "Mating end", note: "Firewall", cols: ["H5","E4","H6","G6"], rows: ["1"],
+    cavities: { "H5": { ckt: "19A", dest: "Fuel heater", gauge: "18 AWG", color: "GY" }, "E4": { ckt: "19B", dest: "WIF", gauge: "18 AWG", color: "GY" }, "H6": { ckt: "19C", dest: "Vacuum", gauge: "18 AWG", color: "GY" }, "G6": { ckt: "17F", dest: "Starter", gauge: "16 AWG", color: "PK" } } },
+  heater_431: { id: "heater_431", name: "FUEL FILTER HEATER RELAY (431)", page: 50, view: "ISO relay", note: "Cab", cols: ["30","87","85","86"], rows: ["1"],
+    cavities: { "30": { ckt: "19D", dest: "From D2", gauge: "10 AWG", color: "GY" }, "87": { ckt: "19F", dest: "Load", gauge: "10 AWG", color: "GY" }, "85": { ckt: "19J", dest: "Key", gauge: "18 AWG", color: "GY" }, "86": { ckt: "19E", dest: "Gnd", gauge: "18 AWG", color: "WH" } } },
+  start_387: { id: "start_387", name: "START RELAY (387)", page: 20, view: "ISO relay", note: "Critical", cols: ["30","87","85","86"], rows: ["1"],
+    cavities: { "30": { ckt: "17B", dest: "Battery", gauge: "10 AWG", color: "RD" }, "87": { ckt: "17F", dest: "Solenoid", gauge: "16 AWG", color: "PK" }, "85": { ckt: "coil", dest: "Crank", gauge: "16 AWG", color: "PK" }, "86": { ckt: "11", dest: "Gnd", gauge: "18 AWG", color: "WH" } } }
+};
+const FIREWALL = [
+  { cav: "H5", ckt: "19A", dest: "Fuel heater" },
+  { cav: "E4", ckt: "19B", dest: "Water probe" },
+  { cav: "H6", ckt: "19C", dest: "Vacuum / WIF" },
+  { cav: "G6", ckt: "17F", dest: "Starter control" }
+];
+const jobKey = "bus3600-job-v1";
+function loadJob(){ try{return JSON.parse(localStorage.getItem(jobKey)||"[]");}catch{return[]} }
+document.querySelectorAll("nav.tabs button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("nav.tabs button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+    const el = document.getElementById("panel-" + btn.dataset.tab);
+    if (el) el.classList.add("active");
+    if (btn.dataset.tab === "circuits") renderCircuits();
+    if (btn.dataset.tab === "job") renderJob();
   });
 });
+function renderCircuits() {
+  const el = document.getElementById("circuitListView");
+  if (!el || typeof CIRCUITS === "undefined") return;
+  el.innerHTML = CIRCUITS.map((c) =>
+    '<button type="button" data-id="'+c.id+'"><div class="label">'+(c.crit?"🔴 ":"")+c.id+" · "+c.title+'</div><div class="hint">'+c.power+" · p."+c.page+"</div></button>"
+  ).join("");
+  el.querySelectorAll("[data-id]").forEach((b) => b.addEventListener("click", () => openCircuit(b.dataset.id)));
+}
+function openCircuit(id) {
+  const c = CIRCUITS.find((x) => x.id === id);
+  if (!c) return;
+  const list = document.getElementById("circuitListView");
+  const detail = document.getElementById("circuitDetailView");
+  list.classList.add("hidden");
+  detail.classList.remove("hidden");
+  detail.innerHTML = '<button type="button" id="btnBack">← Back</button><div class="card" style="margin-top:10px"><h2>Circuit '+c.id+" · "+c.title+"</h2><p class=\"muted\">"+c.blurb+"</p><div>"+
+    c.hops.map((h,i) => '<button type="button" class="hop" data-i="'+i+'"><strong>'+(i+1)+". "+h.at+'</strong><br/><span class="muted">'+h.wire+" · "+(h.gauge||"")+(h.conn?" · cavity "+h.cavity:"")+"</span></button>").join("")+
+    "</div></div>";
+  document.getElementById("btnBack").onclick = () => { detail.classList.add("hidden"); list.classList.remove("hidden"); };
+  detail.querySelectorAll(".hop").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const h = c.hops[+btn.dataset.i];
+      if (h && h.conn) showConnector(h.conn, h.cavity);
+    });
+  });
+}
+function showConnector(connId, cav) {
+  const conn = CONNECTORS[connId];
+  if (!conn) return;
+  const info = cav && conn.cavities[cav];
+  alert(conn.name+"\nCavity "+(cav||"—")+"\n"+(info?(info.ckt+" → "+info.dest):"")+"\nPage "+conn.page);
+}
+function renderJob() {
+  const el = document.getElementById("jobList");
+  if (!el) return;
+  el.innerHTML = "<p class='muted'>Open circuits to build a job list.</p>";
+}
+const skills = document.getElementById("skillsList");
+if (skills) {
+  skills.innerHTML = '<button type="button" id="skModules"><div class="label">Modules</div></button><button type="button" id="skFw"><div class="label">Firewall cavities</div></button>';
+  document.getElementById("skModules").onclick = () => alert(Object.values(CONNECTORS).map(c=>c.name).join("\n"));
+  document.getElementById("skFw").onclick = () => alert(FIREWALL.map(f=>f.cav+" · "+f.ckt+" · "+f.dest).join("\n"));
+}
+renderCircuits();
 </script>
 </body>
 </html>
