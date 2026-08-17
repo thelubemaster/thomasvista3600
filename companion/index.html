@@ -3,94 +3,276 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0f1115" />
-<meta name="app-version" content="0.4.2" />
-<title>3600 Wiring v0.4.2</title>
+<meta name="theme-color" content="#0b0d10" />
+<meta name="app-version" content="0.5.0" />
+<title>3600 / 7.3 Wiring v0.5.0</title>
 <style>
-:root{--bg:#0f1115;--card:#1c2029;--line:#2a3140;--fg:#e8ecf4;--muted:#9aa3b5;--safe:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,sans-serif}
-button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:inherit;font:inherit;cursor:pointer;width:100%;text-align:left;margin-bottom:8px}
-.banner{background:#1a5c2e;border-bottom:3px solid #3ecf8e;padding:14px 12px;text-align:center}
-.banner .ver{font-family:ui-monospace,monospace;font-size:28px;font-weight:800;color:#7dffb3;letter-spacing:0.04em}
-.banner .build{font-size:14px;color:#b8f5d0;margin-top:4px}
-header{padding:12px;border-bottom:1px solid var(--line)}
-header h1{margin:0;font-size:15px}
-main{padding:12px;padding-bottom:80px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.panel{display:none}.panel.active{display:block}.muted{color:var(--muted)}.hidden{display:none!important}
-.hint{font-size:12px;color:var(--muted)}.label{font-weight:600}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:#0f1115;border-top:1px solid var(--line);padding:8px 4px calc(8px + var(--safe))}
-nav.tabs button{border:none;background:transparent;font-size:11px;padding:8px 2px;margin:0;text-align:center;color:var(--muted)}
+:root{
+  --bg:#0b0d10;--raised:#12151a;--card:#171b21;--line:#2a3140;
+  --fg:#e8ecf2;--muted:#9aa3b5;--subtle:#6b7385;
+  --accent:#3ecf8e;--bat:#e85d5d;--ign:#e6a23c;--gnd:#d4c9a8;--sig:#7ec8e3;
+  --safe:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,sans-serif;line-height:1.45}
+button,input{font:inherit;color:inherit}
+button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;width:100%;text-align:left}
+button:active{transform:scale(.99)}
+.banner{background:#0f3d28;border-bottom:3px solid var(--accent);padding:14px 12px;text-align:center}
+.banner .ver{font-family:ui-monospace,monospace;font-size:28px;font-weight:800;color:#7dffb3;letter-spacing:.04em}
+.banner .build{font-size:13px;color:#b8f5d0;margin-top:4px}
+header{padding:12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,13,16,.96);z-index:20}
+header h1{margin:0;font-size:16px}
+.search{margin-top:8px;width:100%;background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--fg)}
+main{padding:12px;padding-bottom:calc(92px + var(--safe))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.muted{color:var(--muted)}.subtle{color:var(--subtle);font-size:12px}
+.hidden{display:none!important}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid var(--line);font-size:11px;color:var(--muted)}
+.chip.crit{border-color:#5a2a2a;color:#ff9b9b;background:#2a1414}
+.chip.ok{border-color:#24523a;color:#7dffb3;background:#13281d}
+.chip.bat{color:#ffb3b3}.chip.ign{color:#ffd48a}.chip.gnd{color:#efe4bf}
+.label{font-weight:650}
+.list button{margin-bottom:8px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:8px 4px calc(8px + var(--safe));background:rgba(11,13,16,.97);border-top:1px solid var(--line);z-index:30}
+nav.tabs button{border:0;background:transparent;font-size:10px;padding:8px 2px;margin:0;text-align:center;color:var(--muted)}
 nav.tabs button.active{color:var(--fg);background:var(--card)}
+.panel{display:none}.panel.active{display:block}
+.hop{margin-bottom:8px}
+.cav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:10px}
+.cav{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--raised);min-height:72px}
+.cav.hit{outline:2px solid var(--accent)}
+.stage{position:relative;height:min(62vh,520px);overflow:hidden;touch-action:none;overscroll-behavior:none;background:#0a0c10;border:1px solid var(--line);border-radius:12px}
+.inner{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.node{position:absolute;width:170px;padding:8px;border:1px solid var(--line);border-radius:8px;background:#141820;font-size:11px}
+.node .k{font-size:10px;color:var(--subtle);text-transform:uppercase}
+.zoombar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.zoombar button{text-align:center;min-height:44px}
+.wire{position:absolute;height:2px;transform-origin:0 50%}
 </style>
 </head>
 <body>
 <div class="banner">
-  <div class="ver">v0.4.2</div>
-  <div class="build">build 2026-08-17d · if you see this, the preview updated</div>
+  <div class="ver">v0.5.0</div>
+  <div class="build">build 2026-08-17e · 91 circuits · 63 diagrams · 59 connectors</div>
 </div>
 <header>
   <h1>International 3600 · T444E 7.3</h1>
-  <p class="muted" style="margin:4px 0 0;font-size:12px">CTS-5123V wiring companion</p>
+  <p class="subtle">CTS-5123V · hyd brakes 004040 · official book names</p>
+  <input id="q" class="search" type="search" placeholder="Search circuit, fuse, relay, connector, page…" autocomplete="off" />
 </header>
 <main>
-  <section id="panel-book" class="panel active">
+  <section id="panel-circuits" class="panel active"><div id="circuitList" class="list"></div><div id="circuitDetail" class="hidden"></div></section>
+  <section id="panel-fuses" class="panel"><div id="fuseList" class="list"></div></section>
+  <section id="panel-relays" class="panel"><div id="relayList" class="list"></div><div id="relayDetail" class="hidden"></div></section>
+  <section id="panel-modules" class="panel"><div id="modList" class="list"></div><div id="modDetail" class="hidden"></div></section>
+  <section id="panel-wall" class="panel"><div id="wallList"></div></section>
+  <section id="panel-more" class="panel">
     <div class="card">
-      <h2>You are on the updated app</h2>
-      <p>Green bar at top = <strong>v0.4.2</strong>.</p>
-      <p class="muted">If your screen has no green bar and no v0.4.2, you are looking at the old Grok chat Build preview — not this file.</p>
-      <p class="muted">Open this file: GitHub → companion/index.html → Raw, or enable Pages.</p>
+      <h2>About</h2>
+      <p>v0.5.0 · this file is the GitHub Pages app. Engine-critical circuits stay; the rest is optional for a skoolie rewire.</p>
+      <p class="muted">Book names match CTS-5123V. T444E 7.3 / hydraulic brakes.</p>
     </div>
   </section>
-  <section id="panel-circuits" class="panel"><div id="circuitListView"></div><div id="circuitDetailView" class="hidden"></div></section>
-  <section id="panel-job" class="panel"><div class="card"><h2>Job</h2><div id="jobList"></div></div></section>
-  <section id="panel-skills" class="panel"><div id="skillsList"></div></section>
-  <section id="panel-more" class="panel"><div class="card"><p class="muted">v0.4.2</p></div></section>
 </main>
 <nav class="tabs">
-  <button type="button" data-tab="book" class="active">Book</button>
-  <button type="button" data-tab="circuits">Circuits</button>
-  <button type="button" data-tab="job">Job</button>
-  <button type="button" data-tab="skills">Skills</button>
+  <button type="button" data-tab="circuits" class="active">Circuits</button>
+  <button type="button" data-tab="fuses">Fuses</button>
+  <button type="button" data-tab="relays">Relays</button>
+  <button type="button" data-tab="modules">Modules</button>
+  <button type="button" data-tab="wall">Firewall</button>
   <button type="button" data-tab="more">More</button>
 </nav>
+<script src="data.js"></script>
 <script>
-const APP_VERSION="0.4.2",APP_BUILD="2026-08-17d";
-const CIRCUITS=[
-{id:"13",title:"IGNITION FEED",power:"Key",crit:true,page:10,blurb:"Key ON powers IGN fuses.",hops:[{at:"KEY SWITCH (63) IGN",wire:"13",gauge:"12 AWG",kind:"ign"},{at:"FUSE B1 20A",wire:"13",gauge:"12 AWG",kind:"ign"}]},
-{id:"14",title:"BATTERY FEED",power:"Battery",crit:true,page:8,blurb:"Always hot.",hops:[{at:"J1 BATTERY STUD",wire:"15",gauge:"10 AWG",kind:"bat"},{at:"FUSE C2 10A",wire:"14B",gauge:"18 AWG",kind:"bat"}]},
-{id:"17",title:"STARTER CONTROL",power:"Key START",crit:true,page:20,blurb:"Needed to crank.",hops:[{at:"KEY START (63)",wire:"17",gauge:"16 AWG",kind:"ign"},{at:"FUSE H1 10A START",wire:"97P",gauge:"18 AWG",kind:"ign"},{at:"START RELAY (387)",conn:"start_387",cavity:"30",wire:"17B",gauge:"10 AWG",kind:"bat"}]},
-{id:"19",title:"FUEL FILTER / SHUTOFF",power:"Battery + Key",crit:true,page:50,blurb:"Fuel heater family.",hops:[{at:"FUSE D2 20A",wire:"19D",gauge:"10 AWG",kind:"bat"},{at:"HEATER RELAY (431)",conn:"heater_431",cavity:"30",wire:"19D",gauge:"10 AWG",kind:"bat"},{at:"DASH CONNECTOR (2) H5",conn:"dash2",cavity:"H5",wire:"19A",gauge:"18 AWG",kind:"sig"}]}
-];
-const CONNECTORS={dash2:{name:"DASH CONNECTOR (2)",page:78,cavities:{H5:{ckt:"19A",dest:"Fuel heater"},E4:{ckt:"19B",dest:"WIF"},H6:{ckt:"19C",dest:"Vacuum"},G6:{ckt:"17F",dest:"Starter"}}},heater_431:{name:"HEATER RELAY (431)",page:50,cavities:{30:{ckt:"19D",dest:"From D2"},87:{ckt:"19F",dest:"Load"}}},start_387:{name:"START RELAY (387)",page:20,cavities:{30:{ckt:"17B",dest:"Battery"},87:{ckt:"17F",dest:"Solenoid"}}}};
-const FIREWALL=[{cav:"H5",ckt:"19A",dest:"Fuel heater"},{cav:"E4",ckt:"19B",dest:"Water probe"},{cav:"H6",ckt:"19C",dest:"Vacuum"},{cav:"G6",ckt:"17F",dest:"Starter"}];
-document.querySelectorAll("nav.tabs button").forEach(btn=>{
- btn.addEventListener("click",()=>{
-  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-  const el=document.getElementById("panel-"+btn.dataset.tab);
-  if(el)el.classList.add("active");
-  if(btn.dataset.tab==="circuits")renderCircuits();
- });
+const D = window.DATA;
+const $ = (id) => document.getElementById(id);
+const qEl = $("q");
+function q(){ return (qEl.value||"").trim().toLowerCase(); }
+function hit(s){ const n=q(); if(!n) return true; return String(s||"").toLowerCase().includes(n); }
+function powerChip(p){
+  const t=String(p||"");
+  const cls = /batt/i.test(t)?"bat":/key|ign|start/i.test(t)?"ign":/ground/i.test(t)?"gnd":"";
+  return '<span class="chip '+cls+'">'+t+'</span>';
+}
+document.querySelectorAll("nav.tabs button").forEach((btn)=>{
+  btn.onclick=()=>{
+    document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    $("panel-"+btn.dataset.tab).classList.add("active");
+    if(btn.dataset.tab==="circuits") renderCircuits();
+    if(btn.dataset.tab==="fuses") renderFuses();
+    if(btn.dataset.tab==="relays") renderRelays();
+    if(btn.dataset.tab==="modules") renderMods();
+    if(btn.dataset.tab==="wall") renderWall();
+  };
 });
+qEl.oninput=()=>{
+  const t=document.querySelector("nav.tabs button.active")?.dataset.tab;
+  if(t==="circuits") renderCircuits();
+  if(t==="fuses") renderFuses();
+  if(t==="relays") renderRelays();
+  if(t==="modules") renderMods();
+  if(t==="wall") renderWall();
+};
+
 function renderCircuits(){
- const el=document.getElementById("circuitListView");
- if(!el)return;
- el.innerHTML=CIRCUITS.map(c=>'<button type="button" data-id="'+c.id+'"><div class="label">'+(c.crit?"🔴 ":"")+c.id+' · '+c.title+'</div><div class="hint">'+c.power+' · p.'+c.page+'</div></button>').join("");
- el.querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>openCircuit(b.dataset.id)));
+  const list=$("circuitList"), det=$("circuitDetail");
+  det.classList.add("hidden"); list.classList.remove("hidden");
+  const rows=D.circuits.filter(c=>hit(c.id+" "+c.name+" "+c.notes+" "+c.power));
+  const crit=rows.filter(c=>c.engineCritical);
+  const rest=rows.filter(c=>!c.engineCritical);
+  list.innerHTML =
+    '<div class="card"><div class="label">Engine critical · '+crit.length+'</div><p class="subtle">Needed to crank or keep the 7.3 running.</p></div>'+
+    crit.map(cBtn).join("")+
+    '<div class="card" style="margin-top:12px"><div class="label">Not required to run · '+rest.length+'</div></div>'+
+    rest.map(cBtn).join("");
+  list.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>openCircuit(b.dataset.id));
+}
+function cBtn(c){
+  return '<button type="button" data-id="'+c.id+'"><div class="label">'+(c.engineCritical?'🔴 ':'')+c.id+' · '+c.name+'</div><div class="subtle">'+c.power+' · '+(c.engineCritical?'ENGINE CRITICAL':'optional')+'</div></button>';
+}
+function mapFor(id){
+  const fam=String(id).match(/^\d+/)?.[0] || id;
+  return D.maps.find(m=>m.id===fam || m.number===fam || m.id===id) || D.maps.find(m=>String(m.title).includes(String(id)));
 }
 function openCircuit(id){
- const c=CIRCUITS.find(x=>x.id===id);if(!c)return;
- const list=document.getElementById("circuitListView"),detail=document.getElementById("circuitDetailView");
- list.classList.add("hidden");detail.classList.remove("hidden");
- detail.innerHTML='<button type="button" id="btnBack">← Back</button><div class="card" style="margin-top:10px"><h2>Circuit '+c.id+' · '+c.title+'</h2><p class="muted">'+c.blurb+'</p><div>'+c.hops.map((h,i)=>'<button type="button" class="hop" data-i="'+i+'"><strong>'+(i+1)+'. '+h.at+'</strong><br/><span class="muted">'+h.wire+' · '+(h.gauge||'')+(h.conn?' · cavity '+h.cavity:'')+'</span></button>').join('')+'</div></div>';
- document.getElementById("btnBack").onclick=()=>{detail.classList.add("hidden");list.classList.remove("hidden")};
- detail.querySelectorAll(".hop").forEach(btn=>btn.addEventListener("click",()=>{const h=c.hops[+btn.dataset.i];if(h&&h.conn){const conn=CONNECTORS[h.conn];const info=h.cavity&&conn&&conn.cavities[h.cavity];alert((conn?conn.name:h.conn)+'\nCavity '+(h.cavity||'—')+'\n'+(info?(info.ckt+' → '+info.dest):''));}}));
+  const c=D.circuits.find(x=>x.id===id); if(!c) return;
+  const list=$("circuitList"), det=$("circuitDetail");
+  list.classList.add("hidden"); det.classList.remove("hidden");
+  const map=mapFor(id);
+  const hops = map ? map.nodes.slice().sort((a,b)=>a.x-b.x||a.y-b.y) : [];
+  det.innerHTML =
+    '<button type="button" id="backC">← All circuits</button>'+
+    '<div class="card" style="margin-top:10px">'+
+    '<div class="row"><span class="chip '+(c.engineCritical?'crit':'ok')+'">'+(c.engineCritical?'ENGINE CRITICAL':'optional')+'</span>'+powerChip(c.power)+'</div>'+
+    '<h2>Circuit '+c.id+'</h2><p class="label">'+c.name+'</p><p class="muted">'+c.notes+'</p></div>'+
+    (map? renderMapCard(map, hops): '<div class="card"><p class="muted">No hop map for this family yet. Fuse / connector search still works.</p></div>');
+  $("backC").onclick=renderCircuits;
+  if(map) bindMap(map);
+  det.querySelectorAll("[data-conn]").forEach(b=>b.onclick=()=>showConn(b.dataset.conn, b.dataset.cav||""));
+  det.querySelectorAll("[data-rel]").forEach(b=>b.onclick=()=>showRelay(b.dataset.rel));
 }
-const skills=document.getElementById("skillsList");
-if(skills){skills.innerHTML='<button type="button" id="skM"><div class="label">Modules</div></button><button type="button" id="skF"><div class="label">Firewall</div></button>';
-document.getElementById("skM").onclick=()=>alert(Object.values(CONNECTORS).map(c=>c.name).join('\n'));
-document.getElementById("skF").onclick=()=>alert(FIREWALL.map(f=>f.cav+' · '+f.ckt+' · '+f.dest).join('\n'));}
+function renderMapCard(map, hops){
+  return '<div class="card"><div class="label">Hop path · printed p.'+(map.nodes[0]?.page||'—')+'</div><p class="muted">'+map.blurb+'</p>'+
+    hops.map((h,i)=>'<button type="button" class="hop" data-conn="'+(h.relayId||h.id)+'" data-cav="'+(h.pins||'')+'"><strong>'+(i+1)+'. '+h.label+'</strong><br/><span class="subtle">'+(h.sub||'')+(h.pins?' · pins '+h.pins:'')+(h.page?' · p.'+h.page:'')+'</span><div class="muted" style="margin-top:4px">'+h.detail+'</div></button>').join("")+
+    '</div>'+
+    (map.legend&&map.legend.length?'<div class="card"><div class="label">Wires</div>'+map.legend.map(l=>'<p><strong>'+l.id+'</strong> · '+l.cavity+'<br/><span class="muted">'+l.note+'</span></p>').join("")+'</div>':'')+
+    '<div class="card"><div class="label">Diagram</div><div class="stage" id="stage"><div class="inner" id="inner">'+drawMap(map)+'</div></div><div class="zoombar"><button type="button" id="fit">Fit</button><button type="button" id="zm">−</button><button type="button" id="zp">+</button><button type="button" id="zpct">100%</button></div></div>';
+}
+function drawMap(map){
+  const w=map.width||1400,h=map.height||520;
+  let svg='<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">';
+  const node=Object.fromEntries(map.nodes.map(n=>[n.id,n]));
+  const col={bat:'#e85d5d',ign:'#e6a23c',acc:'#c9a227',a:'#7ec8e3',b:'#8fd3a8',c:'#c9a0ff',gnd:'#d4c9a8'};
+  for(const wr of map.wires){
+    const a=node[wr.from],b=node[wr.to]; if(!a||!b) continue;
+    const x1=a.x+85,y1=a.y+28,x2=b.x+85,y2=b.y+28;
+    svg+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(col[wr.color]||'#7ec8e3')+'" stroke-width="3" />';
+    if(wr.label) svg+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-6)+'" fill="#9aa3b5" font-size="11">'+wr.circuit+(wr.label?(' '+wr.label):'')+'</text>';
+  }
+  for(const n of map.nodes){
+    svg+='<rect x="'+n.x+'" y="'+n.y+'" width="170" height="56" rx="8" fill="#141820" stroke="#2a3140"/>';
+    svg+='<text x="'+(n.x+8)+'" y="'+(n.y+18)+'" fill="#e8ecf2" font-size="11" font-weight="700">'+esc(n.label).slice(0,22)+'</text>';
+    svg+='<text x="'+(n.x+8)+'" y="'+(n.y+36)+'" fill="#9aa3b5" font-size="10">'+esc(n.sub||n.kind)+'</text>';
+  }
+  if(map.firewallX) svg+='<line x1="'+map.firewallX+'" y1="0" x2="'+map.firewallX+'" y2="'+h+'" stroke="#3a5a8a" stroke-dasharray="6 6"/>';
+  return svg+'</svg>';
+}
+function esc(s){ return String(s).replace(/[<>&]/g,c=>({'<':'<','>':'>','&':'&'}[c])); }
+function bindMap(map){
+  const stage=$("stage"), inner=$("inner"); if(!stage||!inner) return;
+  let x=12,y=12,s=0.55;
+  const apply=()=>{ inner.style.transform='translate('+x+'px,'+y+'px) scale('+s+')'; const p=$("zpct"); if(p) p.textContent=Math.round(s*100)+'%'; };
+  apply();
+  $("fit").onclick=()=>{ const sw=stage.clientWidth, sh=stage.clientHeight; s=Math.min((sw-24)/(map.width||1400),(sh-24)/(map.height||520),2); x=(sw-(map.width||1400)*s)/2; y=20; apply(); };
+  $("zm").onclick=()=>{ s=Math.max(.25,s*0.75); apply(); };
+  $("zp").onclick=()=>{ s=Math.min(6,s*1.35); apply(); };
+  let mode=null,sx,sy,ox,oy,ld,lm;
+  const start=(e)=>{ e.preventDefault(); const t=e.touches; if(t.length===1){ mode='pan'; sx=t[0].clientX; sy=t[0].clientY; ox=x; oy=y; } else if(t.length>=2){ mode='pinch'; ld=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1; lm={x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}; } };
+  const move=(e)=>{ e.preventDefault(); const t=e.touches; if(mode==='pan'&&t.length===1){ x=ox+(t[0].clientX-sx); y=oy+(t[0].clientY-sy); apply(); } else if(t.length>=2){ const d=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1; const m={x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}; const f=d/ld; const r=stage.getBoundingClientRect(); const px=m.x-r.left, py=m.y-r.top; const wx=(px-x)/s, wy=(py-y)/s; s=Math.min(6,Math.max(.25,s*f)); x=px-wx*s; y=py-wy*s; x += (m.x-lm.x); y += (m.y-lm.y); ld=d; lm=m; apply(); } };
+  const end=(e)=>{ if(!e.touches.length) mode=null; };
+  stage.addEventListener('touchstart',start,{passive:false});
+  document.addEventListener('touchmove',move,{passive:false});
+  document.addEventListener('touchend',end,{passive:false});
+  stage.addEventListener('wheel',(e)=>{ e.preventDefault(); const f=e.deltaY<0?1.12:0.9; const r=stage.getBoundingClientRect(); const px=e.clientX-r.left, py=e.clientY-r.top; const wx=(px-x)/s, wy=(py-y)/s; s=Math.min(6,Math.max(.25,s*f)); x=px-wx*s; y=py-wy*s; apply(); },{passive:false});
+}
+
+function renderFuses(){
+  const el=$("fuseList");
+  const rows=D.fuses.filter(f=>hit(f.id+" "+f.cover+" "+f.description+" "+f.notes+(f.relay||"")));
+  el.innerHTML = rows.map(f=>'<div class="card"><div class="row"><span class="label">FUSE '+f.id+' · '+f.size+' '+(f.cover&&f.cover!=='—'?'· '+f.cover:'')+'</span>'+
+    '<span class="chip '+(f.engineCritical?'crit':'ok')+'">'+(f.engineCritical?'ENGINE CRITICAL':'optional')+'</span>'+powerChip(f.source==='battery'?'Battery':f.source==='key'?'Key / IGN':f.source==='acc'?'Accessory':f.source)+'</div>'+
+    '<p>'+f.description+'</p>'+(f.relay?'<p class="subtle">Relay: '+f.relay+'</p>':'')+'<p class="muted">'+f.notes+'</p></div>').join("");
+}
+function renderRelays(){
+  const list=$("relayList"), det=$("relayDetail");
+  det.classList.add("hidden"); list.classList.remove("hidden");
+  const rows=D.relays.filter(r=>hit(r.id+" "+r.name+" "+r.notes+" "+r.fused));
+  list.innerHTML=rows.map(r=>'<button type="button" data-id="'+r.id+'"><div class="label">'+(r.engineCritical?'🔴 ':'')+r.name+'</div><div class="subtle">Fused '+r.fused+' · load '+r.loadSide+' · coil '+r.coilSide+'</div></button>').join("");
+  list.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>showRelay(b.dataset.id));
+}
+function showRelay(id){
+  const face=D.relayFaces.find(r=>r.id===id);
+  const basic=D.relays.find(r=>r.id===id);
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab==="relays"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  $("panel-relays").classList.add("active");
+  const list=$("relayList"), det=$("relayDetail");
+  list.classList.add("hidden"); det.classList.remove("hidden");
+  if(!face && !basic){ det.innerHTML='<button type="button" id="backR">← Relays</button><div class="card" style="margin-top:10px"><p>No pinout for '+id+'</p></div>'; $("backR").onclick=renderRelays; return; }
+  const r=face||{};
+  det.innerHTML='<button type="button" id="backR">← Relays</button><div class="card" style="margin-top:10px">'+
+    '<div class="row"><span class="chip '+( (face?.engineCritical||basic?.engineCritical)?'crit':'ok')+'">'+((face?.engineCritical||basic?.engineCritical)?'ENGINE CRITICAL':'optional')+'</span></div>'+
+    '<h2>'+(face?.name||basic?.name)+'</h2>'+
+    '<p class="muted">'+(face?.where||'')+(face?.page?' · p.'+face.page:'')+'</p>'+
+    '<p>'+(face?.look||basic?.notes||'')+'</p>'+
+    '<p class="subtle">Fused: '+(face?.fused||basic?.fused||'')+'</p>'+
+    (face?.pins? '<div class="cav-grid">'+face.pins.map(p=>'<div class="cav"><div class="label">'+p.iso+' · cav '+p.id+'</div><div>'+p.circuit+' · '+p.role+'</div><div class="subtle">'+p.goes+'</div><div class="chip">'+p.power+'</div></div>').join("")+'</div>':'')+
+    (face?.more?'<p class="muted" style="margin-top:10px">'+face.more+'</p>':'')+
+    '</div>';
+  $("backR").onclick=renderRelays;
+}
+function renderMods(){
+  const list=$("modList"), det=$("modDetail");
+  det.classList.add("hidden"); list.classList.remove("hidden");
+  const rows=D.connectors.filter(c=>hit(c.name+" "+c.tag+" "+c.harness+" "+c.page+" "+c.pins.map(p=>p.circuit+" "+p.dest+" "+p.cavity).join(" ")));
+  list.innerHTML=rows.map(c=>'<button type="button" data-id="'+c.id+'"><div class="label">'+c.name+'</div><div class="subtle">'+c.harness+' · p.'+c.page+' · '+c.pins.length+' cavities</div></button>').join("");
+  list.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>showConn(b.dataset.id,""));
+}
+function showConn(id, cav){
+  let c=D.connectors.find(x=>x.id===id);
+  if(!c) c=D.connectors.find(x=>x.tag===id || x.name.toLowerCase().includes(String(id).toLowerCase()));
+  if(!c){
+    const face=D.relayFaces.find(r=>r.id===id);
+    if(face) return showRelay(id);
+    return;
+  }
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab==="modules"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  $("panel-modules").classList.add("active");
+  const list=$("modList"), det=$("modDetail");
+  list.classList.add("hidden"); det.classList.remove("hidden");
+  const want=String(cav||"").split(/\s+/).filter(Boolean);
+  det.innerHTML='<button type="button" id="backM">← Modules / connectors</button><div class="card" style="margin-top:10px">'+
+    '<h2>'+c.name+'</h2><p class="muted">'+c.harness+' · printed page '+c.page+(c.hyd?' · hyd brakes':'')+'</p>'+
+    '<div class="cav-grid">'+c.pins.map(p=>{
+      const on=want.includes(p.cavity);
+      return '<div class="cav'+(on?' hit':'')+'"><div class="label">'+p.cavity+'</div><div>'+p.circuit+'</div><div class="subtle">'+p.dest+'</div></div>';
+    }).join("")+'</div></div>';
+  $("backM").onclick=renderMods;
+}
+function renderWall(){
+  const dash=D.connectors.find(c=>c.id==="dash-2-hyd") || D.connectors.find(c=>/DASH CONNECTOR \(2\)/.test(c.name));
+  const others=D.connectors.filter(c=>/firewall|bulkhead|dash connector|engine connector|front end/i.test(c.name+" "+c.harness));
+  $("wallList").innerHTML =
+    '<div class="card"><p class="label">Firewall / bulkhead plugs</p><p class="muted">Tap a cavity to keep it highlighted. These are the mating-end names from the book.</p></div>'+
+    others.map(c=>'<div class="card"><div class="label">'+c.name+'</div><p class="subtle">'+c.harness+' · p.'+c.page+'</p><div class="cav-grid">'+
+      c.pins.map(p=>'<div class="cav"><div class="label">'+p.cavity+'</div><div>'+p.circuit+'</div><div class="subtle">'+p.dest+'</div></div>').join("")+
+    '</div></div>').join("");
+}
 renderCircuits();
 </script>
 </body>
