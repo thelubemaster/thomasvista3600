@@ -12,3 +12,5 @@ cd companion && python3 -m http.server 8765
 Optional: copy CTS-5123V PDF to `public/manual.pdf` then tap **Open full PDF** in the Book tab.
 
 Gestures on circuit map: 1 finger pan · 2 finger pinch · Fit / − / +
+
+**Wire gauge:** every hop and map node shows AWG (e.g. 18 AWG, 10 AWG, 4/0) plus color when known. See `docs/wire-gauge.md`.
