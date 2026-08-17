@@ -33,6 +33,7 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.pathname.endsWith("/sw.js")) return;
+  if (url.pathname.endsWith(".pdf")) return;
   if (/version\.json|app-update\.json/.test(url.pathname) || req.mode === "navigate") {
     e.respondWith(fetch(req, { cache: "no-store" }).catch(() => caches.match(req)));
     return;

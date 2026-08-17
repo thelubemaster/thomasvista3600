@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0",
-  "apkVersion": "1.1.0",
-  "apkVersionCode": 7,
+  "version": "1.1.1",
+  "apkVersion": "1.1.1",
+  "apkVersionCode": 8,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Version badge on every page."
+  "notes": "Book tab is the CTS-5123V PDF."
 }

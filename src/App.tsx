@@ -11,7 +11,7 @@ import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
 import { cn } from "@/lib/utils";
 
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.1.1";
 const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
@@ -167,7 +167,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-bg text-fg">
+    <div className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
       {banner ? (
         <div className="border-b border-border bg-raised print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -191,7 +191,7 @@ export default function App() {
       ) : null}
 
       <header
-        className="sticky top-0 z-40 border-b border-border bg-bg print:hidden"
+        className="sticky top-0 z-40 shrink-0 border-b border-border bg-bg print:hidden"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="flex items-center gap-2 px-3 py-2 sm:hidden">
@@ -247,13 +247,13 @@ export default function App() {
             </button>
           ))}
         </nav>
-        {tab === "book" || tab === "job" ? (
+        {tab === "job" ? (
           <label className="mx-3 mb-2 block sm:mx-auto sm:max-w-6xl sm:px-6">
             <span className="sr-only">Search</span>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={tab === "book" ? "Page, circuit, title…" : "Job item…"}
+              placeholder="Job item…"
               className="h-11 w-full rounded-sm border border-border bg-surface px-3 text-sm text-fg placeholder:text-subtle"
             />
           </label>
@@ -261,8 +261,13 @@ export default function App() {
       </header>
 
       <main
-        className={cn("mx-auto min-w-0 px-3 py-3 sm:px-6 sm:py-8", tab === "shop" ? "max-w-7xl" : "max-w-6xl")}
-        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+        className={cn(
+          "min-h-0 min-w-0 flex-1",
+          tab === "book"
+            ? "flex flex-col overflow-hidden"
+            : cn("overflow-auto px-3 py-3 sm:px-6 sm:py-8", tab === "shop" ? "mx-auto w-full max-w-7xl" : "mx-auto w-full max-w-6xl"),
+        )}
+        style={{ paddingBottom: tab === "book" ? 0 : "max(1rem, env(safe-area-inset-bottom))" }}
       >
         {tab === "shop" ? <Shop3D /> : null}
         {tab === "circuits" ? (
