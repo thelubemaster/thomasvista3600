@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f1115" />
+<meta name="app-version" content="0.4.1" />
+<meta name="app-build" content="2026-08-17c" />
+<title>3600 / 7.3 Wiring v0.4.1</title>
+<style>
+:root{--bg:#0f1115;--raised:#171a21;--card:#1c2029;--line:#2a3140;--fg:#e8ecf4;--muted:#9aa3b5;--subtle:#6b7385;--accent:#5b8def;--ok:#3ecf8e;--warn:#e6b84d;--bat:#e85d5d;--ign:#e6a23c;--gnd:#d4c9a8;--sig:#7ec8e3;--safe:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.4;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button,input,select{font:inherit;color:inherit}button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer}button.primary{background:var(--accent);border-color:transparent;color:#fff;font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:12px;color:var(--muted)}
+.app{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+header{position:sticky;top:0;z-index:20;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 12px 8px}
+header h1{margin:0;font-size:15px;font-weight:650}.ver{display:inline-flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}.ver .badge{font-family:ui-monospace,monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1a2740;border:1px solid #3a5a8a;color:#9ec1ff}.ver .build{font-size:11px;color:var(--subtle)}
+header p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.search{margin-top:8px;width:100%;background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--fg)}
+main{overflow:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:calc(88px + var(--safe))}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 6px calc(8px + var(--safe));background:rgba(15,17,21,.96);border-top:1px solid var(--line)}
+nav.tabs button{font-size:11px;padding:8px 4px;border:none;background:transparent;color:var(--muted)}nav.tabs button.active{color:var(--fg);background:var(--card)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.panel{display:none}.panel.active{display:block}
+.muted{color:var(--muted)}.hidden{display:none!important}
+.map-sheet{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;flex-direction:column}.map-sheet.open{display:flex;height:100dvh}
+.map-stage{flex:1;min-height:0;position:relative;touch-action:none!important;overscroll-behavior:none;overflow:hidden;background:#0a0c10}
+.map-stage .zoom-inner{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;pointer-events:none}
+.list button{display:block;width:100%;text-align:left;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>International 3600 · T444E 7.3</h1>
+<div class="ver"><span class="badge" id="appVersion">v0.4.1</span><span class="build" id="appBuild">build 2026-08-17c · github</span></div>
+<p>CTS-5123V wiring companion · matches GitHub main</p>
+<input id="globalSearch" class="search" type="search" placeholder="Search circuit, fuse, page…" autocomplete="off" />
+</header>
+<main>
+<section id="panel-book" class="panel active">
+<div class="card"><h2>Book</h2><p class="muted">Open the PDF from your device or use Circuits / Skills for the interactive maps.</p>
+<p><strong>This page is the live GitHub preview.</strong> Version badge must show <code>v0.4.1</code>.</p></div>
+</section>
+<section id="panel-circuits" class="panel"><div id="circuitListView" class="list"></div><div id="circuitDetailView" class="hidden"></div></section>
+<section id="panel-job" class="panel"><div class="card"><h2>Job list</h2><div id="jobList"></div></div></section>
+<section id="panel-skills" class="panel"><div class="list" id="skillsList"></div></section>
+<section id="panel-more" class="panel"><div class="card"><h2>About</h2><p class="muted">v0.4.1 · auto-updates when GitHub main changes (Pages + Actions).</p></div></section>
+</main>
+<nav class="tabs" aria-label="Main">
+<button type="button" data-tab="book" class="active"><span class="icon">📖</span>Book</button>
+<button type="button" data-tab="circuits"><span class="icon">⚡</span>Circuits</button>
+<button type="button" data-tab="job"><span class="icon">✅</span>Job</button>
+<button type="button" data-tab="skills"><span class="icon">🧰</span>Skills</button>
+<button type="button" data-tab="more"><span class="icon">···</span>More</button>
+</nav>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+// Fallback if data/app not yet deployed: still show version
+document.querySelectorAll('nav.tabs button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+    var id='panel-'+btn.dataset.tab;
+    var el=document.getElementById(id); if(el) el.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
