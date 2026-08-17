@@ -1,4 +1,4 @@
-# Live site: https://thelubemaster.github.io/thomasvista3600/
+# Live app: https://thelubemaster.github.io/thomasvista3600/
 name: Deploy GitHub Pages
 
 on:
@@ -20,25 +20,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build static site from companion
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install
+      - name: Stamp version
         run: |
-          set -e
           VER=$(tr -d ' \n' < VERSION)
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\",\"notes\":\"In-app updater.\"}" > companion/version.json
-          printf '%s\n' "{\"version\":\"${VER}\",\"apkVersion\":\"${VER}\",\"apkVersionCode\":2,\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\",\"url\":\"https://thelubemaster.github.io/thomasvista3600/\",\"notes\":\"Tap Update now.\"}" > companion/app-update.json
-          mkdir -p _site
-          cp companion/index.html _site/index.html
-          for f in data.js manifest.webmanifest sw.js install.json version.json app-update.json icon-192.png icon-512.png apple-touch-icon.png 3600-wiring.apk apk.html; do
-            [ -f "companion/$f" ] && cp "companion/$f" "_site/$f"
-          done
-          ls -la _site
-          cat _site/version.json
-
+          printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\"}" > public/version.json
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: dist
 
   deploy:
     needs: build

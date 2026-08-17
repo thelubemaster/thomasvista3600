@@ -1,12 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import path from "node:path";
 
-// Project Pages URL: https://thelubemaster.github.io/thomasvista3600/
 export default defineConfig({
-  plugins: [react()],
-  base: "/thomasvista3600/",
-  server: {
-    host: true,
-    port: 5173,
+  plugins: [react(), tailwindcss()],
+  base: "./",
+  resolve: {
+    alias: { "@": path.resolve(__dirname, "src") },
   },
+  server: { host: true, port: 5173 },
+  build: { outDir: "dist", assetsDir: "assets" },
 });
