@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0d0c0b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="3600 Wiring" />
-<meta name="app-version" content="1.0.0" />
+<meta name="app-version" content="1.0.1" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <title>Electrical Circuit Diagrams · 3600 T444E</title>
@@ -76,6 +76,13 @@ main{padding:16px 16px calc(28px + var(--safe))}
 .marks button.on{border-color:var(--accent);color:var(--fg)}
 #installPage{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;padding:20px}
 .primary{display:block;text-align:center;background:var(--accent);color:#1a120c;font-weight:600;padding:16px;border-radius:12px;text-decoration:none;min-height:48px}
+.update-bar{display:none;margin:12px 16px 0;padding:14px;border:1px solid color-mix(in oklab,var(--accent) 45%, var(--border));background:var(--raised);border-radius:14px}
+.update-bar.show{display:block}
+.update-bar h3{margin:0 0 4px;font-family:var(--font-display);font-size:22px}
+.update-bar .row{margin-top:10px}
+.update-bar button,.update-bar a.primary{flex:1;min-height:48px;border:0}
+.progress{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:10px}
+.progress > i{display:block;height:100%;width:0;background:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 <script>try{navigator.serviceWorker&&navigator.serviceWorker.register("./sw.js")}catch(e){}</script>
@@ -87,6 +94,14 @@ main{padding:16px 16px calc(28px + var(--safe))}
   <p class="muted" style="margin:0;font-size:14px">CTS-5123V names. Locked to the 7.3. Job marks stay on this device.</p>
   <input id="q" class="search" type="search" placeholder="Search circuit, fuse, relay, connector, page…" autocomplete="off" />
 </header>
+<div id="updateBar" class="update-bar" role="status">
+  <h3>Update available</h3>
+  <p id="updateCopy" class="muted" style="margin:0">A newer build is ready.</p>
+  <div class="progress" id="updateProg" hidden><i id="updateFill"></i></div>
+  <div class="row">
+    <button type="button" class="primary" id="updateNow" style="border:0">Update now</button>
+  </div>
+</div>
 <nav class="tabs-scroll" id="tabs">
   <button type="button" data-tab="panel" class="on">Fuse panel</button>
   <button type="button" data-tab="circuits">Circuits</button>
@@ -107,9 +122,15 @@ main{padding:16px 16px calc(28px + var(--safe))}
   <section id="panel-job" class="hidden"></section>
   <section id="panel-more" class="hidden">
     <div class="card">
+      <p class="eyebrow">Updates</p>
+      <h2 class="display" style="font-size:28px">Get up to date</h2>
+      <p id="updStatus" class="muted">This app is 1.0.1. Checks the live site when you open it.</p>
+      <p><button type="button" class="primary" id="chkUpd" style="width:100%;border:0">Check for updates</button></p>
+    </div>
+    <div class="card">
       <p class="eyebrow">Install</p>
       <h2 class="display" style="font-size:28px">Put it on the phone</h2>
-      <p class="muted">Same idea as the cost tracker. Home screen or APK.</p>
+      <p class="muted">Home screen or APK. Updates then land inside the app.</p>
       <p><a class="primary" href="?install=1">Open install page</a></p>
     </div>
     <div class="card">
@@ -371,6 +392,86 @@ function renderJob(){
 }
 
 draw();
+
+const APP_VERSION = "1.0.1";
+const UPDATE_ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
+const APK_URL = UPDATE_ORIGIN + "/3600-wiring.apk";
+function cmpVer(a,b){
+  const pa=String(a).replace(/^v/i,"").split(/[.+-]/).map(x=>parseInt(x,10)||0);
+  const pb=String(b).replace(/^v/i,"").split(/[.+-]/).map(x=>parseInt(x,10)||0);
+  const n=Math.max(pa.length,pb.length);
+  for(let i=0;i<n;i++){ const d=(pa[i]||0)-(pb[i]||0); if(d) return d>0?1:-1; }
+  return 0;
+}
+function isNative(){
+  return !!(window.Capacitor && (window.Capacitor.isNativePlatform?.() || /capacitor/i.test(window.Capacitor.getPlatform?.()||"")));
+}
+function setUpdMsg(t){ const e=$("updStatus"); if(e) e.textContent=t; }
+let remoteInfo=null;
+async function checkUpdates(manual){
+  setUpdMsg(manual?"Checking…":("This app is "+APP_VERSION+". Checking the live site…"));
+  try{
+    if(navigator.serviceWorker){
+      const reg=await navigator.serviceWorker.getRegistration();
+      if(reg) await reg.update();
+    }
+    const res=await fetch(UPDATE_ORIGIN+"/version.json?t="+Date.now(), {cache:"no-store"});
+    if(!res.ok) throw new Error("Could not reach update file ("+res.status+")");
+    const j=await res.json();
+    remoteInfo=j;
+    const remote=String(j.version||"").replace(/^v/i,"");
+    if(cmpVer(remote, APP_VERSION)>0){
+      $("updateCopy").textContent="Live build "+remote+". You’re on "+APP_VERSION+". "+(j.notes||"");
+      $("updateBar").classList.add("show");
+      setUpdMsg("Newer build on the site: "+remote+". You’re on "+APP_VERSION+".");
+      return "available";
+    }
+    $("updateBar").classList.remove("show");
+    setUpdMsg("You’re on the newest version ("+APP_VERSION+").");
+    return "current";
+  }catch(e){
+    setUpdMsg(e.message||"Could not check for updates.");
+    return "error";
+  }
+}
+async function applyUpdate(){
+  const prog=$("updateProg"), fill=$("updateFill"), btn=$("updateNow");
+  const setP=(n)=>{ prog.hidden=false; fill.style.width=n+"%"; };
+  btn.disabled=true;
+  $("updateCopy").textContent="Updating…";
+  try{
+    if(navigator.serviceWorker){
+      const reg=await navigator.serviceWorker.getRegistration();
+      if(reg && (reg.waiting||reg.installing)){
+        setP(40);
+        (reg.waiting||reg.installing).postMessage({type:"SKIP_WAITING"});
+      }
+    }
+    if(isNative()){
+      setP(20);
+      $("updateCopy").textContent="Downloading the new package…";
+      window.location.href = (remoteInfo&&remoteInfo.apkUrl)||APK_URL;
+      setP(80);
+      $("updateCopy").textContent="Open the file and tap Install. Then open 3600 Wiring from the home screen.";
+      return;
+    }
+    setP(70);
+    location.replace(UPDATE_ORIGIN+"/?updated="+Date.now());
+  }catch(e){
+    $("updateCopy").textContent=e.message||"Update failed";
+    btn.disabled=false;
+  }
+}
+$("updateNow").onclick=()=>void applyUpdate();
+$("chkUpd").onclick=()=>void checkUpdates(true);
+checkUpdates(false);
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") checkUpdates(false); });
+if(navigator.serviceWorker){
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    $("updateCopy").textContent="New install is ready on this device.";
+    $("updateBar").classList.add("show");
+  });
+}
 
 (function installFlow(){
   const want=/(?:\?|&)install=1(?:&|$)/.test(location.search);

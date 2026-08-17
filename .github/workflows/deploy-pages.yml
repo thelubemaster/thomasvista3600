@@ -24,12 +24,17 @@ jobs:
       - name: Build static site from companion
         run: |
           set -e
+          VER=$(tr -d ' \n' < VERSION)
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\",\"notes\":\"In-app updater.\"}" > companion/version.json
+          printf '%s\n' "{\"version\":\"${VER}\",\"apkVersion\":\"${VER}\",\"apkVersionCode\":2,\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\",\"url\":\"https://thelubemaster.github.io/thomasvista3600/\",\"notes\":\"Tap Update now.\"}" > companion/app-update.json
           mkdir -p _site
           cp companion/index.html _site/index.html
-          for f in data.js manifest.webmanifest sw.js install.json icon-192.png icon-512.png apple-touch-icon.png 3600-wiring.apk apk.html; do
+          for f in data.js manifest.webmanifest sw.js install.json version.json app-update.json icon-192.png icon-512.png apple-touch-icon.png 3600-wiring.apk apk.html; do
             [ -f "companion/$f" ] && cp "companion/$f" "_site/$f"
           done
           ls -la _site
+          cat _site/version.json
 
       - uses: actions/upload-pages-artifact@v3
         with:
