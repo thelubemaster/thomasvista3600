@@ -1,16 +1,9 @@
-# Mobile companion (no build)
+# Mobile companion
 
-Single-file wiring app for phone use.
+**Live preview (auto-updates from GitHub):** https://thelubemaster.github.io/thomasvista3600/
+
+Version badge at top of the page (`v0.4.1`). Every push to `main` redeploys.
 
 ```bash
-# from repo root
-npm run companion
-# or
-cd companion && python3 -m http.server 8765
+python3 -m http.server 8765
 ```
-
-Optional: copy CTS-5123V PDF to `public/manual.pdf` then tap **Open full PDF** in the Book tab.
-
-Gestures on circuit map: 1 finger pan · 2 finger pinch · Fit / − / +
-
-**Wire gauge:** every hop and map node shows AWG (e.g. 18 AWG, 10 AWG, 4/0) plus color when known. See `docs/wire-gauge.md`.
