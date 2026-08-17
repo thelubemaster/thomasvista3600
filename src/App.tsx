@@ -12,7 +12,7 @@ import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
 import { cn } from "@/lib/utils";
 
-const APP_VERSION = "1.0.4";
+const APP_VERSION = "1.0.5";
 const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
@@ -63,14 +63,18 @@ function cmpVer(a: string, b: string) {
   return 0;
 }
 
+function applyLive() {
+  const url = ORIGIN + "/?updated=" + Date.now();
+  window.location.replace(url);
+}
+
 export default function App() {
   const [tab, setTab] = useState<Tab>("shop");
   const [fuse, setFuse] = useState<string | null>("E3");
   const [query, setQuery] = useState("");
   const [hint, setHint] = useState<string | null>(null);
   const [jumpOpen, setJumpOpen] = useState(false);
-  const [install, setInstall] = useState(false);
-  const [update, setUpdate] = useState<string | null>(null);
+  const [banner, setBanner] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -80,27 +84,38 @@ export default function App() {
     } catch {
       /* ignore */
     }
-    const force = params.get("install") === "1";
-    const appOnly = params.get("app") === "1";
-    if (!appOnly && (force || (!isStandalone() && !skip && (isAndroid() || isIos())))) {
-      setInstall(true);
+    if (params.get("install") === "1") {
+      setBanner(true);
+      return;
+    }
+    if (!skip && !isStandalone() && (isAndroid() || isIos())) {
+      setBanner(true);
     }
   }, []);
 
   useEffect(() => {
+    if (isNative() && !location.href.startsWith(ORIGIN)) {
+      applyLive();
+      return;
+    }
+
+    const params = new URLSearchParams(location.search);
+    const justUpdated = params.has("updated");
     let gone = false;
+
     async function check() {
       try {
         if (navigator.serviceWorker) {
-          const reg = await navigator.serviceWorker.getRegistration();
-          await reg?.update();
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.update()));
         }
         const res = await fetch(ORIGIN + "/version.json?t=" + Date.now(), { cache: "no-store" });
         if (!res.ok) return;
-        const j = (await res.json()) as { version?: string; notes?: string };
+        const j = (await res.json()) as { version?: string };
         const remote = String(j.version || "").replace(/^v/i, "");
-        if (!gone && cmpVer(remote, APP_VERSION) > 0) {
-          setUpdate(remote);
+        if (gone) return;
+        if (cmpVer(remote, APP_VERSION) > 0 && !justUpdated) {
+          applyLive();
         }
       } catch {
         /* offline */
@@ -124,60 +139,39 @@ export default function App() {
     if (next === "circuits" && nextHint) setQuery(nextHint);
   }
 
-  function skipInstall() {
+  function dismissBanner() {
     try {
       localStorage.setItem("wiring-skip-installer", "1");
     } catch {
       /* ignore */
     }
-    setInstall(false);
-  }
-
-  function applyUpdate() {
-    if (isNative()) {
-      window.location.href = APK;
-      return;
-    }
-    window.location.replace(ORIGIN + "/?updated=" + Date.now());
-  }
-
-  if (install) {
-    return (
-      <div className="min-h-screen bg-bg px-5 py-10 text-fg">
-        <div className="mx-auto max-w-sm text-center">
-          <img src="./icon-192.png" width={88} height={88} alt="" className="mx-auto rounded-[20px] border border-border" />
-          <p className="mt-4 font-mono text-[11px] tracking-[0.18em] text-accent uppercase">3600 Wiring</p>
-          <h1 className="font-display mt-2 text-4xl font-semibold tracking-tight">Install the app</h1>
-          <p className="mt-3 text-sm text-muted">
-            {isIos()
-              ? "Safari → Share → Add to Home Screen. Then open it like any other app."
-              : "Download the app, open the file, tap Install. Then open 3600 Wiring from the home screen."}
-          </p>
-          {isAndroid() || !isIos() ? (
-            <a href={APK} download="3600-wiring.apk" className="mt-6 flex min-h-12 items-center justify-center rounded-md bg-accent font-semibold text-accent-fg">
-              Download the app
-            </a>
-          ) : null}
-          <button
-            type="button"
-            className="mt-3 w-full min-h-12 rounded-md border border-border bg-raised"
-            onClick={() => {
-              const ev = (window as Window & { deferredInstall?: { prompt: () => void } }).deferredInstall;
-              if (ev) ev.prompt();
-            }}
-          >
-            Add to Home Screen
-          </button>
-          <button type="button" className="mt-6 text-sm text-subtle underline" onClick={skipInstall}>
-            Continue without installing
-          </button>
-        </div>
-      </div>
-    );
+    setBanner(false);
   }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-bg text-fg">
+      {banner ? (
+        <div className="border-b border-border bg-raised print:hidden">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+            <p className="text-sm">
+              Put 3600 Wiring on the home screen. Same shop-manual.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {isAndroid() || !isIos() ? (
+                <a href={APK} download="3600-wiring.apk" className="inline-flex min-h-11 items-center rounded-sm bg-accent px-4 text-sm font-semibold text-accent-fg">
+                  Download
+                </a>
+              ) : (
+                <span className="text-sm text-muted">Safari → Share → Add to Home Screen</span>
+              )}
+              <button type="button" className="min-h-11 px-3 text-sm text-muted underline" onClick={dismissBanner}>
+                Not now
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <header className="border-b border-border print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div>
@@ -195,18 +189,6 @@ export default function App() {
             Ctrl+K
           </button>
         </div>
-        {update ? (
-          <div className="mx-auto max-w-6xl px-4 pb-3 sm:px-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-accent/40 bg-raised px-4 py-3">
-              <p className="text-sm">
-                Update available · {update} <span className="text-muted">You’re on {APP_VERSION}.</span>
-              </p>
-              <button type="button" className="min-h-10 rounded-sm bg-accent px-4 font-semibold text-accent-fg" onClick={applyUpdate}>
-                Update now
-              </button>
-            </div>
-          </div>
-        ) : null}
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 pb-4 sm:px-6">
           <nav className="flex flex-wrap gap-1 rounded-sm border border-border bg-surface p-1">
             {TABS.map((t) => (

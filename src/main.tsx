@@ -10,7 +10,26 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => undefined);
+    void (async () => {
+      try {
+        const reg = await navigator.serviceWorker.register("./sw.js");
+        await reg.update();
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          try {
+            if (sessionStorage.getItem("wiring-sw-reload") === "1") return;
+            sessionStorage.setItem("wiring-sw-reload", "1");
+          } catch {
+            /* ignore */
+          }
+          window.location.reload();
+        });
+        navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
+          if (e.data && e.data.type === "RELOAD") window.location.reload();
+        });
+      } catch {
+        /* ignore */
+      }
+    })();
   });
 }
 

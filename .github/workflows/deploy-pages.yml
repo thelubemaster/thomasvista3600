@@ -29,12 +29,17 @@ jobs:
         run: |
           VER=$(tr -d ' \n' < VERSION)
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\"}" > public/version.json
+          printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\",\"notes\":\"Shop-manual updates itself.\"}" > public/version.json
       - run: npm run build
-      - name: Keep APK on the site
+      - name: Put the APK on the site
         run: |
-          [ -f public/3600-wiring.apk ] && cp public/3600-wiring.apk dist/3600-wiring.apk
-          ls -la dist | head
+          set +e
+          curl -fL --retry 5 --retry-delay 2 -o dist/3600-wiring.apk \
+            "https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.apk"
+          if [ ! -s dist/3600-wiring.apk ]; then
+            [ -f public/3600-wiring.apk ] && cp public/3600-wiring.apk dist/3600-wiring.apk
+          fi
+          ls -lh dist | head
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
