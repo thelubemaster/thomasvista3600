@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.env
+.env.*
+companion/public/manual.pdf
+*.log
+.vscode
+.idea
