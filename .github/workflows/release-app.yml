@@ -43,8 +43,8 @@ jobs:
           from pathlib import Path
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 3')
-          t = t.replace('versionName \"1.0\"', 'versionName \"1.0.3\"')
+          t = t.replace('versionCode 1', 'versionCode 4')
+          t = t.replace('versionName \"1.0\"', 'versionName \"1.0.4\"')
           p.write_text(t)
           "
       - name: Assemble APK
