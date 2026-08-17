@@ -4,17 +4,22 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0b0d10" />
-<meta name="app-version" content="0.5.1" />
+<meta name="app-version" content="0.5.2" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
-<title>3600 / 7.3 Wiring v0.5.1</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="3600 Wiring" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<title>3600 / 7.3 Wiring v0.5.2</title>
 <script>
 (function(){
   try{
     if(navigator.serviceWorker){
-      navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(r){ r.unregister(); }); });
+      navigator.serviceWorker.register("./sw.js");
     }
-    if(window.caches){ caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k); }); }); }
   }catch(e){}
 })();
 </script>
@@ -63,8 +68,8 @@ nav.tabs button.active{color:var(--fg);background:var(--card)}
 </head>
 <body>
 <div class="banner">
-  <div class="ver">v0.5.1</div>
-  <div class="build">build 2026-08-17f · 91 circuits · 63 diagrams · 59 connectors</div>
+  <div class="ver">v0.5.2</div>
+  <div class="build">build 2026-08-17g · 91 circuits · 63 diagrams · installable app</div>
 </div>
 <header>
   <h1>International 3600 · T444E 7.3</h1>
@@ -79,8 +84,14 @@ nav.tabs button.active{color:var(--fg);background:var(--card)}
   <section id="panel-wall" class="panel"><div id="wallList"></div></section>
   <section id="panel-more" class="panel">
     <div class="card">
+      <h2>Install this app</h2>
+      <p>Same idea as the cost tracker — put it on the home screen or download the file.</p>
+      <p><a href="?install=1" style="color:#7dffb3;font-weight:700">Open the install page</a></p>
+      <p><a href="https://github.com/thelubemaster/thomasvista3600/releases/latest" style="color:#7dffb3">GitHub download / release</a></p>
+    </div>
+    <div class="card">
       <h2>About</h2>
-      <p>v0.5.1 · GitHub Pages wiring companion. Engine-critical circuits stay; the rest is optional for a skoolie rewire.</p>
+      <p>v0.5.2 · GitHub Pages wiring companion. Engine-critical circuits stay; the rest is optional for a skoolie rewire.</p>
       <p class="muted">Book names match CTS-5123V. T444E 7.3 / hydraulic brakes.</p>
     </div>
   </section>
@@ -93,6 +104,30 @@ nav.tabs button.active{color:var(--fg);background:var(--card)}
   <button type="button" data-tab="wall">Firewall</button>
   <button type="button" data-tab="more">More</button>
 </nav>
+<div id="installPage" class="hidden" style="position:fixed;inset:0;z-index:80;background:#0b0d10;overflow:auto;padding:20px;padding-bottom:40px">
+  <div class="banner" style="border-radius:12px;margin-bottom:16px">
+    <div class="ver">v0.5.2</div>
+    <div class="build">Install 3600 Wiring</div>
+  </div>
+  <div class="card">
+    <h2>Android</h2>
+    <p>Tap the button, then open the file and tap <strong>Install</strong>. Allow unknown apps if asked.</p>
+    <p><a id="apkBtn" href="https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.apk" style="display:block;text-align:center;background:#1a5c2e;color:#7dffb3;font-weight:800;padding:16px;border-radius:12px;text-decoration:none;min-height:48px">Download APK</a></p>
+    <p class="subtle">If APK is still building, use Add to Home Screen below — that works now.</p>
+  </div>
+  <div class="card">
+    <h2>Add to Home Screen (any phone)</h2>
+    <p><strong>Samsung / Chrome:</strong> menu (⋮) → <strong>Add to Home screen</strong> / <strong>Install app</strong>.</p>
+    <p><strong>iPhone:</strong> Safari → Share → <strong>Add to Home Screen</strong>.</p>
+    <p><button type="button" id="pwaBtn" style="text-align:center;background:#1a5c2e;color:#7dffb3;font-weight:800">Install on this phone</button></p>
+    <p id="pwaMsg" class="muted"></p>
+  </div>
+  <div class="card">
+    <h2>File download</h2>
+    <p><a href="https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.zip" style="color:#7dffb3">3600-wiring.zip</a> — open index.html if you want the files on a computer.</p>
+    <p><a href="./" style="color:#9aa3b5">Skip install — just use the site</a></p>
+  </div>
+</div>
 <script src="data.js?v=051"></script>
 <script>
 const D = window.DATA;
@@ -281,6 +316,34 @@ function renderWall(){
 }
 if(!D){ document.body.insertAdjacentHTML("beforeend",'<div class="card"><p>data.js failed to load. Open the /now/ link.</p></div>'); }
 else renderCircuits();
+
+(function installFlow(){
+  var want = /(?:\?|&)install=1(?:&|$)/.test(location.search) || location.hash === "#install";
+  var page = document.getElementById("installPage");
+  if(want && page) page.classList.remove("hidden");
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferred = e;
+    var m = document.getElementById("pwaMsg");
+    if(m) m.textContent = "Tap Install on this phone.";
+  });
+  var btn = document.getElementById("pwaBtn");
+  if(btn) btn.onclick = function(){
+    if(deferred){
+      deferred.prompt();
+      deferred.userChoice.then(function(){ deferred = null; });
+      return;
+    }
+    var ua = navigator.userAgent || "";
+    var msg = document.getElementById("pwaMsg");
+    if(/iPhone|iPad|iPod/i.test(ua)){
+      msg.textContent = "Safari → Share (square with arrow) → Add to Home Screen.";
+    } else {
+      msg.textContent = "Browser menu (⋮) → Add to Home screen / Install app.";
+    }
+  };
+})();
 </script>
 </body>
 </html>

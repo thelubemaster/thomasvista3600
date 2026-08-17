@@ -1,0 +1,112 @@
+# Build a downloadable Android APK + zip, publish to GitHub Releases.
+# Install page: https://thelubemaster.github.io/thomasvista3600/?install=1
+name: Release app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-app
+  cancel-in-progress: true
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: ver
+        run: echo "version=$(tr -d ' \n' < VERSION | head -1)" >> "$GITHUB_OUTPUT"
+      - name: Zip companion
+        run: |
+          mkdir -p artifacts
+          (cd companion && zip -qr ../artifacts/3600-wiring.zip .)
+          ls -lh artifacts/3600-wiring.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wiring-zip
+          path: artifacts/3600-wiring.zip
+
+  apk:
+    runs-on: ubuntu-latest
+    needs: pack
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: android-actions/setup-android@v3
+      - name: Android packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      - name: Capacitor Android shell
+        run: |
+          set -e
+          npm install --no-save @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          npx cap add android
+          npx cap sync android
+      - name: Assemble debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Stage APK
+        run: |
+          mkdir -p artifacts
+          cp android/app/build/outputs/apk/debug/app-debug.apk artifacts/3600-wiring.apk
+          ls -lh artifacts/3600-wiring.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wiring-apk
+          path: artifacts/3600-wiring.apk
+          if-no-files-found: error
+
+  release:
+    needs: [pack, apk]
+    if: ${{ always() && needs.pack.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: wiring-zip
+          path: artifacts
+      - name: Download APK if present
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: wiring-apk
+          path: artifacts
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.pack.outputs.version }}
+          name: 3600 Wiring v${{ needs.pack.outputs.version }}
+          body: |
+            ## Install
+
+            **[Open the install page](https://thelubemaster.github.io/thomasvista3600/?install=1)**
+
+            | Device | How |
+            | --- | --- |
+            | **Android** | Install page → **Download APK** → Install |
+            | **Any phone** | Browser menu → **Add to Home screen** |
+            | **Computer** | [3600-wiring.zip](https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.zip) |
+
+            Direct APK: [3600-wiring.apk](https://github.com/thelubemaster/thomasvista3600/releases/latest/download/3600-wiring.apk)
+          files: |
+            artifacts/3600-wiring.zip
+            artifacts/3600-wiring.apk
+          fail_on_unmatched_files: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

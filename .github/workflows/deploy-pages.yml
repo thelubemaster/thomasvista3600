@@ -1,6 +1,6 @@
 # Live preview tracks GitHub main:
 # https://thelubemaster.github.io/thomasvista3600/
-# One-time: Settings → Pages → Source = GitHub Actions
+# Install: https://thelubemaster.github.io/thomasvista3600/?install=1
 name: Deploy GitHub Pages
 
 on:
@@ -26,22 +26,16 @@ jobs:
       - name: Build static site from companion
         run: |
           set -e
-          mkdir -p _site
-          if [ -f companion/index.html ]; then
-            cp companion/index.html _site/index.html
-            [ -f companion/data.js ] && cp companion/data.js _site/data.js
-            [ -f companion/app.js ] && cp companion/app.js _site/app.js
-            [ -d companion/public ] && cp -r companion/public _site/public || true
-            mkdir -p _site/now
-            cp companion/index.html _site/now/index.html
-            [ -f companion/data.js ] && cp companion/data.js _site/now/data.js
-            # cache-buster file so phones that cached / don't stick
-            date -u +%Y-%m-%dT%H:%M:%SZ > _site/BUILD.txt
-          elif [ -f index.html ]; then
-            cp index.html _site/index.html
-          else
-            echo '<!DOCTYPE html><html><body><h1>v0.4.1</h1><p>Push companion/</p></body></html>' > _site/index.html
-          fi
+          mkdir -p _site/now
+          cp companion/index.html _site/index.html
+          cp companion/index.html _site/now/index.html
+          for f in data.js manifest.webmanifest sw.js install.json icon-192.png icon-512.png apple-touch-icon.png; do
+            if [ -f "companion/$f" ]; then
+              cp "companion/$f" "_site/$f"
+              cp "companion/$f" "_site/now/$f"
+            fi
+          done
+          date -u +%Y-%m-%dT%H:%M:%SZ > _site/BUILD.txt
           ls -la _site
           grep -o 'v[0-9]\.[0-9]\.[0-9]' _site/index.html | head -1 || true
 
