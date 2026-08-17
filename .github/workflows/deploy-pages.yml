@@ -29,12 +29,15 @@ jobs:
           mkdir -p _site/now
           cp companion/index.html _site/index.html
           cp companion/index.html _site/now/index.html
-          for f in data.js manifest.webmanifest sw.js install.json icon-192.png icon-512.png apple-touch-icon.png; do
+          for f in data.js manifest.webmanifest sw.js install.json icon-192.png icon-512.png apple-touch-icon.png 3600-wiring.apk; do
             if [ -f "companion/$f" ]; then
               cp "companion/$f" "_site/$f"
               cp "companion/$f" "_site/now/$f"
             fi
           done
+          mkdir -p _site/downloads
+          [ -f companion/downloads/3600-wiring.apk ] && cp companion/downloads/3600-wiring.apk _site/downloads/3600-wiring.apk
+          [ -f companion/3600-wiring.apk ] && cp companion/3600-wiring.apk _site/3600-wiring.apk
           date -u +%Y-%m-%dT%H:%M:%SZ > _site/BUILD.txt
           ls -la _site
           grep -o 'v[0-9]\.[0-9]\.[0-9]' _site/index.html | head -1 || true
