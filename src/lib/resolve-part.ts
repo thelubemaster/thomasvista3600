@@ -11,6 +11,7 @@ const NODE_ALIAS: Record<string, string> = {
   eng2a: "engine-2a-hyd",
   front2b: "front-2-cab",
   front2: "front-2-cab",
+  front: "front-2-cab",
   eng3: "eng-dash-3",
   ff399: "filter-399",
   filter: "filter-399",
@@ -21,12 +22,21 @@ const NODE_ALIAS: Record<string, string> = {
   wif: "wif-470",
   key: "key-63",
   fuse: "fuse-block",
+  a1: "fuse-block",
   a2: "fuse-block",
+  d1: "fuse-block",
   d2: "fuse-block",
+  d3: "fuse-block",
   c1: "fuse-block",
+  c2: "fuse-block",
   b1: "fuse-block",
   h1: "fuse-block",
+  e1: "fuse-block",
+  e2: "fuse-block",
   e3: "fuse-block",
+  f1: "fuse-block",
+  f2: "fuse-block",
+  f3: "fuse-block",
   g1: "fuse-block",
   cec: "cec-379",
   aps: "aps-382",
@@ -36,10 +46,15 @@ const NODE_ALIAS: Record<string, string> = {
   mon: "monitor-49",
   hdsw: "hdlamp-60",
   turn459: "turn-459",
+  col: "turn-459",
   bb194: "bb-194",
+  bb: "bb-194",
   cl26: "cluster-26",
+  left: "cluster-26",
   cl27: "cluster-27",
+  ctr: "cluster-27",
   cl28: "cluster-28",
+  right: "cluster-28",
   alarm: "alarm-20",
   lh: "lh-502",
   rh: "rh-504",
@@ -53,7 +68,11 @@ const NODE_ALIAS: Record<string, string> = {
   r615: "neutral-615",
   r661: "crank-661",
   r662: "modpwr-662",
-  rel: "",
+  int: "abs-377",
+  on: "cruise-391",
+  set: "cruise-392",
+  red: "ata-p",
+  blu: "ata-n",
   flash: "fuse-block",
 };
 
@@ -93,14 +112,19 @@ export type ResolvedPart = {
   hintCavity?: string;
 };
 
+function firstCavityHint(node: FlowNode): string | undefined {
+  const blob = `${node.pins ?? ""} ${node.sub ?? ""}`;
+  const hit = blob.match(/\b([A-H]\d|[A-F]|IGN|OUT|GND|PROBE|TEST|BAT|ACC|ST)\b/i);
+  return hit?.[1]?.toUpperCase();
+}
+
 export function resolvePart(node: FlowNode | undefined | null): ResolvedPart | null {
   if (!node) return null;
   const out: ResolvedPart = {};
 
   if (node.relayId) {
     out.relay = relayByToken(node.relayId);
-    out.connector =
-      connByToken(node.relayId) ?? (out.relay ? connByToken(out.relay.tag) : undefined);
+    out.connector = connByToken(node.relayId) ?? (out.relay ? connByToken(out.relay.tag) : undefined);
   }
 
   const alias = NODE_ALIAS[node.id];
@@ -123,9 +147,14 @@ export function resolvePart(node: FlowNode | undefined | null): ResolvedPart | n
   if (/FRONT END/i.test(node.label)) {
     out.connector ??= connByToken("2B");
   }
-  if (/DASH CONNECTOR/i.test(node.label) && !out.connector) {
-    out.connector = connByToken("2");
+  if (/DASH CONNECTOR|BULKHEAD/i.test(node.label)) {
+    out.connector ??= connByToken("2");
   }
+  if (/ENGINE DASH/i.test(node.label)) {
+    out.connector ??= connByToken("3");
+  }
+
+  out.hintCavity ??= firstCavityHint(node);
 
   if (!out.connector && !out.relay) return null;
   return out;

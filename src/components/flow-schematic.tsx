@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
 import { routeWire } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
@@ -15,17 +15,7 @@ const strokeFor: Record<string, string> = {
   gnd: "var(--color-wire-gnd)",
 };
 
-function NodeCard({
-  node,
-  selected,
-  dim,
-  onSelect,
-}: {
-  node: FlowNode;
-  selected: boolean;
-  dim: boolean;
-  onSelect: (id: string) => void;
-}) {
+function NodeCard({ node, selected, dim }: { node: FlowNode; selected: boolean; dim: boolean }) {
   const isGnd = /ground/i.test(node.label);
   const kindRing =
     isGnd
@@ -45,22 +35,14 @@ function NodeCard({
       transform={`translate(${node.x - 64} ${node.y - 28})`}
       className={cn("cursor-pointer transition-opacity", dim && "opacity-30")}
       data-node={node.id}
-      onPointerUp={(e) => {
-        if (e.pointerType === "mouse" && e.button !== 0) return;
-        e.stopPropagation();
-        onSelect(node.id);
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(node.id);
-      }}
     >
+      <rect x={-16} y={-16} width={160} height={88} fill="transparent" />
       <rect
         width="128"
         height="56"
         rx="8"
         className={cn(isGnd ? "fill-[#3a3832]" : "fill-raised", selected ? "stroke-accent" : kindRing)}
-        strokeWidth={selected ? 2 : 1}
+        strokeWidth={selected ? 2.4 : 1.2}
       />
       <text x="64" y="22" textAnchor="middle" className="fill-fg font-mono" style={{ fontSize: 13, fontWeight: 500 }}>
         {node.label}
@@ -72,14 +54,44 @@ function NodeCard({
   );
 }
 
+function chipTag(node: FlowNode) {
+  const paren = node.label.match(/\(([^)]+)\)/);
+  if (paren) return paren[1];
+  const fuse = node.label.match(/FUSE\s+([A-H]\d)/i);
+  if (fuse) return fuse[1].toUpperCase();
+  if (node.relayId) return node.relayId;
+  return node.label.replace(/\s+/g, " ").slice(0, 12);
+}
+
+function pickIdAt(x: number, y: number): string | null {
+  const stack = document.elementsFromPoint(x, y);
+  for (const el of stack) {
+    if (!(el instanceof Element)) continue;
+    const node = el.closest("[data-node]");
+    const nid = node?.getAttribute("data-node");
+    if (nid) return nid;
+    const wire = el.closest("[data-wire]");
+    const wid = wire?.getAttribute("data-wire");
+    if (wid) return wid;
+  }
+  return null;
+}
+
 export function FlowSchematic({ map }: { map: FlowMap }) {
-  const [selected, setSelected] = useState(map.defaultId);
+  const [selected, setSelected] = useState<string | null>(null);
+  const inspectRef = useRef<HTMLDivElement>(null);
   const W = map.width ?? 1320;
   const H = map.height ?? 360;
   const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
+  const parts = useMemo(
+    () => map.nodes.filter((n) => n.kind === "connector" || n.kind === "relay" || n.kind === "fuse" || n.kind === "module"),
+    [map.nodes],
+  );
 
   const related = useMemo(() => {
-    const ids = new Set<string>([selected]);
+    const ids = new Set<string>();
+    if (!selected) return ids;
+    ids.add(selected);
     for (const w of map.wires) {
       if (w.from === selected || w.to === selected || w.id === selected || w.circuit === selected) {
         ids.add(w.from);
@@ -92,6 +104,14 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
 
   const node = map.nodes.find((n) => n.id === selected);
   const wire = map.wires.find((w) => w.id === selected);
+  const inspectOpen = Boolean(selected && (node || wire));
+
+  function select(id: string) {
+    setSelected(id);
+    requestAnimationFrame(() => {
+      inspectRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+  }
 
   return (
     <section className="space-y-3 sm:space-y-5">
@@ -104,16 +124,23 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           <h2 className="font-display text-xl font-semibold tracking-tight text-fg sm:text-3xl">{map.title}</h2>
           <p className="mt-1 line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted sm:line-clamp-none">{map.blurb}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setSelected(map.defaultId)}
-          className="h-11 shrink-0 rounded-sm border border-line px-3 text-sm font-medium text-muted hover:border-accent hover:text-fg sm:h-auto sm:py-2 sm:text-xs"
-        >
-          Reset
-        </button>
+        {selected ? (
+          <button
+            type="button"
+            onClick={() => setSelected(null)}
+            className="h-11 shrink-0 rounded-sm border border-line px-3 text-sm font-medium text-muted hover:border-accent hover:text-fg sm:h-auto sm:py-2 sm:text-xs"
+          >
+            Reset
+          </button>
+        ) : null}
       </header>
 
-      <ZoomStage>
+      <ZoomStage
+        onTap={(x, y) => {
+          const id = pickIdAt(x, y);
+          if (id) select(id);
+        }}
+      >
         <svg
           width={W}
           height={H}
@@ -121,7 +148,6 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           className="block max-w-none"
           role="img"
           aria-label={`Circuit ${map.number} schematic`}
-          onClick={() => setSelected(map.defaultId)}
         >
           <rect width={W} height={H} className="fill-surface" />
           <text x="24" y="18" className="fill-subtle font-mono" style={{ fontSize: 10 }}>
@@ -150,19 +176,12 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             const siblings = map.wires.filter((x) => x.from === w.from && x.to === w.to);
             const lane = siblings.length > 1 ? (siblings.indexOf(w) - (siblings.length - 1) / 2) * 12 : 0;
             const d = routeWire(a, b, map.nodes, lane, { w: W, h: H });
-            const active = related.has(w.id) || related.has(w.from) || related.has(w.to);
-            const dim = selected !== map.defaultId && !active;
+            const active = !selected || related.has(w.id) || related.has(w.from) || related.has(w.to);
+            const dim = Boolean(selected) && !active;
             return (
-              <g
-                key={w.id}
-                className={cn("cursor-pointer", dim && "opacity-25")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelected(w.id);
-                }}
-              >
+              <g key={w.id} className={cn("cursor-pointer", dim && "opacity-25")} data-wire={w.id}>
                 <path d={d} fill="none" stroke="transparent" strokeWidth={16} />
-                <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active ? 3.2 : 2.1} />
+                <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active && selected ? 3.2 : 2.1} />
               </g>
             );
           })}
@@ -172,12 +191,45 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
               key={n.id}
               node={n}
               selected={selected === n.id}
-              dim={selected !== n.id && !related.has(n.id) && selected !== map.defaultId}
-              onSelect={setSelected}
+              dim={Boolean(selected) && selected !== n.id && !related.has(n.id)}
             />
           ))}
         </svg>
       </ZoomStage>
+
+      <div className="rounded-sm border border-border bg-raised px-2 py-1.5">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <p className="min-w-0 truncate font-mono text-[10px] tracking-wide text-accent uppercase">
+            {inspectOpen
+              ? node
+                ? `${node.page ? `p.${node.page} · ` : ""}${node.label}`
+                : `Wire ${wire?.circuit}`
+              : "Tap a connector or relay — pinout opens below"}
+          </p>
+        </div>
+        <div className="flex gap-1 overflow-x-auto">
+          {parts.map((n) => (
+            <button
+              key={n.id}
+              type="button"
+              data-part-chip={n.id}
+              onClick={() => select(n.id)}
+              className={cn(
+                "h-11 shrink-0 rounded-xs border px-3 font-mono text-xs",
+                selected === n.id ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
+              )}
+            >
+              {chipTag(n)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {inspectOpen ? (
+        <div ref={inspectRef}>
+          <PartInspect map={map} node={node} wire={wire} onPickNode={select} onClose={() => setSelected(null)} />
+        </div>
+      ) : null}
 
       <ol className="grid gap-2 sm:grid-cols-2">
         {map.wires.map((w, i) => {
@@ -187,7 +239,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             <li key={w.id}>
               <button
                 type="button"
-                onClick={() => setSelected(w.id)}
+                onClick={() => select(w.id)}
                 className={cn(
                   "flex w-full items-start gap-2 rounded-md border px-3 py-2 text-left",
                   selected === w.id ? "border-accent bg-raised" : "border-border bg-surface hover:border-line",
@@ -211,7 +263,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             <button
               key={row.id}
               type="button"
-              onClick={() => setSelected(row.id)}
+              onClick={() => select(row.id)}
               className={cn(
                 "rounded-md border px-4 py-3 text-left transition-colors",
                 selected === row.id ? "border-accent bg-raised" : "border-border bg-surface hover:border-line",
@@ -226,14 +278,6 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           ))}
         </div>
       ) : null}
-
-      <PartInspect
-        map={map}
-        node={node}
-        wire={wire}
-        onPickNode={setSelected}
-        onClose={() => setSelected(map.defaultId)}
-      />
     </section>
   );
 }

@@ -64,17 +64,22 @@ function Shell({
   kicker,
   title,
   sub,
+  inspectId,
   onClose,
   children,
 }: {
   kicker: string;
   title: string;
   sub?: string;
+  inspectId?: string;
   onClose: () => void;
   children: ReactNode;
 }) {
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-sm border border-accent bg-raised">
+    <section
+      data-inspect={inspectId ?? "part"}
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-sm border border-accent bg-raised"
+    >
       <header className="flex shrink-0 items-start gap-2 border-b border-border px-2 py-1.5">
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[10px] tracking-widest text-accent uppercase">{kicker}</p>
@@ -90,7 +95,7 @@ function Shell({
           ×
         </button>
       </header>
-      <div className="min-h-0 flex-1 overflow-auto p-2" style={{ maxHeight: "min(56vh, 28rem)" }}>{children}</div>
+      <div className="min-h-0 flex-1 overflow-auto p-2 [max-height:min(56vh,28rem)] [[.h-full_&]]:max-h-none">{children}</div>
     </section>
   );
 }
@@ -118,27 +123,40 @@ function ConnectorInspect({
     () => conn.pins.filter((p) => family && circuitFamily(p.circuit) === family),
     [conn, family],
   );
-  const first = onThis[0]?.cavity ?? hintCavity ?? conn.pins.find((p) => p.circuit !== "---")?.cavity ?? conn.pins[0]?.cavity;
+  const first =
+    (hintCavity && onThis.find((p) => p.cavity === hintCavity)?.cavity) ||
+    onThis[0]?.cavity ||
+    hintCavity ||
+    conn.pins.find((p) => p.circuit !== "---")?.cavity ||
+    conn.pins[0]?.cavity;
   const [cavity, setCavity] = useState<string | null>(first ?? null);
-  const [onlyThis, setOnlyThis] = useState(onThis.length > 0);
+  const [onlyThis, setOnlyThis] = useState(false);
 
   useEffect(() => {
     setCavity(first ?? null);
-    setOnlyThis(onThis.length > 0);
-  }, [conn.id, first, onThis.length]);
+    setOnlyThis(false);
+  }, [conn.id, first]);
 
   const pin: Pin | undefined = conn.pins.find((p) => p.cavity === cavity) ?? conn.pins[0];
-  const rows = onlyThis && onThis.length ? onThis : conn.pins;
+  const rows = onlyThis && onThis.length ? onThis : [...onThis, ...conn.pins.filter((p) => !onThis.includes(p))];
   const hits = pin ? findCircuitHits(pin.circuit) : [];
   const hops = node ? wiresOnNode(map, node.id) : [];
 
   return (
     <Shell
-      kicker={`${relay ? "Relay" : "Connector"} ${conn.tag} · p.${conn.page} · tap a cavity`}
+      inspectId={conn.id}
+      kicker={`${relay ? "Relay" : "Connector"} ${conn.tag} · p.${conn.page} · every cavity`}
       title={conn.name}
       sub={conn.harness}
       onClose={onClose}
     >
+      {onThis.length ? (
+        <p className="mb-2 rounded-xs border border-accent/40 bg-surface px-2 py-1.5 font-mono text-[11px] leading-snug text-fg">
+          Circuit {family} on this plug:{" "}
+          {onThis.map((p) => `${p.cavity}=${p.circuit}`).join(" · ")}
+        </p>
+      ) : null}
+
       <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="min-w-0 space-y-2">
           {pin ? (
@@ -154,6 +172,16 @@ function ConnectorInspect({
           <div className="flex gap-1">
             <button
               type="button"
+              onClick={() => setOnlyThis(false)}
+              className={cn(
+                "h-8 rounded-xs border px-2 font-mono text-[11px]",
+                !onlyThis ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
+              )}
+            >
+              All {conn.pins.length} cavities
+            </button>
+            <button
+              type="button"
               onClick={() => setOnlyThis(true)}
               className={cn(
                 "h-8 rounded-xs border px-2 font-mono text-[11px]",
@@ -162,16 +190,6 @@ function ConnectorInspect({
               disabled={!onThis.length}
             >
               Circuit {family || map.number} · {onThis.length}
-            </button>
-            <button
-              type="button"
-              onClick={() => setOnlyThis(false)}
-              className={cn(
-                "h-8 rounded-xs border px-2 font-mono text-[11px]",
-                !onlyThis ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
-              )}
-            >
-              All {conn.pins.length} cavities
             </button>
           </div>
 
@@ -217,18 +235,24 @@ function RelayInspect({
   const [pinId, setPinId] = useState(onThis[0]?.id ?? face.pins[0]?.id ?? "");
   useEffect(() => {
     setPinId(onThis[0]?.id ?? face.pins[0]?.id ?? "");
-  }, [face.id, onThis[0]?.id]);
+  }, [face.id, onThis[0]?.id, face.pins]);
   const pin: RelayPin | undefined = face.pins.find((p) => p.id === pinId) ?? face.pins[0];
   const hops = node ? wiresOnNode(map, node.id) : [];
   const hits = pin ? findCircuitHits(pin.circuit.split(/[\s/]/)[0]) : [];
 
   return (
     <Shell
-      kicker={`Relay ${face.tag} · p.${face.page} · tap a pin`}
+      inspectId={`relay-${face.id}`}
+      kicker={`Relay ${face.tag} · p.${face.page} · every pin`}
       title={face.name}
       sub={`${face.where}. ${face.look}`}
       onClose={onClose}
     >
+      {onThis.length ? (
+        <p className="mb-2 rounded-xs border border-accent/40 bg-surface px-2 py-1.5 font-mono text-[11px] leading-snug text-fg">
+          Circuit {family} on this relay: {onThis.map((p) => `${p.iso}=${p.circuit}`).join(" · ")}
+        </p>
+      ) : null}
       <div className="grid gap-2 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
         <RelaySocket face={face} pinId={pinId} onPick={setPinId} />
         <div className="min-w-0 space-y-2">
@@ -293,6 +317,7 @@ function WireInspect({
   const hits = findCircuitHits(wire.circuit);
   return (
     <Shell
+      inspectId={`wire-${wire.id}`}
       kicker={`Wire · circuit ${wire.circuit}`}
       title={circuitLabel(wire.circuit)}
       sub={`${from?.label ?? wire.from} → ${to?.label ?? wire.to}`}
@@ -300,14 +325,22 @@ function WireInspect({
     >
       <div className="mb-2 grid grid-cols-2 gap-1">
         {from ? (
-          <button type="button" onClick={() => onPickNode(from.id)} className="rounded-xs border border-border bg-surface px-2 py-1.5 text-left">
+          <button
+            type="button"
+            onClick={() => onPickNode(from.id)}
+            className="rounded-xs border border-border bg-surface px-2 py-1.5 text-left"
+          >
             <p className="font-mono text-[10px] text-accent">From</p>
             <p className="text-sm leading-snug">{from.label}</p>
             <p className="text-[11px] text-muted">{from.sub}</p>
           </button>
         ) : null}
         {to ? (
-          <button type="button" onClick={() => onPickNode(to.id)} className="rounded-xs border border-border bg-surface px-2 py-1.5 text-left">
+          <button
+            type="button"
+            onClick={() => onPickNode(to.id)}
+            className="rounded-xs border border-border bg-surface px-2 py-1.5 text-left"
+          >
             <p className="font-mono text-[10px] text-accent">To</p>
             <p className="text-sm leading-snug">{to.label}</p>
             <p className="text-[11px] text-muted">{to.sub}</p>
@@ -337,6 +370,7 @@ function NodeInspect({
   const hits = circuits.flatMap((c) => findCircuitHits(c));
   return (
     <Shell
+      inspectId={node.id}
       kicker={`${node.kind}${node.page ? ` · p.${node.page}` : ""}`}
       title={node.label}
       sub={node.detail}
@@ -376,7 +410,11 @@ function CavityTable({
             return (
               <tr
                 key={p.cavity}
-                className={cn("cursor-pointer border-t border-border", p.cavity === active && "bg-surface", onCkt && "text-fg")}
+                className={cn(
+                  "cursor-pointer border-t border-border",
+                  p.cavity === active && "bg-surface",
+                  onCkt && "text-fg",
+                )}
                 onClick={() => onPick(p.cavity)}
               >
                 <td className={cn("px-1.5 py-1 font-mono text-xs", onCkt ? "text-accent" : "text-muted")}>{p.cavity}</td>
@@ -404,7 +442,11 @@ function DrawingHops({
       <ul className="space-y-0.5">
         {hops.map((h) => (
           <li key={`${h.otherId}-${h.circuit}`}>
-            <button type="button" onClick={() => onPickNode(h.otherId)} className="w-full rounded-xs px-1 py-0.5 text-left text-[12px] hover:bg-surface">
+            <button
+              type="button"
+              onClick={() => onPickNode(h.otherId)}
+              className="w-full rounded-xs px-1 py-0.5 text-left text-[12px] hover:bg-surface"
+            >
               <span className="font-mono text-accent">{h.circuit}</span>
               <span className="text-muted"> → {h.otherLabel}</span>
             </button>
@@ -424,11 +466,15 @@ function SameCircuit({
 }) {
   return (
     <div className="mt-2">
-      <p className="mb-0.5 font-mono text-[10px] tracking-widest text-subtle uppercase">{circuit} also lands at</p>
+      <p className="mb-0.5 font-mono text-[10px] tracking-widest text-subtle uppercase">
+        {circuit} also lands at
+      </p>
       <ul className="max-h-28 space-y-0 overflow-y-auto">
         {hits.slice(0, 16).map((h) => (
           <li key={`${h.connector.id}-${h.pin.cavity}`} className="px-1 py-0.5 text-[12px]">
-            <span className="font-mono text-accent">{h.connector.tag}-{h.pin.cavity}</span>
+            <span className="font-mono text-accent">
+              {h.connector.tag}-{h.pin.cavity}
+            </span>
             <span className="text-muted"> · {h.pin.dest}</span>
           </li>
         ))}

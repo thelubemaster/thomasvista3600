@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 
 const MIN = 0.2;
 const MAX = 5;
-const DRAG = 5;
+/** Finger jitter on a phone is bigger than 5px — don't start a pan that soon. */
+const DRAG = 16;
 
 function clamp(n: number) {
   return Math.min(MAX, Math.max(MIN, n));
@@ -17,9 +18,11 @@ function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
 export function ZoomStage({
   children,
   className,
+  onTap,
 }: {
   children: ReactNode;
   className?: string;
+  onTap?: (clientX: number, clientY: number) => void;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -30,9 +33,11 @@ export function ZoomStage({
   const scaleRef = useRef(scale);
   const txRef = useRef(tx);
   const tyRef = useRef(ty);
+  const onTapRef = useRef(onTap);
   scaleRef.current = scale;
   txRef.current = tx;
   tyRef.current = ty;
+  onTapRef.current = onTap;
 
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const drag = useRef<{
@@ -52,6 +57,7 @@ export function ZoomStage({
     cy: number;
   } | null>(null);
   const suppressClick = useRef(false);
+  const pinched = useRef(false);
 
   const apply = useCallback((nextScale: number, nextTx: number, nextTy: number) => {
     const s = clamp(nextScale);
@@ -89,7 +95,7 @@ export function ZoomStage({
     const vw = el.clientWidth;
     const vh = el.clientHeight;
     if (!vw || !vh || !cw || !ch) return;
-    const pad = 20;
+    const pad = 16;
     const s = clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch));
     apply(s, (vw - cw * s) / 2, (vh - ch * s) / 2);
   }, [apply]);
@@ -110,20 +116,25 @@ export function ZoomStage({
     el.addEventListener("wheel", onWheel, { passive: false });
     const ro = new ResizeObserver(() => {
       if (pointers.current.size) return;
+      fitToView();
     });
     ro.observe(el);
     return () => {
       el.removeEventListener("wheel", onWheel);
       ro.disconnect();
     };
-  }, [zoomAt]);
+  }, [zoomAt, fitToView]);
 
   function endPointer(e: React.PointerEvent) {
     pointers.current.delete(e.pointerId);
-    if (pinch.current && pointers.current.size < 2) pinch.current = null;
+    if (pinch.current && pointers.current.size < 2) {
+      pinch.current = null;
+      pinched.current = true;
+    }
     const d = drag.current;
     if (d?.id === e.pointerId) {
-      if (d.moved) {
+      const wasTap = !d.moved && !pinched.current;
+      if (d.moved || pinched.current) {
         suppressClick.current = true;
         e.preventDefault();
         e.stopPropagation();
@@ -133,15 +144,25 @@ export function ZoomStage({
       }
       drag.current = null;
       setPanning(false);
+      if (wasTap && onTapRef.current) {
+        suppressClick.current = true;
+        onTapRef.current(e.clientX, e.clientY);
+      }
     }
+    if (pointers.current.size === 0) pinched.current = false;
   }
 
   return (
-    <div className={cn("relative overflow-hidden rounded-lg border border-border bg-surface", className)}>
-      <div className="absolute top-2 right-2 z-10 flex items-center gap-1 rounded-sm border border-border bg-raised/95 p-1 shadow-sm">
+    <div
+      className={cn(
+        "relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface",
+        className ?? "h-[min(58svh,36rem)] sm:h-[min(68svh,40rem)]",
+      )}
+    >
+      <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-xs border border-border bg-raised/95 p-0.5">
         <button
           type="button"
-          className="grid size-9 place-items-center rounded-xs text-muted hover:bg-surface hover:text-fg"
+          className="grid size-8 place-items-center rounded-xs text-muted hover:bg-surface hover:text-fg"
           aria-label="Zoom out"
           onClick={() => {
             const el = viewport.current;
@@ -149,12 +170,12 @@ export function ZoomStage({
             zoomAt((r?.left ?? 0) + (r?.width ?? 0) / 2, (r?.top ?? 0) + (r?.height ?? 0) / 2, scaleRef.current / 1.2);
           }}
         >
-          <Minus className="size-4" />
+          <Minus className="size-3.5" />
         </button>
-        <span className="min-w-12 text-center font-mono text-xs text-muted">{Math.round(scale * 100)}%</span>
+        <span className="min-w-10 text-center font-mono text-[11px] text-muted">{Math.round(scale * 100)}%</span>
         <button
           type="button"
-          className="grid size-9 place-items-center rounded-xs text-muted hover:bg-surface hover:text-fg"
+          className="grid size-8 place-items-center rounded-xs text-muted hover:bg-surface hover:text-fg"
           aria-label="Zoom in"
           onClick={() => {
             const el = viewport.current;
@@ -162,24 +183,21 @@ export function ZoomStage({
             zoomAt((r?.left ?? 0) + (r?.width ?? 0) / 2, (r?.top ?? 0) + (r?.height ?? 0) / 2, scaleRef.current * 1.2);
           }}
         >
-          <Plus className="size-4" />
+          <Plus className="size-3.5" />
         </button>
         <button
           type="button"
-          className="grid size-9 place-items-center rounded-xs text-muted hover:bg-surface hover:text-fg"
+          className="grid size-8 place-items-center rounded-xs text-muted hover:bg-surface hover:text-fg"
           aria-label="Fit drawing"
           onClick={fitToView}
         >
-          <Maximize2 className="size-4" />
+          <Maximize2 className="size-3.5" />
         </button>
       </div>
-      <p className="pointer-events-none absolute bottom-2 left-3 z-10 font-mono text-[10px] text-subtle">
-        Drag to pan · pinch to zoom · tap a box
-      </p>
       <div
         ref={viewport}
         className={cn(
-          "h-[min(58svh,36rem)] touch-none overflow-hidden overscroll-none select-none sm:h-[min(68svh,40rem)]",
+          "min-h-0 flex-1 touch-none overflow-hidden overscroll-none select-none",
           panning ? "cursor-grabbing" : "cursor-grab",
         )}
         style={{ touchAction: "none", WebkitUserSelect: "none" }}

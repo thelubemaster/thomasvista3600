@@ -436,12 +436,12 @@ export const connectors: Connector[] = [
     page: "50 / 88",
     hyd: true,
     pins: [
-      { cavity: "A", circuit: "19D", dest: "Heater power from D2" },
-      { cavity: "B", circuit: "19", dest: "Filter / heater common" },
-      { cavity: "C", circuit: "19", dest: "Start-switch related" },
-      { cavity: "D", circuit: "19A", dest: "In-line 401-A" },
-      { cavity: "E", circuit: "19B", dest: "In-line 401-B" },
-      { cavity: "F", circuit: "19C", dest: "In-line 401-C / WIF" },
+      { cavity: "A", circuit: "19D", dest: "Heater power from D2 / relay 431-30" },
+      { cavity: "B", circuit: "19J", dest: "Key-on from A2 — WIF jumper / filter lamp" },
+      { cavity: "C", circuit: "19H", dest: "18PK to the start switch" },
+      { cavity: "D", circuit: "19A", dest: "Dash connector (2) H5 → in-line 401-A heater" },
+      { cavity: "E", circuit: "19B", dest: "Dash connector (2) E4 → in-line 401-B water probe" },
+      { cavity: "F", circuit: "19C", dest: "Dash connector (2) H6 → in-line 401-C vacuum / WIF test" },
     ],
   },
   {
