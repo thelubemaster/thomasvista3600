@@ -1,6 +1,6 @@
 {
-  "version": "1.1.8",
+  "version": "1.1.9",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "All 61 Navistar CID circuits listed on Circuits tab (phone + desktop)."
+  "notes": "Tap a connector or relay on a drawing to see every cavity and where the wires go."
 }
