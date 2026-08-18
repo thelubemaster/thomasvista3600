@@ -109,7 +109,6 @@ export function ZoomStage({
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     const ro = new ResizeObserver(() => {
-      // Keep the drawing on screen if the phone chrome resizes.
       if (pointers.current.size) return;
     });
     ro.observe(el);
@@ -186,7 +185,6 @@ export function ZoomStage({
         style={{ touchAction: "none", WebkitUserSelect: "none" }}
         onPointerDown={(e) => {
           if (e.pointerType === "mouse" && e.button !== 0) return;
-          e.currentTarget.setPointerCapture(e.pointerId);
           pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
           if (pointers.current.size >= 2) {
             const pts = [...pointers.current.values()];
@@ -240,6 +238,7 @@ export function ZoomStage({
           if (!d.moved && dx * dx + dy * dy < DRAG * DRAG) return;
           if (!d.moved) {
             d.moved = true;
+            e.currentTarget.setPointerCapture(e.pointerId);
             setPanning(true);
           }
           apply(scaleRef.current, d.tx + dx, d.ty + dy);
