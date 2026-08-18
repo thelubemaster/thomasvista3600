@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
-import { relayFaces } from "@/data/relay-pins";
 import { routeWire } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
+import { PartInspect } from "@/components/part-inspect";
 import { cn } from "@/lib/utils";
 
 const strokeFor: Record<string, string> = {
@@ -44,6 +44,12 @@ function NodeCard({
     <g
       transform={`translate(${node.x - 64} ${node.y - 28})`}
       className={cn("cursor-pointer transition-opacity", dim && "opacity-30")}
+      data-node={node.id}
+      onPointerUp={(e) => {
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        e.stopPropagation();
+        onSelect(node.id);
+      }}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(node.id);
@@ -66,62 +72,6 @@ function NodeCard({
   );
 }
 
-function Face({ node }: { node: FlowNode }) {
-  const face = node.relayId ? relayFaces.find((r) => r.id === node.relayId) : undefined;
-  if (face) {
-    return (
-      <div className="mt-4 space-y-3">
-        <p className="font-mono text-[10px] tracking-widest text-subtle uppercase">
-          Mating end · {face.look}
-        </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {face.pins.map((p) => (
-            <div key={p.id} className="rounded-sm border border-line bg-bg px-3 py-2">
-              <p className="font-mono text-sm text-accent">
-                {p.iso} · {p.circuit}
-              </p>
-              <p className="text-xs text-fg">{p.role}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted">{p.goes}</p>
-              <p className="mt-1 font-mono text-[10px] text-subtle">{p.power}</p>
-            </div>
-          ))}
-        </div>
-        <p className="text-sm leading-relaxed text-muted">{face.more}</p>
-      </div>
-    );
-  }
-  const pins = node.pins ?? "";
-  if (node.kind === "connector" || node.kind === "module") {
-    const cells = pins.includes("–") || pins.includes("-") || pins.includes("/") || pins.includes(" ")
-      ? pins.split(/[\s/–-]+/).filter(Boolean).slice(0, 12)
-      : pins.length <= 3
-        ? [pins]
-        : pins.split("").slice(0, 12);
-    return (
-      <div className="mt-3 rounded-md border border-line bg-bg p-3">
-        <p className="font-mono text-[10px] tracking-widest text-subtle uppercase">What it looks like</p>
-        <p className="mt-1 text-sm text-fg">{node.look}</p>
-        <div className="mt-3 flex flex-wrap gap-1">
-          {(cells.length ? cells : ["·"]).map((c) => (
-            <span
-              key={c}
-              className="grid size-8 place-items-center rounded-xs border border-line bg-raised font-mono text-[10px] text-muted"
-            >
-              {c}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  return node.look ? (
-    <p className="mt-3 text-sm text-muted">
-      <span className="font-mono text-[10px] tracking-widest text-subtle uppercase">Looks like · </span>
-      {node.look}
-    </p>
-  ) : null;
-}
-
 export function FlowSchematic({ map }: { map: FlowMap }) {
   const [selected, setSelected] = useState(map.defaultId);
   const W = map.width ?? 1320;
@@ -142,7 +92,6 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
 
   const node = map.nodes.find((n) => n.id === selected);
   const wire = map.wires.find((w) => w.id === selected);
-  const legend = map.legend?.find((l) => l.id === selected);
 
   return (
     <section className="space-y-3 sm:space-y-5">
@@ -194,7 +143,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             </>
           ) : null}
 
-          {map.wires.map((w, i) => {
+          {map.wires.map((w) => {
             const a = byId[w.from];
             const b = byId[w.to];
             if (!a || !b) return null;
@@ -278,22 +227,13 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
         </div>
       ) : null}
 
-      <aside className="rounded-lg border border-border bg-raised px-5 py-4">
-        <p className="font-mono text-xs tracking-widest text-accent uppercase">Selected</p>
-        <h3 className="mt-1 font-display text-2xl font-semibold text-fg">
-          {node?.label ?? wire?.label ?? legend?.id ?? selected}
-        </h3>
-        {node?.page ? <p className="mt-1 font-mono text-xs text-muted">Manual printed page {node.page}</p> : null}
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
-          {node?.detail ?? wire?.label ?? legend?.note ?? "Tap a box or a wire."}
-        </p>
-        {wire ? (
-          <p className="mt-2 font-mono text-xs text-steel">
-            {wire.from} → {wire.to} · {wire.circuit}
-          </p>
-        ) : null}
-        {node ? <Face node={node} /> : null}
-      </aside>
+      <PartInspect
+        map={map}
+        node={node}
+        wire={wire}
+        onPickNode={setSelected}
+        onClose={() => setSelected(map.defaultId)}
+      />
     </section>
   );
 }

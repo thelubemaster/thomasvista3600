@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const APP_VERSION = "1.1.8";
+export const APP_VERSION = "1.1.9";
 const LIVE = "https://thelubemaster.github.io/thomasvista3600";
 
 function cmpVer(a: string, b: string) {
