@@ -157,51 +157,50 @@ function ConnectorInspect({
         </p>
       ) : null}
 
-      <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="min-w-0 space-y-2">
-          {pin ? (
-            <div className="rounded-xs border border-border bg-surface px-2 py-1.5">
-              <p className="font-mono text-[10px] tracking-widest text-accent uppercase">
-                {conn.tag}-{pin.cavity} · {pin.circuit}
-              </p>
-              <p className="text-sm leading-snug text-fg">{circuitLabel(pin.circuit)}</p>
-              <p className="text-[12px] leading-snug text-muted">{pin.dest}</p>
-            </div>
-          ) : null}
+      <div className="mb-2 rounded-xs border border-[#c9c2b4] bg-[#f4f0e6] p-1">
+        {relay ? (
+          <RelaySocket face={relay} pinId={cavity ?? pin?.cavity ?? ""} onPick={setCavity} />
+        ) : (
+          <PlugArt tag={conn.tag} pins={conn.pins} active={pin?.cavity} family={family} onPick={setCavity} />
+        )}
+      </div>
 
-          <div className="flex gap-1">
-            <button
-              type="button"
-              onClick={() => setOnlyThis(false)}
-              className={cn(
-                "h-8 rounded-xs border px-2 font-mono text-[11px]",
-                !onlyThis ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
-              )}
-            >
-              All {conn.pins.length} cavities
-            </button>
-            <button
-              type="button"
-              onClick={() => setOnlyThis(true)}
-              className={cn(
-                "h-8 rounded-xs border px-2 font-mono text-[11px]",
-                onlyThis ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
-              )}
-              disabled={!onThis.length}
-            >
-              Circuit {family || map.number} · {onThis.length}
-            </button>
+      <div className="min-w-0 space-y-2">
+        {pin ? (
+          <div className="rounded-xs border border-border bg-surface px-2 py-1.5">
+            <p className="font-mono text-[10px] tracking-widest text-accent uppercase">
+              {conn.tag}-{pin.cavity} · {pin.circuit}
+            </p>
+            <p className="text-sm leading-snug text-fg">{circuitLabel(pin.circuit)}</p>
+            <p className="text-[12px] leading-snug text-muted">{pin.dest}</p>
           </div>
+        ) : null}
 
-          <CavityTable rows={rows} active={pin?.cavity} family={family} onPick={setCavity} />
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => setOnlyThis(false)}
+            className={cn(
+              "h-8 rounded-xs border px-2 font-mono text-[11px]",
+              !onlyThis ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
+            )}
+          >
+            All {conn.pins.length} cavities
+          </button>
+          <button
+            type="button"
+            onClick={() => setOnlyThis(true)}
+            className={cn(
+              "h-8 rounded-xs border px-2 font-mono text-[11px]",
+              onlyThis ? "border-accent bg-accent text-accent-fg" : "border-border text-muted",
+            )}
+            disabled={!onThis.length}
+          >
+            Circuit {family || map.number} · {onThis.length}
+          </button>
         </div>
-        <div className="max-h-56 overflow-auto rounded-xs border border-border bg-surface p-1 lg:max-h-none">
-          {relay ? (
-            <RelaySocket face={relay} pinId={cavity ?? pin?.cavity ?? ""} onPick={setCavity} />
-          ) : (
-            <PlugArt tag={conn.tag} pins={conn.pins} active={pin?.cavity} family={family} onPick={setCavity} />
-          )}
-        </div>
+
+        <CavityTable rows={rows} active={pin?.cavity} family={family} onPick={setCavity} />
       </div>
 
       {hops.length ? <DrawingHops hops={hops} onPickNode={onPickNode} /> : null}

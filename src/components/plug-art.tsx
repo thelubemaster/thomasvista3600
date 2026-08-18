@@ -44,8 +44,8 @@ function Hole({
 }) {
   const vacant = empty(pin);
   const lit = !vacant && !!family && circuitFamily(pin!.circuit) === family;
-  const fill = active ? "#c4783a" : lit ? "#8fa3b8" : paper;
-  const stroke = active ? "#8a4e1c" : ink;
+  const fill = active || lit ? "#c4783a" : paper;
+  const stroke = active || lit ? "#8a4e1c" : ink;
   const r = round ? size / 2 : 1.5;
   return (
     <g
@@ -67,7 +67,7 @@ function Hole({
         stroke={stroke}
         strokeWidth={active ? 2 : 1.4}
       />
-      {!vacant ? (
+      {!vacant && size >= 22 ? (
         <text
           x={x + size / 2}
           y={y + size / 2 + 3}
@@ -177,6 +177,26 @@ export function Dash2Art({ pins, active, family, onPick }: ArtProps) {
           {c}
         </text>
       ))}
+      {pins
+        .filter((p) => family && circuitFamily(p.circuit) === family)
+        .map((p, i, all) => {
+          const w = 72;
+          const x = 20 + i * (w + 6) + Math.max(0, (240 - all.length * (w + 6)) / 2);
+          return (
+            <g key={`call-${p.cavity}`}>
+              <rect x={x} y={248} width={w} height={16} rx="2" fill="#c4783a" />
+              <text
+                x={x + w / 2}
+                y={260}
+                textAnchor="middle"
+                fill="#1a120c"
+                style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", fontWeight: 700 }}
+              >
+                {p.cavity}={p.circuit}
+              </text>
+            </g>
+          );
+        })}
     </SvgPlate>
   );
 }
@@ -369,8 +389,8 @@ function Engine3Pin({
         cx={ox + p.x}
         cy={p.y}
         r={9}
-        fill={on ? "#c4783a" : lit ? "#c5d0c4" : paper}
-        stroke={on ? "#8a4e1c" : ink}
+        fill={on || lit ? "#c4783a" : paper}
+        stroke={on || lit ? "#8a4e1c" : ink}
         strokeWidth={on ? 2.2 : 1.5}
       />
       <circle cx={ox + p.x} cy={p.y} r={3.2} fill={on ? "#1a120c" : ink} />
@@ -557,22 +577,28 @@ export function Filter6Art({ pins, active, family, onPick }: ArtProps) {
     ["F", "E"],
   ];
   return (
-    <SvgPlate caption="FUEL FILTER CAB HARNESS (71) · mating end" find="Small 6-cavity on the filter head / cab harness. Two columns, three rows. D C on top, then B A, then F E.">
-      <rect x="70" y="28" width="100" height="148" rx="4" fill={paper} stroke={ink} strokeWidth="2.2" />
+    <SvgPlate
+      caption="FUEL FILTER (71 / 399) · 6-way mating end"
+      find="Small 6-cavity on the filter head / cab harness. Two columns, three rows. D C on top, then B A, then F E. Same face as IN-LINE (401) A–C."
+      box="0 0 220 250"
+      maxW={360}
+    >
+      <rect x="42" y="22" width="136" height="188" rx="6" fill={paper} stroke={ink} strokeWidth="2.4" />
+      <path d="M 92 22 L 92 10 L 128 10 L 128 22" fill="none" stroke={ink} strokeWidth="1.8" />
       {grid.map((row, ri) =>
         row.map((c, ci) => (
           <g key={c}>
             <Hole
-              x={86 + ci * 40}
-              y={44 + ri * 40}
-              size={32}
+              x={58 + ci * 52}
+              y={40 + ri * 52}
+              size={42}
               cavity={c}
               pin={pinAt(pins, c)}
               active={active === c}
               family={family}
               onPick={onPick}
             />
-            <text x={102 + ci * 40} y={40 + ri * 40} textAnchor="middle" fill={ink} style={{ fontSize: 9, fontFamily: "ui-monospace, monospace" }}>
+            <text x={79 + ci * 52} y={36 + ri * 52} textAnchor="middle" fill={ink} style={lab}>
               {c}
             </text>
           </g>
@@ -657,22 +683,18 @@ function SvgPlate({
 }) {
   const vb = box ?? (wide ? "0 0 440 240" : "0 0 280 300");
   return (
-    <div className="space-y-2">
-      <div className={cn("overflow-x-auto rounded-sm border border-[#c9c2b4] bg-[#f4f0e6] p-3 shadow-[inset_0_0_0_1px_#fff]")}>
+    <div>
+      <div className={cn("overflow-x-auto rounded-sm border border-[#c9c2b4] bg-[#f4f0e6] p-1.5")}>
         <svg
           viewBox={vb}
           className="mx-auto h-auto w-full"
-          style={{ maxWidth: maxW ?? (wide ? 440 : 320) }}
+          style={{ maxWidth: maxW ?? (wide ? 520 : 420) }}
           role="img"
         >
           {children}
         </svg>
       </div>
-      <p className="font-mono text-[10px] tracking-widest text-subtle uppercase">{caption}</p>
-      <p className="text-sm leading-relaxed text-muted">
-        <span className="font-mono text-[10px] tracking-widest text-subtle uppercase">Find it · </span>
-        {find}
-      </p>
+      <p className="mt-1 font-mono text-[10px] tracking-widest text-subtle uppercase">{caption}</p>
     </div>
   );
 }
