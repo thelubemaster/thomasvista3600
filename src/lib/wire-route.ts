@@ -82,7 +82,7 @@ function skirts(pts: Pt[], obstacles: Box[], near = 26): number {
   return n;
 }
 
-function pathLen(pts: Pt[]): number {
+export function pathLen(pts: Pt[]): number {
   let s = 0;
   for (let i = 0; i < pts.length - 1; i++) {
     s += Math.abs(pts[i + 1].x - pts[i].x) + Math.abs(pts[i + 1].y - pts[i].y);

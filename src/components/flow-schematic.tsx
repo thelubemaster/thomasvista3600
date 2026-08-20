@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
 import { isWallStop, readLines, type ReadLine } from "@/data/read-lines";
-import { pathMid, polylineToPath, routeWirePts } from "@/lib/wire-route";
+import { placeWireLabels } from "@/lib/wire-label";
+import { polylineToPath, routeWirePts } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
 import { PartInspect } from "@/components/part-inspect";
 import { cn } from "@/lib/utils";
@@ -107,7 +108,6 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
   const inspectRef = useRef<HTMLDivElement>(null);
   const W = map.width ?? 1320;
   const H = map.height ?? 360;
-  const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
   const parts = useMemo(
     () => map.nodes.filter((n) => n.kind === "connector" || n.kind === "relay" || n.kind === "fuse" || n.kind === "module"),
     [map.nodes],
@@ -128,6 +128,42 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
     }
     return ids;
   }, [map.wires, selected, readCircuit]);
+
+  const drawn = useMemo(() => {
+    const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
+    const items: { w: (typeof map.wires)[number]; pts: { x: number; y: number }[]; d: string }[] = [];
+    for (const w of map.wires) {
+      const a = byId[w.from];
+      const b = byId[w.to];
+      if (!a || !b) continue;
+      const siblings = map.wires.filter((x) => x.from === w.from && x.to === w.to);
+      const lane = siblings.length > 1 ? (siblings.indexOf(w) - (siblings.length - 1) / 2) * 12 : 0;
+      const pts = routeWirePts(a, b, map.nodes, lane, { w: W, h: H });
+      items.push({ w, pts, d: polylineToPath(pts) });
+    }
+    const obstacles = map.nodes.map((n) => ({
+      l: n.x - 70,
+      r: n.x + 70,
+      t: n.y - 36,
+      b: n.y + 36,
+    }));
+    if (map.firewallX) {
+      obstacles.push({ l: 0, r: W, t: 0, b: 22 });
+      obstacles.push({ l: map.firewallX - 4, r: W, t: H - 22, b: H });
+    }
+    const labels = placeWireLabels(
+      items.map((it) => ({
+        id: it.w.id,
+        pts: it.pts,
+        circuit: it.w.circuit,
+        note: it.w.label ?? null,
+      })),
+      obstacles,
+      { w: W, h: H },
+    );
+    const byLab = new Map(labels.map((l) => [l.id, l]));
+    return items.map((it) => ({ ...it, lab: byLab.get(it.w.id) ?? null }));
+  }, [map, W, H]);
 
   const node = map.nodes.find((n) => n.id === selected);
   const wire = map.wires.find((w) => w.id === selected);
@@ -213,32 +249,14 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             </text>
           )}
 
-          {map.wires.map((w) => {
-            const a = byId[w.from];
-            const b = byId[w.to];
-            if (!a || !b) return null;
-            const siblings = map.wires.filter((x) => x.from === w.from && x.to === w.to);
-            const lane = siblings.length > 1 ? (siblings.indexOf(w) - (siblings.length - 1) / 2) * 12 : 0;
-            const pts = routeWirePts(a, b, map.nodes, lane, { w: W, h: H });
-            const d = polylineToPath(pts);
-            const mid = pathMid(pts);
+          {drawn.map(({ w, d }) => {
             const onRead = activeCircuit ? w.circuit === activeCircuit : false;
             const active = !selected && !readCircuit ? true : related.has(w.id) || related.has(w.from) || related.has(w.to) || onRead;
             const dim = Boolean(selected || readCircuit) && !active;
-            const tag = w.label ? `${w.circuit} ${w.label}` : w.circuit;
             return (
               <g key={w.id} className={cn("cursor-pointer", dim && "opacity-20")} data-wire={w.id}>
                 <path d={d} fill="none" stroke="transparent" strokeWidth={18} />
                 <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active && (selected || onRead) ? 3.4 : 2.1} />
-                <text
-                  x={mid.x}
-                  y={mid.y - 6}
-                  textAnchor="middle"
-                  className="fill-fg font-mono"
-                  style={{ fontSize: 10, fontWeight: 600, paintOrder: "stroke", stroke: "var(--color-surface)", strokeWidth: 3 }}
-                >
-                  {tag}
-                </text>
               </g>
             );
           })}
@@ -252,6 +270,61 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
               dim={Boolean(selected || readCircuit) && selected !== n.id && !related.has(n.id) && !lines.some((l) => l.circuit === activeCircuit && l.stops.some((s) => s.id === n.id))}
             />
           ))}
+
+          {drawn.map(({ w, lab }) => {
+            if (!lab) return null;
+            const onRead = activeCircuit ? w.circuit === activeCircuit : false;
+            const active = !selected && !readCircuit ? true : related.has(w.id) || related.has(w.from) || related.has(w.to) || onRead;
+            const dim = Boolean(selected || readCircuit) && !active;
+            const color = strokeFor[w.color];
+            const bw = lab.box.r - lab.box.l;
+            const bh = lab.box.b - lab.box.t;
+            return (
+              <g key={`lab-${w.id}`} className={cn("cursor-pointer", dim && "opacity-20")} data-wire={w.id}>
+                <line
+                  x1={lab.attach.x}
+                  y1={lab.attach.y}
+                  x2={lab.leaderTo.x}
+                  y2={lab.leaderTo.y}
+                  stroke={color}
+                  strokeWidth={1.2}
+                />
+                <circle cx={lab.attach.x} cy={lab.attach.y} r={2.7} fill={color} stroke="var(--color-surface)" strokeWidth={1.1} />
+                <rect
+                  x={lab.box.l}
+                  y={lab.box.t}
+                  width={bw}
+                  height={bh}
+                  rx={3}
+                  fill="var(--color-raised)"
+                  stroke={color}
+                  strokeWidth={1.15}
+                />
+                <text
+                  x={lab.textAt.x}
+                  y={lab.note ? lab.textAt.y - 5 : lab.textAt.y + 0.5}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-fg font-mono"
+                  style={{ fontSize: 11, fontWeight: 700 }}
+                >
+                  {lab.circuit}
+                </text>
+                {lab.note ? (
+                  <text
+                    x={lab.textAt.x}
+                    y={lab.textAt.y + 7}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="fill-muted font-mono"
+                    style={{ fontSize: 8.5, fontWeight: 500 }}
+                  >
+                    {lab.note}
+                  </text>
+                ) : null}
+              </g>
+            );
+          })}
         </svg>
       </ZoomStage>
 
@@ -260,6 +333,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           <p className="font-mono text-[10px] tracking-widest text-accent uppercase">
             Read left to right · cab → wall plug → engine
           </p>
+          <p className="text-xs text-muted">Each tag points at one wire. Tap a tag or a hop below to light that circuit.</p>
           <ul className="space-y-1.5">
             {lines.map((line) => (
               <ReadRow

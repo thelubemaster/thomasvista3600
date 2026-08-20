@@ -1,6 +1,6 @@
 {
-  "version": "1.2.4",
+  "version": "1.2.5",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Force-refresh so phones leave the old cached build. Circuit drawings still read left to right with wall plugs labeled."
+  "notes": "Circuit numbers sit on tags that point at their own wire, so 19A / 19B / 19C no longer stack on top of each other."
 }
