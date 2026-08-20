@@ -1,6 +1,6 @@
 {
-  "version": "1.2.2",
+  "version": "1.2.3",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Every circuit drawing: cab/engine hops land on DASH CONNECTOR (2), ENGINE DASH (3), or FRONT END (2B)."
+  "notes": "Circuit drawings: cab vs engine shading, circuit numbers on wires, left-to-right hop list with wall plugs highlighted."
 }

@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
-import { routeWire } from "@/lib/wire-route";
+import { isWallStop, readLines, type ReadLine } from "@/data/read-lines";
+import { pathMid, polylineToPath, routeWirePts } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
 import { PartInspect } from "@/components/part-inspect";
 import { cn } from "@/lib/utils";
@@ -15,20 +16,32 @@ const strokeFor: Record<string, string> = {
   gnd: "var(--color-wire-gnd)",
 };
 
-function NodeCard({ node, selected, dim }: { node: FlowNode; selected: boolean; dim: boolean }) {
+function NodeCard({
+  node,
+  selected,
+  dim,
+  wall,
+}: {
+  node: FlowNode;
+  selected: boolean;
+  dim: boolean;
+  wall: boolean;
+}) {
   const isGnd = /ground/i.test(node.label);
   const kindRing =
     isGnd
       ? "stroke-[var(--color-wire-gnd)]"
-      : node.kind === "fuse"
+      : wall
         ? "stroke-accent"
-        : node.kind === "connector"
-          ? "stroke-steel"
-          : node.kind === "load"
-            ? "stroke-ok"
-            : node.kind === "relay"
-              ? "stroke-warn"
-              : "stroke-line";
+        : node.kind === "fuse"
+          ? "stroke-accent"
+          : node.kind === "connector"
+            ? "stroke-steel"
+            : node.kind === "load"
+              ? "stroke-ok"
+              : node.kind === "relay"
+                ? "stroke-warn"
+                : "stroke-line";
 
   return (
     <g
@@ -41,13 +54,24 @@ function NodeCard({ node, selected, dim }: { node: FlowNode; selected: boolean; 
         width="128"
         height="56"
         rx="8"
-        className={cn(isGnd ? "fill-[#3a3832]" : "fill-raised", selected ? "stroke-accent" : kindRing)}
-        strokeWidth={selected ? 2.4 : 1.2}
+        className={cn(isGnd ? "fill-[#3a3832]" : wall ? "fill-[#2a2218]" : "fill-raised", selected ? "stroke-accent" : kindRing)}
+        strokeWidth={selected || wall ? 2.4 : 1.2}
       />
-      <text x="64" y="22" textAnchor="middle" className="fill-fg font-mono" style={{ fontSize: 13, fontWeight: 500 }}>
+      {wall ? (
+        <text x="64" y="12" textAnchor="middle" className="fill-accent font-mono" style={{ fontSize: 9, fontWeight: 600 }}>
+          WALL
+        </text>
+      ) : null}
+      <text
+        x="64"
+        y={wall ? 28 : 22}
+        textAnchor="middle"
+        className="fill-fg font-mono"
+        style={{ fontSize: wall ? 12 : 13, fontWeight: 500 }}
+      >
         {node.label}
       </text>
-      <text x="64" y="42" textAnchor="middle" className="fill-muted font-sans" style={{ fontSize: 11 }}>
+      <text x="64" y={wall ? 44 : 42} textAnchor="middle" className="fill-muted font-sans" style={{ fontSize: 11 }}>
         {node.sub}
       </text>
     </g>
@@ -79,6 +103,7 @@ function pickIdAt(x: number, y: number): string | null {
 
 export function FlowSchematic({ map }: { map: FlowMap }) {
   const [selected, setSelected] = useState<string | null>(null);
+  const [readCircuit, setReadCircuit] = useState<string | null>(null);
   const inspectRef = useRef<HTMLDivElement>(null);
   const W = map.width ?? 1320;
   const H = map.height ?? 360;
@@ -90,24 +115,30 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
 
   const related = useMemo(() => {
     const ids = new Set<string>();
-    if (!selected) return ids;
-    ids.add(selected);
+    if (selected) ids.add(selected);
     for (const w of map.wires) {
-      if (w.from === selected || w.to === selected || w.id === selected || w.circuit === selected) {
+      const hit =
+        (selected && (w.from === selected || w.to === selected || w.id === selected || w.circuit === selected)) ||
+        (readCircuit && w.circuit === readCircuit);
+      if (hit) {
         ids.add(w.from);
         ids.add(w.to);
         ids.add(w.id);
       }
     }
     return ids;
-  }, [map.wires, selected]);
+  }, [map.wires, selected, readCircuit]);
 
   const node = map.nodes.find((n) => n.id === selected);
   const wire = map.wires.find((w) => w.id === selected);
   const inspectOpen = Boolean(selected && (node || wire));
+  const lines = useMemo(() => readLines(map), [map]);
+  const activeCircuit = readCircuit ?? wire?.circuit ?? null;
 
   function select(id: string) {
     setSelected(id);
+    const w = map.wires.find((x) => x.id === id);
+    if (w) setReadCircuit(w.circuit);
     requestAnimationFrame(() => {
       inspectRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     });
@@ -124,10 +155,13 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           <h2 className="font-display text-xl font-semibold tracking-tight text-fg sm:text-3xl">{map.title}</h2>
           <p className="mt-1 line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted sm:line-clamp-none">{map.blurb}</p>
         </div>
-        {selected ? (
+        {selected || readCircuit ? (
           <button
             type="button"
-            onClick={() => setSelected(null)}
+            onClick={() => {
+              setSelected(null);
+              setReadCircuit(null);
+            }}
             className="h-11 shrink-0 rounded-sm border border-line px-3 text-sm font-medium text-muted hover:border-accent hover:text-fg sm:h-auto sm:py-2 sm:text-xs"
           >
             Reset
@@ -150,24 +184,34 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           aria-label={`Circuit ${map.number} schematic`}
         >
           <rect width={W} height={H} className="fill-surface" />
-          <text x="24" y="18" className="fill-subtle font-mono" style={{ fontSize: 10 }}>
-            {map.cabLabel ?? "CAB"}
-          </text>
           {map.firewallX ? (
             <>
+              <rect x="0" y="0" width={map.firewallX} height={H} fill="rgba(196,120,58,0.06)" />
+              <rect x={map.firewallX} y="0" width={W - map.firewallX} height={H} fill="rgba(143,163,184,0.07)" />
               <line
                 x1={map.firewallX}
                 y1="16"
                 x2={map.firewallX}
                 y2={H - 16}
-                stroke="var(--color-line)"
-                strokeDasharray="4 6"
+                stroke="var(--color-accent)"
+                strokeWidth={1.6}
+                strokeDasharray="5 7"
               />
-              <text x={map.firewallX + 6} y={H - 12} className="fill-subtle font-mono" style={{ fontSize: 9 }}>
-                FIREWALL
+              <text x="20" y="18" className="fill-accent font-mono" style={{ fontSize: 11, fontWeight: 600 }}>
+                {map.cabLabel ?? "CAB"}
+              </text>
+              <text x={map.firewallX + 10} y="18" className="fill-steel font-mono" style={{ fontSize: 11, fontWeight: 600 }}>
+                ENGINE
+              </text>
+              <text x={map.firewallX + 10} y={H - 10} className="fill-accent font-mono" style={{ fontSize: 10 }}>
+                FIREWALL — wires cross here only at a plug
               </text>
             </>
-          ) : null}
+          ) : (
+            <text x="24" y="18" className="fill-subtle font-mono" style={{ fontSize: 10 }}>
+              {map.cabLabel ?? "CAB"}
+            </text>
+          )}
 
           {map.wires.map((w) => {
             const a = byId[w.from];
@@ -175,13 +219,26 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             if (!a || !b) return null;
             const siblings = map.wires.filter((x) => x.from === w.from && x.to === w.to);
             const lane = siblings.length > 1 ? (siblings.indexOf(w) - (siblings.length - 1) / 2) * 12 : 0;
-            const d = routeWire(a, b, map.nodes, lane, { w: W, h: H });
-            const active = !selected || related.has(w.id) || related.has(w.from) || related.has(w.to);
-            const dim = Boolean(selected) && !active;
+            const pts = routeWirePts(a, b, map.nodes, lane, { w: W, h: H });
+            const d = polylineToPath(pts);
+            const mid = pathMid(pts);
+            const onRead = activeCircuit ? w.circuit === activeCircuit : false;
+            const active = !selected && !readCircuit ? true : related.has(w.id) || related.has(w.from) || related.has(w.to) || onRead;
+            const dim = Boolean(selected || readCircuit) && !active;
+            const tag = w.label ? `${w.circuit} ${w.label}` : w.circuit;
             return (
-              <g key={w.id} className={cn("cursor-pointer", dim && "opacity-25")} data-wire={w.id}>
-                <path d={d} fill="none" stroke="transparent" strokeWidth={16} />
-                <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active && selected ? 3.2 : 2.1} />
+              <g key={w.id} className={cn("cursor-pointer", dim && "opacity-20")} data-wire={w.id}>
+                <path d={d} fill="none" stroke="transparent" strokeWidth={18} />
+                <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active && (selected || onRead) ? 3.4 : 2.1} />
+                <text
+                  x={mid.x}
+                  y={mid.y - 6}
+                  textAnchor="middle"
+                  className="fill-fg font-mono"
+                  style={{ fontSize: 10, fontWeight: 600, paintOrder: "stroke", stroke: "var(--color-surface)", strokeWidth: 3 }}
+                >
+                  {tag}
+                </text>
               </g>
             );
           })}
@@ -190,12 +247,38 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             <NodeCard
               key={n.id}
               node={n}
+              wall={isWallStop(n, map.firewallX)}
               selected={selected === n.id}
-              dim={Boolean(selected) && selected !== n.id && !related.has(n.id)}
+              dim={Boolean(selected || readCircuit) && selected !== n.id && !related.has(n.id) && !lines.some((l) => l.circuit === activeCircuit && l.stops.some((s) => s.id === n.id))}
             />
           ))}
         </svg>
       </ZoomStage>
+
+      {lines.length ? (
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] tracking-widest text-accent uppercase">
+            Read left to right · cab → wall plug → engine
+          </p>
+          <ul className="space-y-1.5">
+            {lines.map((line) => (
+              <ReadRow
+                key={line.circuit}
+                line={line}
+                active={activeCircuit === line.circuit}
+                onPick={(id) => {
+                  setReadCircuit(line.circuit);
+                  select(id);
+                }}
+                onFocus={() => {
+                  setSelected(null);
+                  setReadCircuit(line.circuit);
+                }}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <div className="rounded-sm border border-border bg-raised px-2 py-1.5">
         <div className="mb-1 flex items-center justify-between gap-2">
@@ -231,32 +314,6 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
         </div>
       ) : null}
 
-      <ol className="grid gap-2 sm:grid-cols-2">
-        {map.wires.map((w, i) => {
-          const a = byId[w.from];
-          const b = byId[w.to];
-          return (
-            <li key={w.id}>
-              <button
-                type="button"
-                onClick={() => select(w.id)}
-                className={cn(
-                  "flex w-full items-start gap-2 rounded-md border px-3 py-2 text-left",
-                  selected === w.id ? "border-accent bg-raised" : "border-border bg-surface hover:border-line",
-                )}
-              >
-                <span className="font-mono text-xs text-accent">{i + 1}</span>
-                <span className="min-w-0">
-                  <span className="block text-sm text-fg">{a?.label ?? w.from}</span>
-                  <span className="block text-xs text-muted">→ {b?.label ?? w.to}</span>
-                  <span className="mt-0.5 block font-mono text-[10px] text-subtle">{w.label ?? w.circuit}</span>
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-
       {map.legend?.length ? (
         <div className="grid gap-3 sm:grid-cols-3">
           {map.legend.map((row) => (
@@ -279,5 +336,54 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
         </div>
       ) : null}
     </section>
+  );
+}
+
+function ReadRow({
+  line,
+  active,
+  onPick,
+  onFocus,
+}: {
+  line: ReadLine;
+  active: boolean;
+  onPick: (id: string) => void;
+  onFocus: () => void;
+}) {
+  return (
+    <li>
+      <div
+        className={cn(
+          "rounded-md border px-3 py-2",
+          active ? "border-accent bg-raised" : "border-border bg-surface",
+        )}
+      >
+        <button type="button" onClick={onFocus} className="flex w-full items-center gap-2 text-left">
+          <span className="font-mono text-sm font-semibold text-fg">{line.circuit}</span>
+          {line.crosses ? (
+            <span className="rounded-xs bg-accent px-1.5 py-0.5 font-mono text-[10px] text-accent-fg">through wall</span>
+          ) : (
+            <span className="font-mono text-[10px] text-subtle">stays this side</span>
+          )}
+        </button>
+        <p className="mt-1.5 flex flex-wrap items-center gap-1 text-sm leading-snug">
+          {line.stops.map((s, i) => (
+            <span key={s.id} className="inline-flex items-center gap-1">
+              {i ? <span className="text-subtle">→</span> : null}
+              <button
+                type="button"
+                onClick={() => onPick(s.id)}
+                className={cn(
+                  "rounded-xs px-1.5 py-0.5 font-mono text-xs",
+                  s.wall ? "bg-accent text-accent-fg" : "text-fg hover:bg-raised",
+                )}
+              >
+                {s.wall ? `plug ${s.name}` : s.name}
+              </button>
+            </span>
+          ))}
+        </p>
+      </div>
+    </li>
   );
 }

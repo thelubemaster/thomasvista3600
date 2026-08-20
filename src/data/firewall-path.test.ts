@@ -4,12 +4,13 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { hopsThatSkipFirewall, type NamedHop, type NamedX } from "./firewall-path.ts";
+import { readLines } from "./read-lines.ts";
 
 type MapBlock = {
   id: string;
   firewallX: number | null;
   nodes: NamedX[];
-  wires: NamedHop[];
+  wires: (NamedHop & { circuit: string })[];
 };
 
 function parseMaps(src: string): MapBlock[] {
@@ -36,9 +37,9 @@ function parseMaps(src: string): MapBlock[] {
         kind: /kind: "([^"]+)"/.exec(slice)?.[1],
       });
     }
-    const wires: NamedHop[] = [];
-    const wireRe = /\{ id: "([^"]+)", from: "([^"]+)", to: "([^"]+)"/g;
-    while ((n = wireRe.exec(block))) wires.push({ id: n[1], from: n[2], to: n[3] });
+    const wires: (NamedHop & { circuit: string })[] = [];
+    const wireRe = /\{ id: "([^"]+)", from: "([^"]+)", to: "([^"]+)", circuit: "([^"]+)"/g;
+    while ((n = wireRe.exec(block))) wires.push({ id: n[1], from: n[2], to: n[3], circuit: n[4] });
     maps.push({
       id: hits[i].id,
       firewallX: fx ? Number(fx[1]) : null,
@@ -82,4 +83,24 @@ test("circuit 19: no wire crosses the firewall except at DASH CONNECTOR (2)", ()
 test("no circuit drawing jumps the firewall without a connector", () => {
   const bad = loadCore().flatMap(skipIds);
   assert.deepEqual(bad, []);
+});
+
+test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const line = readLines({
+    firewallX: map.firewallX ?? undefined,
+    nodes: map.nodes.map((n) => ({
+      id: n.id,
+      label: n.label ?? n.id,
+      kind: n.kind ?? "load",
+      x: n.x,
+      y: 0,
+    })),
+    wires: map.wires,
+  }).find((l) => l.circuit === "19B");
+  assert.ok(line?.crosses, "19B crosses the firewall");
+  const names = line.stops.map((s) => s.name);
+  assert.ok(names.includes("399") || names.some((n) => /399/.test(n)));
+  assert.ok(line.stops.some((s) => s.wall), "includes the wall plug");
 });

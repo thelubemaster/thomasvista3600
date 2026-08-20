@@ -27,6 +27,10 @@ Ctrl+K search understands “no crank”, “pin 85”, “CPS”.
 
 Job marks stay on the phone.
 
+## 1.2.3
+
+- Circuit drawings: cab (warm) vs engine (cool), circuit numbers on the wires, hop list “399 → plug 2 → 401 → probe”. Tap a line to light that path.
+
 ## 1.2.2
 
 - Every circuit drawing: if a wire crosses the firewall it lands on DASH CONNECTOR (2), ENGINE DASH (3), FRONT END (2B), or a labeled dedicated pass (17B 10PK).

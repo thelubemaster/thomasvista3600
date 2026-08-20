@@ -156,6 +156,23 @@ export function polylineToPath(pts: Pt[], radius = 8): string {
   return d;
 }
 
+export function pathMid(pts: Pt[]): Pt {
+  const total = pathLen(pts);
+  if (total < 1) return pts[0] ?? { x: 0, y: 0 };
+  let remain = total / 2;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i];
+    const b = pts[i + 1];
+    const len = Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
+    if (remain <= len) {
+      const t = len ? remain / len : 0;
+      return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+    }
+    remain -= len;
+  }
+  return pts[pts.length - 1] ?? { x: 0, y: 0 };
+}
+
 export function routeWire(
   from: FlowNode,
   to: FlowNode,
@@ -163,6 +180,16 @@ export function routeWire(
   lane = 0,
   bounds?: { w: number; h: number },
 ): string {
+  return polylineToPath(routeWirePts(from, to, nodes, lane, bounds));
+}
+
+export function routeWirePts(
+  from: FlowNode,
+  to: FlowNode,
+  nodes: FlowNode[],
+  lane = 0,
+  bounds?: { w: number; h: number },
+): Pt[] {
   const obstacles = nodes.filter((n) => n.id !== from.id && n.id !== to.id).map(boxOf);
   const W = bounds?.w ?? 1600;
   const H = bounds?.h ?? 800;
@@ -248,5 +275,5 @@ export function routeWire(
       bestScore = score;
     }
   }
-  return polylineToPath(best ?? fallback);
+  return best ?? fallback;
 }
