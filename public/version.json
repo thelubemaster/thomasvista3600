@@ -1,6 +1,6 @@
 {
-  "version": "1.1.10",
+  "version": "1.2.0",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Tap a connector or relay on a drawing — the full pinout with every cavity opens below."
+  "notes": "Diagnose tab: no crank, pin 85 / thermal overcrank, J30 vs J31, CPS / tach 0. 387 ISO 86 is coil +, 85 is constant ground."
 }
