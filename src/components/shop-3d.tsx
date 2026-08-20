@@ -1,3 +1,5 @@
+"use client";
+
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { circuitToggles, partById } from "@/data/world";
 import { hopsForCircuit, keyPositions, type Hop, type KeyPos } from "@/data/follow";

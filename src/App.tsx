@@ -4,6 +4,7 @@ import { AllCircuits } from "@/components/all-circuits";
 import { CircuitTable } from "@/components/circuit-table";
 import { CommandJump, type JumpTab } from "@/components/command-jump";
 import { BookPlugs } from "@/components/book-plugs";
+import { Diagnose } from "@/components/diagnose";
 import { FusePanel } from "@/components/fuse-panel";
 import { JobBook } from "@/components/job-book";
 import { Manual } from "@/components/manual";
@@ -16,6 +17,7 @@ const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 const APK = ORIGIN + "/3600-wiring.apk";
 
 const TABS = [
+  { id: "dx", label: "Dx" },
   { id: "shop", label: "Shop" },
   { id: "circuits", label: "Circuits" },
   { id: "fuses", label: "Fuses" },
@@ -74,6 +76,7 @@ export default function App() {
   const [banner, setBanner] = useState(false);
   const [circuitView, setCircuitView] = useState<CircuitView>("draw");
   const [fuseView, setFuseView] = useState<FuseView>("cover");
+  const [dxStart, setDxStart] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -93,10 +96,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (isNative() && !location.href.startsWith(ORIGIN)) {
+    if (isNative() && !location.href.startsWith(ORIGIN) && location.hostname.endsWith("github.io")) {
       applyLive();
       return;
     }
+
+    if (!location.hostname.endsWith("github.io")) return;
 
     const params = new URLSearchParams(location.search);
     const justUpdated = params.has("updated");
@@ -134,8 +139,12 @@ export default function App() {
   function jump(next: JumpTab, nextHint?: string) {
     setHint(nextHint ?? null);
     setQuery("");
-    if (next === "shop") setTab("shop");
-    else if (next === "job") setTab("job");
+    if (next === "dx") {
+      setTab("dx");
+      setDxStart(nextHint ?? null);
+    } else if (next === "shop") {
+      setTab("shop");
+    } else if (next === "job") setTab("job");
     else if (next === "book") setTab("book");
     else if (next === "circuits") {
       setTab("circuits");
@@ -166,14 +175,14 @@ export default function App() {
     setBanner(false);
   }
 
+  const showSearch = tab === "job" || tab === "circuits" || tab === "book" || (tab === "fuses" && fuseView === "table");
+
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
       {banner ? (
         <div className="border-b border-border bg-raised print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-            <p className="text-sm">
-              Put 3600 Wiring on the home screen. Same shop-manual.
-            </p>
+            <p className="text-sm">Put 3600 Wiring on the home screen. Same shop-manual.</p>
             <div className="flex flex-wrap items-center gap-2">
               {isAndroid() || !isIos() ? (
                 <a href={APK} download="3600-wiring.apk" className="inline-flex min-h-11 items-center rounded-sm bg-accent px-4 text-sm font-semibold text-accent-fg">
@@ -228,7 +237,7 @@ export default function App() {
           </div>
         </div>
 
-        <nav className="grid grid-cols-5 gap-0.5 px-2 pb-2 sm:mx-auto sm:flex sm:max-w-6xl sm:gap-1 sm:px-6 sm:pb-4">
+        <nav className="grid grid-cols-6 gap-0.5 px-2 pb-2 sm:mx-auto sm:flex sm:max-w-6xl sm:gap-1 sm:px-6 sm:pb-4">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -243,13 +252,21 @@ export default function App() {
             </button>
           ))}
         </nav>
-        {tab === "job" ? (
+        {showSearch ? (
           <label className="mx-3 mb-2 block sm:mx-auto sm:max-w-6xl sm:px-6">
             <span className="sr-only">Search</span>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Job item…"
+              placeholder={
+                tab === "job"
+                  ? "Job item…"
+                  : tab === "circuits"
+                    ? "Circuit 17, starter, tach…"
+                    : tab === "book"
+                      ? "Page 20, overcrank, 387…"
+                      : "Fuse or circuit…"
+              }
               className="h-11 w-full rounded-sm border border-border bg-surface px-3 text-sm text-fg placeholder:text-subtle"
             />
           </label>
@@ -265,6 +282,7 @@ export default function App() {
         )}
         style={{ paddingBottom: tab === "book" ? 0 : "max(1rem, env(safe-area-inset-bottom))" }}
       >
+        {tab === "dx" ? <Diagnose onJump={jump} startFlow={dxStart} /> : null}
         {tab === "shop" ? <Shop3D /> : null}
         {tab === "circuits" ? (
           <div className="space-y-3">

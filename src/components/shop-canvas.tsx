@@ -1,3 +1,5 @@
+"use client";
+
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import { useLayoutEffect, useRef } from "react";
@@ -35,8 +37,8 @@ const RELAY_LEADS: Record<string, { iso: string; hex: string }[]> = {
   r387: [
     { iso: "30", hex: WIRE_HEX.hot },
     { iso: "87", hex: WIRE_HEX.hot },
-    { iso: "85", hex: WIRE_HEX.key },
-    { iso: "86", hex: WIRE_HEX.gnd },
+    { iso: "85", hex: WIRE_HEX.gnd },
+    { iso: "86", hex: WIRE_HEX.key },
   ],
   r396: [
     { iso: "30", hex: WIRE_HEX.hot },
@@ -539,11 +541,11 @@ export default function ShopCanvas({
       style={{ position: "absolute", inset: 0, touchAction: "none" }}
     >
       <color attach="background" args={["#0d0c0b"]} />
-      <hemisphereLight args={["#c4b8a8", "#1a1612", 0.35]} />
-      <ambientLight intensity={0.28} />
-      <directionalLight position={[4, 6, 3]} intensity={1.25} castShadow />
-      <directionalLight position={[-2.5, 3.2, -2.5]} intensity={0.45} />
-      <spotLight position={[1.2, 3.4, -1.6]} angle={0.55} penumbra={0.5} intensity={1.1} />
+      <hemisphereLight args={["#c4b8a8", "#1a1612", 0.55]} />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[4, 6, 3]} intensity={1.45} castShadow />
+      <directionalLight position={[-2.5, 3.2, -2.5]} intensity={0.65} />
+      <spotLight position={[1.2, 3.4, -1.6]} angle={0.55} penumbra={0.5} intensity={1.35} />
       <FitShop />
       <ShopScene on={on} selected={selected} onSelect={onSelect} keyPos={keyPos} followCircuit={followCircuit} hopWireId={hopWireId} />
       <OrbitControls

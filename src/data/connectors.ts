@@ -679,9 +679,9 @@ export const connectors: Connector[] = [
     hyd: true,
     pins: [
       { cavity: "4", circuit: "17B", dest: "Battery / fusible link — ISO 30" },
-      { cavity: "3", circuit: "17F", dest: "Starter solenoid J31 — ISO 87" },
-      { cavity: "1", circuit: "17D", dest: "Coil − — ISO 86" },
-      { cavity: "2", circuit: "17C", dest: "Key START + 661 / 615 — ISO 85" },
+      { cavity: "3", circuit: "17F", dest: "Magnetic switch J30 (engine-top) — ISO 87" },
+      { cavity: "1", circuit: "17D", dest: "Coil − / thermal overcrank ground — ISO 85" },
+      { cavity: "2", circuit: "17C", dest: "Key START — ISO 86" },
     ],
   },
   {
