@@ -27,9 +27,21 @@ jobs:
       - run: npm install
       - name: Stamp version
         run: |
-          VER=$(tr -d ' \n' < VERSION)
-          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          printf '%s\n' "{\"version\":\"${VER}\",\"name\":\"3600 Wiring\",\"builtAt\":\"${NOW}\",\"apkUrl\":\"https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk\",\"notes\":\"Tap the version number to check for an update.\"}" > public/version.json
+          python3 - <<'PY'
+          import json, pathlib
+          from datetime import datetime, timezone
+          ver = pathlib.Path("VERSION").read_text().strip()
+          p = pathlib.Path("public/version.json")
+          j = json.loads(p.read_text()) if p.exists() else {}
+          notes = j.get("notes") or "Tap the version number to check for an update."
+          p.write_text(json.dumps({
+            "version": ver,
+            "name": "3600 Wiring",
+            "builtAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
+            "notes": notes,
+          }, indent=2) + "\n")
+          PY
       - run: npm run build
       - name: Put the APK on the site
         run: |

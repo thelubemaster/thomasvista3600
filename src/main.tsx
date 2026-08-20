@@ -12,17 +12,31 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     void (async () => {
       try {
-        const reg = await navigator.serviceWorker.register("./sw.js");
+        const reg = await navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" });
         await reg.update();
+        if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        reg.addEventListener("updatefound", () => {
+          const w = reg.installing;
+          w?.addEventListener("statechange", () => {
+            if (w.state === "installed" && navigator.serviceWorker.controller) {
+              w.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+        });
         navigator.serviceWorker.addEventListener("controllerchange", () => {
           try {
-            if (sessionStorage.getItem("wiring-sw-reload") === "1") return;
-            sessionStorage.setItem("wiring-sw-reload", "1");
+            if (sessionStorage.getItem("wiring-sw-reloading") === "1") return;
+            sessionStorage.setItem("wiring-sw-reloading", "1");
           } catch {
             /* ignore */
           }
           window.location.reload();
         });
+        try {
+          sessionStorage.removeItem("wiring-sw-reloading");
+        } catch {
+          /* ignore */
+        }
         navigator.serviceWorker.addEventListener("message", (e: MessageEvent) => {
           if (e.data && e.data.type === "RELOAD") window.location.reload();
         });

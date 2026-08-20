@@ -1,20 +1,9 @@
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { APP_VERSION, applyLive, cmpVer, fetchLiveVersion } from "@/lib/live-update";
 
-export const APP_VERSION = "1.2.3";
-const LIVE = "https://thelubemaster.github.io/thomasvista3600";
-
-function cmpVer(a: string, b: string) {
-  const pa = a.replace(/^v/i, "").split(/[.+-]/).map((x) => parseInt(x, 10) || 0);
-  const pb = b.replace(/^v/i, "").split(/[.+-]/).map((x) => parseInt(x, 10) || 0);
-  const n = Math.max(pa.length, pb.length);
-  for (let i = 0; i < n; i++) {
-    const d = (pa[i] || 0) - (pb[i] || 0);
-    if (d) return d > 0 ? 1 : -1;
-  }
-  return 0;
-}
+export { APP_VERSION };
 
 type Status = "idle" | "checking" | "current" | "available" | "error";
 
@@ -29,14 +18,10 @@ export function VersionBadge({ className }: { className?: string }) {
     setLive(null);
     setNotes(null);
     try {
-      const res = await fetch(`${LIVE}/version.json?t=${Date.now()}`, { cache: "no-store" });
-      if (!res.ok) throw new Error("bad");
-      const j = (await res.json()) as { version?: string; notes?: string };
-      const v = String(j.version || "").replace(/^v/i, "");
-      if (!v) throw new Error("empty");
-      setLive(v);
-      setNotes(j.notes || null);
-      setStatus(cmpVer(v, APP_VERSION) > 0 ? "available" : "current");
+      const j = await fetchLiveVersion();
+      setLive(j.version);
+      setNotes(j.notes);
+      setStatus(cmpVer(j.version, APP_VERSION) > 0 ? "available" : "current");
     } catch {
       setStatus("error");
     }
@@ -45,16 +30,6 @@ export function VersionBadge({ className }: { className?: string }) {
   function openSheet() {
     setOpen(true);
     void check();
-  }
-
-  function updateNow() {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistration().then((reg) => {
-        reg?.waiting?.postMessage({ type: "SKIP_WAITING" });
-      });
-    }
-    const url = `${LIVE}/?updated=${Date.now()}`;
-    window.location.replace(url);
   }
 
   return (
@@ -102,13 +77,6 @@ export function VersionBadge({ className }: { className?: string }) {
                     <span className="mt-1 block text-accent">Update available.</span>
                   </p>
                   {notes ? <p className="text-xs text-muted">{notes}</p> : null}
-                  <button
-                    type="button"
-                    onClick={updateNow}
-                    className="h-11 w-full rounded-xs bg-accent font-medium text-accent-fg"
-                  >
-                    Update now
-                  </button>
                 </div>
               ) : null}
               {status === "error" ? (
@@ -120,19 +88,26 @@ export function VersionBadge({ className }: { className?: string }) {
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
+                onClick={() => void applyLive()}
+                className="h-11 flex-1 rounded-xs bg-accent font-medium text-accent-fg"
+              >
+                {status === "available" ? "Update now" : "Reload from live"}
+              </button>
+              <button
+                type="button"
                 onClick={() => void check()}
                 className="h-11 flex-1 rounded-xs border border-border bg-surface text-sm text-fg"
               >
                 Check again
               </button>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="h-11 flex-1 rounded-xs border border-border bg-raised text-sm text-muted"
-              >
-                Close
-              </button>
             </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="mt-2 h-11 w-full rounded-xs border border-border bg-raised text-sm text-muted"
+            >
+              Close
+            </button>
           </div>
         </div>
       ) : null}

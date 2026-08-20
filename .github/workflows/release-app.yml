@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 10')
+          t = t.replace('versionCode 1', 'versionCode 11')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,10 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.3
-          name: 3600 Wiring 1.2.3
+          tag_name: v1.2.4
+          name: 3600 Wiring 1.2.4
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
+
+            Phone update fix: the live site now clears the old cached copy so the app actually moves to this version.
 
             Circuit drawings read left to right: cab → wall plug → engine. Wires are labeled.
 

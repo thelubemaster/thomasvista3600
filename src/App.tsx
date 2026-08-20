@@ -10,10 +10,11 @@ import { JobBook } from "@/components/job-book";
 import { Manual } from "@/components/manual";
 import { RelayPanel } from "@/components/relay-panel";
 import { Shop3D } from "@/components/shop-3d";
-import { APP_VERSION, VersionBadge } from "@/components/version-badge";
+import { VersionBadge } from "@/components/version-badge";
+import { APP_VERSION, LIVE_ORIGIN, applyLive, cmpVer, fetchLiveVersion } from "@/lib/live-update";
 import { cn } from "@/lib/utils";
 
-const ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
+const ORIGIN = LIVE_ORIGIN;
 const APK = ORIGIN + "/3600-wiring.apk";
 
 const TABS = [
@@ -51,22 +52,6 @@ function isStandalone() {
   return document.referrer.includes("android-app://");
 }
 
-function cmpVer(a: string, b: string) {
-  const pa = a.replace(/^v/i, "").split(/[.+-]/).map((x) => parseInt(x, 10) || 0);
-  const pb = b.replace(/^v/i, "").split(/[.+-]/).map((x) => parseInt(x, 10) || 0);
-  const n = Math.max(pa.length, pb.length);
-  for (let i = 0; i < n; i++) {
-    const d = (pa[i] || 0) - (pb[i] || 0);
-    if (d) return d > 0 ? 1 : -1;
-  }
-  return 0;
-}
-
-function applyLive() {
-  const url = ORIGIN + "/?updated=" + Date.now();
-  window.location.replace(url);
-}
-
 export default function App() {
   const [tab, setTab] = useState<Tab>("shop");
   const [fuse, setFuse] = useState<string | null>("E3");
@@ -77,6 +62,7 @@ export default function App() {
   const [circuitView, setCircuitView] = useState<CircuitView>("draw");
   const [fuseView, setFuseView] = useState<FuseView>("cover");
   const [dxStart, setDxStart] = useState<string | null>(null);
+  const [liveUpdate, setLiveUpdate] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -96,15 +82,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (isNative() && !location.href.startsWith(ORIGIN) && location.hostname.endsWith("github.io")) {
-      applyLive();
+    const onLiveHost = location.hostname.endsWith("github.io") || isNative();
+    if (isNative() && onLiveHost && !location.href.startsWith(ORIGIN)) {
+      void applyLive();
       return;
     }
+    if (!onLiveHost) return;
 
-    if (!location.hostname.endsWith("github.io")) return;
-
-    const params = new URLSearchParams(location.search);
-    const justUpdated = params.has("updated");
     let gone = false;
 
     async function check() {
@@ -113,14 +97,26 @@ export default function App() {
           const regs = await navigator.serviceWorker.getRegistrations();
           await Promise.all(regs.map((r) => r.update()));
         }
-        const res = await fetch(ORIGIN + "/version.json?t=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) return;
-        const j = (await res.json()) as { version?: string };
-        const remote = String(j.version || "").replace(/^v/i, "");
+        const j = await fetchLiveVersion();
         if (gone) return;
-        if (cmpVer(remote, APP_VERSION) > 0 && !justUpdated) {
-          applyLive();
+        if (cmpVer(j.version, APP_VERSION) <= 0) {
+          setLiveUpdate(null);
+          return;
         }
+        setLiveUpdate(j.version);
+        let already = false;
+        try {
+          already = sessionStorage.getItem("wiring-applied-" + j.version) === "1";
+        } catch {
+          /* ignore */
+        }
+        if (already) return;
+        try {
+          sessionStorage.setItem("wiring-applied-" + j.version, "1");
+        } catch {
+          /* ignore */
+        }
+        await applyLive();
       } catch {
         /* offline */
       }
@@ -179,6 +175,22 @@ export default function App() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-bg text-fg">
+      {liveUpdate ? (
+        <div className="border-b border-accent bg-raised print:hidden">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+            <p className="text-sm">
+              Live site is v{liveUpdate}. This device is still v{APP_VERSION}.
+            </p>
+            <button
+              type="button"
+              className="inline-flex min-h-11 items-center rounded-sm bg-accent px-4 text-sm font-semibold text-accent-fg"
+              onClick={() => void applyLive()}
+            >
+              Load update
+            </button>
+          </div>
+        </div>
+      ) : null}
       {banner ? (
         <div className="border-b border-border bg-raised print:hidden">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">

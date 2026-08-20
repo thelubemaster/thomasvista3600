@@ -1,8 +1,8 @@
 {
-  "version": "1.1.8",
-  "apkVersion": "1.1.8",
-  "apkVersionCode": 12,
+  "version": "1.2.4",
+  "apkVersion": "1.2.4",
+  "apkVersionCode": 11,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "All 61 Navistar CID circuits listed on Circuits tab (phone + desktop)."
+  "notes": "Force-refresh so phones leave the old cached build. Circuit drawings still read left to right with wall plugs labeled."
 }
