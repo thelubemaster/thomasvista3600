@@ -454,7 +454,7 @@ export const connectors: Connector[] = [
     pins: [
       { cavity: "A", circuit: "19A", dest: "Fuel heater" },
       { cavity: "B", circuit: "19B", dest: "Water probe" },
-      { cavity: "C", circuit: "19C", dest: "WIF module 470" },
+      { cavity: "C", circuit: "19C", dest: "Vacuum switch — 470 lamp-test is 1CR on the cab side of 399-F" },
     ],
   },
   {
@@ -465,11 +465,11 @@ export const connectors: Connector[] = [
     page: "97",
     hyd: true,
     pins: [
-      { cavity: "IGN", circuit: "13", dest: "Key / A2" },
-      { cavity: "OUT", circuit: "19L", dest: "WIF lamp 471" },
+      { cavity: "IGN", circuit: "19J", dest: "399-B / fuse A2 — cab only" },
+      { cavity: "OUT", circuit: "19L", dest: "WIF LIGHT (433) dash lamp" },
       { cavity: "GND", circuit: "11", dest: "Cab ground" },
-      { cavity: "PROBE", circuit: "19C", dest: "Water probe via 401-C" },
-      { cavity: "TEST", circuit: "19", dest: "Lamp test" },
+      { cavity: "PROBE", circuit: "19B", dest: "399-E → DASH CONNECTOR (2) E4 → 401-B water probe" },
+      { cavity: "TEST", circuit: "19C", dest: "1CR at 399-F → DASH CONNECTOR (2) H6 → 401-C vacuum switch" },
     ],
   },
   {

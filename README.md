@@ -27,6 +27,10 @@ Ctrl+K search understands “no crank”, “pin 85”, “CPS”.
 
 Job marks stay on the phone.
 
+## 1.2.1
+
+- Circuit 19: WATER-IN-FUEL MODULE (470) stays in the cab. Probe (19B) and lamp test (19C / 1CR) splice at FUEL FILTER (399). Only 19A/B/C cross DASH CONNECTOR (2) H5/E4/H6.
+
 ## 1.2.0
 
 - Diagnose tab (no crank / click no crank / tach 0 / has RPM no fire)

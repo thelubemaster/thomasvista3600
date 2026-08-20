@@ -606,7 +606,7 @@ export function FuelFilterCan({
         <cylinderGeometry args={[0.012, 0.012, 0.04, 8]} />
         <M color="#2a2622" opacity={op} />
       </mesh>
-      {selected ? <Tag text="FUEL FILTER (399)" sub="Heater + WIF 470" /> : null}
+      {selected ? <Tag text="FUEL FILTER (399)" sub="Heater + probe + vacuum" /> : null}
     </group>
   );
 }

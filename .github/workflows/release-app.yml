@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 7')
+          t = t.replace('versionCode 1', 'versionCode 8')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.0
-          name: 3600 Wiring 1.2.0
+          tag_name: v1.2.1
+          name: 3600 Wiring 1.2.1
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            Diagnose tab (no crank / CPS / pin 85), 387 ISO pin fix, circuit search.
+            Circuit 19: 470 stays in the cab. Probe/test do not skip DASH CONNECTOR (2).
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk
