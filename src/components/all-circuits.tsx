@@ -112,7 +112,7 @@ function Group({
   onPick,
 }: {
   title: string;
-  items: typeof circuitToggles;
+  items: { id: string; title: string; crit: boolean }[];
   active: string;
   onPick: (id: string) => void;
 }) {

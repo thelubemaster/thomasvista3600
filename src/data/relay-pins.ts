@@ -34,11 +34,11 @@ export const relayFaces: RelayFace[] = [
     layout: "iso4",
     pins: [
       { id: "4", iso: "30", circuit: "17B", role: "Load in", goes: "Battery / fusible link into the relay", power: "Battery" },
-      { id: "3", iso: "87", circuit: "17F", role: "Load out", goes: "Firewall dash 2-G6 → starter solenoid J31", power: "Battery" },
-      { id: "1", iso: "86", circuit: "17D", role: "Coil −", goes: "Ground or neutral-safety return", power: "Ground" },
-      { id: "2", iso: "85", circuit: "17C", role: "Coil +", goes: "Key START + neutral relay 615 / 97P", power: "Key / IGN" },
+      { id: "3", iso: "87", circuit: "17F", role: "Load out", goes: "Firewall dash 2-G6 → magnetic switch J30 (engine-top, green rings). Not starter solenoid J31.", power: "Battery" },
+      { id: "1", iso: "85", circuit: "17D", role: "Coil −", goes: "Constant ground through thermal overcrank (17-G 10WH on the starter). Not key-switched. Open 85 = no click even with 86 hot.", power: "Ground" },
+      { id: "2", iso: "86", circuit: "17C", role: "Coil +", goes: "Key START. Hot only in START. Probe this Bosch-stamped 86 to the key ST terminal.", power: "Key / IGN" },
     ],
-    more: "Four wires. Two fat ones are battery in (17B) and solenoid out (17F). Two skinny ones are the coil. No 17F = no crank.",
+    more: "ISO cube: 86 = coil +, 85 = coil ground, 30 = battery, 87 = load. Printed page 20 writes “85=17C / 86=17D” — on a Bosch-stamped cube those ISO numbers are swapped vs that sentence. Probe the socket: the blade hot in START is coil +. The other coil blade is constant ground through thermal overcrank. Grounding 85 while 86 is hot must click the relay. If 85 is open, 12 V from 86 floats onto 85 through the coil. Four wires. Two fat: 17B in, 17F out. Two skinny: coil. 17F feeds magnetic switch J30 (engine-top), not J31.",
   },
   {
     id: "396",

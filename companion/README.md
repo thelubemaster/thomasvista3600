@@ -1,9 +1,7 @@
 # Mobile companion
 
-**Live preview (auto-updates from GitHub):** https://thelubemaster.github.io/thomasvista3600/
+The live app is the Vite build on GitHub Pages, not this folder.
 
-Version badge at top of the page (`v0.4.1`). Every push to `main` redeploys.
+**Live:** https://thelubemaster.github.io/thomasvista3600/
 
-```bash
-python3 -m http.server 8765
-```
+Current app version: **1.2.0** (see repo root `VERSION`). This `companion/` tree is a leftover static seed — do not serve it as the homepage.

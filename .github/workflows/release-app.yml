@@ -42,10 +42,11 @@ jobs:
           npx cap sync android
           python3 -c "
           from pathlib import Path
+          ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 6')
-          t = t.replace('versionName \"1.0\"', 'versionName \"1.0.6\"')
+          t = t.replace('versionCode 1', 'versionCode 7')
+          t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
       - name: Assemble APK
@@ -64,10 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1
-          name: 3600 Wiring
+          tag_name: v1.2.0
+          name: 3600 Wiring 1.2.0
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
+
+            Diagnose tab (no crank / CPS / pin 85), 387 ISO pin fix, circuit search.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

@@ -19,6 +19,19 @@ Once it’s on the home screen, updates check themselves when you open it.
 
 ## What’s in the app
 
-Fuse panel, circuits (engine-critical vs not), relay pinouts, firewall cavities, hop paths, job keep/cut marks.
+**Dx** — garage trees from a real no-crank job: 387 pin 85/86, thermal overcrank splice, magnetic switch J30 vs starter J31, CPS / tach 0.
+
+Fuse panel, circuits (engine-critical vs not), relay pinouts, firewall cavities, hop paths, 3D shop, job keep/cut marks.
+
+Ctrl+K search understands “no crank”, “pin 85”, “CPS”.
 
 Job marks stay on the phone.
+
+## 1.2.0
+
+- Diagnose tab (no crank / click no crank / tach 0 / has RPM no fire)
+- START RELAY (387) ISO 86 = coil + (key START), 85 = constant ground through thermal overcrank
+- Magnetic switch J30 (engine-top green rings) vs J31 on the starter
+- CPS on the front cover in the shop
+- Circuit / book search
+- APK versionName follows `VERSION`

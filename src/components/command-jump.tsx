@@ -5,8 +5,20 @@ import { fuses } from "@/data/wiring";
 import { connectors } from "@/data/connectors";
 import { relayFaces } from "@/data/relay-pins";
 import { jobItems } from "@/data/job";
+import { dxFlows } from "@/data/diagnose";
 
-export type JumpTab = "shop" | "book" | "wall" | "relays" | "circuits" | "pins" | "panel" | "all" | "job";
+export type JumpTab = "shop" | "book" | "wall" | "relays" | "circuits" | "pins" | "panel" | "all" | "job" | "dx";
+
+const SYMPTOMS: { value: string; label: string; tab: JumpTab; hint?: string }[] = [
+  { value: "no crank no start silence 387 pin 85", label: "No crank", tab: "dx", hint: "no-crank" },
+  { value: "click no crank solenoid", label: "Click, no crank", tab: "dx", hint: "click-no-crank" },
+  { value: "no rpm tach 0 cps camshaft", label: "Cranks, tach 0", tab: "dx", hint: "no-rpm" },
+  { value: "cranks no fire fuel glow", label: "Cranks, has RPM, no start", tab: "dx", hint: "no-fire" },
+  { value: "pin 85 ground thermal overcrank", label: "Pin 85 / overcrank ground", tab: "dx", hint: "no-crank" },
+  { value: "iso 86 85 voltage jumping coil", label: "ISO 85 / 86 primer", tab: "dx" },
+  { value: "magnetic switch green ring j30", label: "Magnetic switch J30", tab: "dx", hint: "click-no-crank" },
+  { value: "cps camshaft position sensor harmonic", label: "CPS / no RPM", tab: "shop", hint: "cps" },
+];
 
 export function CommandJump({
   open,
@@ -50,14 +62,29 @@ export function CommandJump({
           autoFocus
           value={q}
           onValueChange={setQ}
-          placeholder="Circuit, fuse, relay, plug…"
+          placeholder="No crank, circuit, fuse, relay…"
           className="h-14 w-full border-b border-border bg-transparent px-4 font-mono text-base text-fg outline-none placeholder:text-subtle sm:h-12 sm:text-sm"
         />
         <Command.List className="min-h-0 flex-1 overflow-y-auto p-1 sm:max-h-80 sm:flex-none">
           <Command.Empty className="px-3 py-6 text-sm text-muted">Nothing matches.</Command.Empty>
+          <Command.Group heading="Symptoms" className="px-2 py-1 font-mono text-[10px] tracking-widest text-subtle uppercase">
+            {SYMPTOMS.map((s) => (
+              <Item
+                key={s.label}
+                value={s.value}
+                onSelect={() => {
+                  onJump(s.tab, s.hint);
+                  onOpen(false);
+                }}
+              >
+                {s.label}
+              </Item>
+            ))}
+          </Command.Group>
           <Command.Group heading="Places" className="px-2 py-1 font-mono text-[10px] tracking-widest text-subtle uppercase">
             {(
               [
+                ["dx", "Diagnose"],
                 ["shop", "Shop"],
                 ["circuits", "Circuits"],
                 ["panel", "Fuses"],
@@ -67,6 +94,18 @@ export function CommandJump({
             ).map(([id, label]) => (
               <Item key={id} value={label} onSelect={() => { onJump(id); onOpen(false); }}>
                 {label}
+              </Item>
+            ))}
+            {dxFlows.map((f) => (
+              <Item
+                key={f.id}
+                value={`${f.title} ${f.blurb}`}
+                onSelect={() => {
+                  onJump("dx", f.id);
+                  onOpen(false);
+                }}
+              >
+                Dx · {f.title}
               </Item>
             ))}
           </Command.Group>
