@@ -27,6 +27,10 @@ Ctrl+K search understands “no crank”, “pin 85”, “CPS”.
 
 Job marks stay on the phone.
 
+## 1.2.2
+
+- Every circuit drawing: if a wire crosses the firewall it lands on DASH CONNECTOR (2), ENGINE DASH (3), FRONT END (2B), or a labeled dedicated pass (17B 10PK).
+
 ## 1.2.1
 
 - Circuit 19: WATER-IN-FUEL MODULE (470) stays in the cab. Probe (19B) and lamp test (19C / 1CR) splice at FUEL FILTER (399). Only 19A/B/C cross DASH CONNECTOR (2) H5/E4/H6.

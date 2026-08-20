@@ -18,6 +18,7 @@ function map(
   const wires: FlowMap["wires"] = [];
   if (mid) {
     nodes.push({ id: "m", label: mid.label, sub: mid.sub, kind: "connector", x: 500, y: 120, detail: mid.label, look: mid.label, pins: mid.sub });
+    // mid at 500 is the firewall hop when label is a bulkhead / 2B.
     nodes.push({ id: "b", label: to, sub: toSub, kind: "load", x: 880, y: 120, detail: to, look: to });
     wires.push({ id: "w1", from: "a", to: "m", circuit: id, color: "ign" });
     wires.push({ id: "w2", from: "m", to: "b", circuit: id, color: "a" });
@@ -45,6 +46,7 @@ function map(
     engineCritical: crit,
     power,
     defaultId: "a",
+    firewallX: mid ? 500 : undefined,
     height: 380,
     nodes,
     wires,
@@ -61,13 +63,13 @@ export const moreMaps: FlowMap[] = [
   map("12", "ACCESSORY FEED", false, "Key ACC", "KEY SWITCH (63) ACC → J2 → D1 / E1.", "KEY SWITCH (63) ACC", "Circuit 12", "ACCESSORY FEED (J2)", "Left lower dash", { id: "fuse", label: "FUSE D1 / E1", sub: "ACC fuses" }),
   map("24", "EXHAUST BRAKE", false, "Signal", "CEC 15. Rare on a 3600 bus.", "CEC CONTROL MODULE (379)", "Pin 15", "EXHAUST BRAKE", "Optional"),
   map("25", "PYROMETER", false, "Signal", "Optional pyrometer gauge.", "ENGINE", "EGT probe", "INSTRUMENT CLUSTER", "Gauge"),
-  map("26", "AMMETER", false, "Signal", "GENERATOR charge sense to cluster.", "GENERATOR", "Charge sense", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 7"),
+  map("26", "AMMETER", false, "Signal", "GENERATOR charge sense through DASH CONNECTOR (2) E5/F5 to cluster.", "GENERATOR", "Charge sense", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 7", { id: "d2", label: "DASH CONNECTOR (2)", sub: "E5 / F5" }),
   map("27", "VOLTMETER", false, "Signal", "Optional voltmeter.", "BATTERY FEED", "Sense", "INSTRUMENT CLUSTER", "Voltmeter"),
   map("29", "ENGINE WATER TEMPERATURE", false, "Signal", "Sender through DASH CONNECTOR (2) to YELLOW (26) 16.", "ENGINE", "Water sender", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 16", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
   map("30", "ENGINE OIL TEMPERATURE", false, "Signal", "Optional oil-temp sender.", "ENGINE", "Oil temp sender", "INSTRUMENT CLUSTER", "Gauge"),
   map("33", "ENGINE OIL LEVEL", false, "Signal", "Optional oil-level warning.", "ENGINE", "Level switch", "AUDIBLE ALARM (20)", "Warning"),
   map("34", "COOLANT LEVEL", false, "Key", "Low-coolant with G1 / Allison feed.", "FUSE G1 15A IGN/XMSN", "Key-on", "COOLANT LEVEL SWITCH", "Warning"),
-  map("35", "ENGINE OIL PRESSURE", false, "Signal", "Oil-pressure sender / warning.", "ENGINE", "Oil pressure", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 10"),
+  map("35", "ENGINE OIL PRESSURE", false, "Signal", "Oil-pressure sender through DASH CONNECTOR (2) to YELLOW (26) 10.", "ENGINE", "Oil pressure", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 10", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
   map("37", "FUEL PUMP", false, "Key", "Electric pump if equipped.", "FUSE BLOCK", "Key-on", "FUEL PUMP", "Tank / frame"),
   map("40", "LOW AIR PRESSURE WARNING", false, "Signal", "Air-brake only. Not on hyd 004040.", "AIR SWITCH", "Low air", "AUDIBLE ALARM (20)", "Cavity 3"),
   map("43", "POWER DIVIDER LOCK (PDL)", false, "Signal", "Tandem / PDL option.", "PDL SWITCH", "Cab", "PDL SOLENOID", "Axle"),
@@ -78,8 +80,8 @@ export const moreMaps: FlowMap[] = [
   map("51", "DIMMER SWITCH-FEED", false, "Battery", "HEADLIGHT SWITCH (60) to dimmer.", "HEADLIGHT SWITCH (60)", "Feed", "FRONT END CONNECTOR (2B)", "HI / LO"),
   map("52", "HEADLIGHT - HI BEAM", false, "Battery", "2B to LEFT HEADLIGHT (502) / RIGHT (504).", "FRONT END CONNECTOR (2B)", "HI", "LEFT HEADLIGHT (502)", "HI 52", { id: "cl", label: "YELLOW (26) cavity 2", sub: "HI indicator" }),
   map("53", "HEADLIGHT - LO BEAM", false, "Battery", "2B to both headlights LO.", "FRONT END CONNECTOR (2B)", "LO", "LEFT HEADLIGHT (502)", "LO 53"),
-  map("56", "LEFT TURN SIGNAL", false, "Battery", "TURN SIGNAL SWITCH (459) → lamp + GREEN (27) cavity 6.", "NAVISTAR TURN SIGNAL SWITCH (459)", "Left", "LEFT TURN SIGNAL", "Front / body", { id: "cl", label: "GREEN (27) cavity 6", sub: "Indicator" }),
-  map("57", "RIGHT TURN SIGNAL", false, "Battery", "459 → right lamp + GREEN (27) cavity 12.", "NAVISTAR TURN SIGNAL SWITCH (459)", "Right", "RIGHT TURN", "Front / body", { id: "cl", label: "GREEN (27) cavity 12", sub: "Indicator" }),
+  map("56", "LEFT TURN SIGNAL", false, "Battery", "TURN SIGNAL SWITCH (459) through FRONT END (2B) to the lamp. GREEN (27) cavity 6 is the dash indicator.", "NAVISTAR TURN SIGNAL SWITCH (459)", "Left", "LEFT TURN SIGNAL", "Front / body", { id: "d2", label: "FRONT END (2B)", sub: "Firewall" }),
+  map("57", "RIGHT TURN SIGNAL", false, "Battery", "459 through FRONT END (2B) to the lamp. GREEN (27) cavity 12 is the dash indicator.", "NAVISTAR TURN SIGNAL SWITCH (459)", "Right", "RIGHT TURN", "Front / body", { id: "d2", label: "FRONT END (2B)", sub: "Firewall" }),
   map("58", "CLEARANCE/IDENTIFICATION", false, "Battery", "Park / marker family to BODY BUILDER (194).", "HEADLIGHT SWITCH (60)", "Park", "BODY BUILDER (194)", "Clearance"),
   map("60", "HAZARD FLASHER-FEED", false, "Battery", "FLASHER (R1) hazard out.", "FLASHER (R1)", "Hazard", "NAVISTAR TURN SIGNAL SWITCH (459)", "Haz"),
   map("61", "AIR SUSPENSION RELEASE", false, "Signal", "Optional air-ride dump.", "DUMP SWITCH", "Cab", "AIR VALVE", "Bags"),
