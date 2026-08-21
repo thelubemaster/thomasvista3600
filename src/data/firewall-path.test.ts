@@ -85,6 +85,22 @@ test("no circuit drawing jumps the firewall without a connector", () => {
   assert.deepEqual(bad, []);
 });
 
+test("circuit 19: 19D goes into 431 pin 30 and out pin 87 to 399-A", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const intoRel = map.wires.filter((w) => w.to === "relay431" && w.circuit === "19D");
+  const outRel = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19D");
+  assert.deepEqual(
+    intoRel.map((w) => `${w.from}->${w.to}`),
+    ["d2->relay431"],
+  );
+  assert.deepEqual(
+    outRel.map((w) => `${w.from}->${w.to}`),
+    ["relay431->ff399"],
+  );
+  assert.equal(map.nodes.some((n) => n.id === "splice19D"), false);
+});
+
 test("fuel filter 399 is a 6-way so only six wires land on it", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);

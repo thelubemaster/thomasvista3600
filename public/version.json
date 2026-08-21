@@ -1,6 +1,6 @@
 {
-  "version": "1.2.13",
+  "version": "1.2.14",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Wires land on their boxes again. Splice dots no longer leave a line hanging in empty space."
+  "notes": "Circuit 19: 19D goes into heater relay 431 pin 30 and out pin 87 to fuel filter 399-A. Same number on both pins — that is the switched battery, not two mystery feeds."
 }

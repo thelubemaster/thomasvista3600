@@ -1,7 +1,7 @@
 {
   "name": "thomasvista3600",
   "private": true,
-  "version": "1.2.13",
+  "version": "1.2.14",
   "type": "module",
   "description": "3600 Wiring — T444E 7.3 electrical circuit diagrams app",
   "homepage": "https://thelubemaster.github.io/thomasvista3600/",
