@@ -166,7 +166,11 @@ function labelMap(map: ReturnType<typeof parseMaps>[number]) {
     const pts = routeWirePts(a as never, b as never, map.nodes as never, lanes.get(w.id) ?? 0, { w: map.w, h: map.h });
     items.push({ id: w.id, pts, circuit: w.circuit, note: w.label ?? null });
   }
-  const obstacles: LabelBox[] = map.nodes.map((n) => ({ l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 }));
+  const obstacles: LabelBox[] = map.nodes.map((n) =>
+    n.kind === "splice"
+      ? { l: n.x - 16, r: n.x + 16, t: n.y - 16, b: n.y + 16 }
+      : { l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 },
+  );
   return { labels: placeWireLabels(items, obstacles, { w: map.w, h: map.h }), items };
 }
 

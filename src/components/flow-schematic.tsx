@@ -28,6 +28,22 @@ function NodeCard({
   dim: boolean;
   wall: boolean;
 }) {
+  if (node.kind === "splice") {
+    return (
+      <g
+        transform={`translate(${node.x} ${node.y})`}
+        className={cn("cursor-pointer transition-opacity", dim && "opacity-30")}
+        data-node={node.id}
+      >
+        <circle r="16" fill="transparent" />
+        <circle r="6.5" className={selected ? "fill-accent stroke-accent" : "fill-fg stroke-line"} strokeWidth={1.2} />
+        <text y="20" textAnchor="middle" className="fill-muted font-mono" style={{ fontSize: 9, fontWeight: 600 }}>
+          {node.sub ?? "SPLICE"}
+        </text>
+      </g>
+    );
+  }
+
   const isGnd = /ground/i.test(node.label);
   const kindRing =
     isGnd
@@ -140,12 +156,11 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
       const pts = routeWirePts(a, b, map.nodes, lanes.get(w.id) ?? 0, { w: W, h: H });
       items.push({ w, pts, d: polylineToPath(pts) });
     }
-    const obstacles = map.nodes.map((n) => ({
-      l: n.x - 70,
-      r: n.x + 70,
-      t: n.y - 36,
-      b: n.y + 36,
-    }));
+    const obstacles = map.nodes.map((n) =>
+      n.kind === "splice"
+        ? { l: n.x - 16, r: n.x + 16, t: n.y - 16, b: n.y + 16 }
+        : { l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 },
+    );
     if (map.firewallX) {
       obstacles.push({ l: 0, r: W, t: 0, b: 22 });
       obstacles.push({ l: map.firewallX - 4, r: W, t: H - 22, b: H });

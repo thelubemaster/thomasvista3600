@@ -37,7 +37,9 @@ export function readLines(map: { firewallX?: number; nodes: Node[]; wires: Wire[
   }
   const lines: ReadLine[] = [];
   for (const [circuit, ids] of byC) {
-    const nodes = [...ids].map((id) => byId.get(id)).filter((n): n is Node => Boolean(n));
+    const nodes = [...ids]
+      .map((id) => byId.get(id))
+      .filter((n): n is Node => n != null && n.kind !== "splice");
     nodes.sort((a, b) => a.x - b.x || a.y - b.y);
     if (nodes.length < 2) continue;
     const stops = nodes.map((n) => ({

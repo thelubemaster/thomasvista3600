@@ -85,6 +85,13 @@ test("no circuit drawing jumps the firewall without a connector", () => {
   assert.deepEqual(bad, []);
 });
 
+test("fuel filter 399 is a 6-way so only six wires land on it", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const hits = map.wires.filter((w) => w.from === "ff399" || w.to === "ff399");
+  assert.equal(hits.length, 6, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
+});
+
 test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);

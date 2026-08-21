@@ -10,6 +10,9 @@ type Side = "L" | "R" | "T" | "B";
 type Box = { id: string; l: number; r: number; t: number; b: number };
 
 function boxOf(n: FlowNode): Box {
+  if (n.kind === "splice") {
+    return { id: n.id, l: n.x - 12, r: n.x + 12, t: n.y - 12, b: n.y + 12 };
+  }
   return { id: n.id, l: n.x - BOX_W / 2, r: n.x + BOX_W / 2, t: n.y - BOX_H / 2, b: n.y + BOX_H / 2 };
 }
 

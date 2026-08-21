@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 17')
+          t = t.replace('versionCode 1', 'versionCode 18')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.10
-          name: 3600 Wiring 1.2.10
+          tag_name: v1.2.11
+          name: 3600 Wiring 1.2.11
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            Wires into different cavities no longer stack on the same box port.
+            Fuel filter 399 is a 6-way. Extra 19J/19B/19C taps are harness splices, not extra pins.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk
