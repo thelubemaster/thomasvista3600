@@ -1,6 +1,6 @@
 {
-  "version": "1.2.7",
+  "version": "1.2.8",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Book tab scrolls again. Tap a printed page to open that CTS sheet in the app."
+  "notes": "Wire number tags are see-through so the line under them stays visible."
 }

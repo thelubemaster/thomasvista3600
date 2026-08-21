@@ -296,9 +296,10 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
                   width={bw}
                   height={bh}
                   rx={3}
-                  fill="var(--color-raised)"
+                  fill="transparent"
                   stroke={color}
-                  strokeWidth={1.15}
+                  strokeWidth={0.9}
+                  strokeOpacity={0.45}
                 />
                 <text
                   x={lab.textAt.x}
@@ -306,7 +307,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
                   textAnchor="middle"
                   dominantBaseline="middle"
                   className="fill-fg font-mono"
-                  style={{ fontSize: 11, fontWeight: 700 }}
+                  style={{ fontSize: 11, fontWeight: 700, paintOrder: "stroke", stroke: "var(--color-surface)", strokeWidth: 3, strokeLinejoin: "round" }}
                 >
                   {lab.circuit}
                 </text>
@@ -317,7 +318,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
                     textAnchor="middle"
                     dominantBaseline="middle"
                     className="fill-muted font-mono"
-                    style={{ fontSize: 8.5, fontWeight: 500 }}
+                    style={{ fontSize: 8.5, fontWeight: 500, paintOrder: "stroke", stroke: "var(--color-surface)", strokeWidth: 2.5, strokeLinejoin: "round" }}
                   >
                     {lab.note}
                   </text>
