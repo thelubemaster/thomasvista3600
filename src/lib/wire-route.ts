@@ -19,6 +19,15 @@ function boxOf(n: FlowNode): Box {
   return { id: n.id, l: n.x - w / 2, r: n.x + w / 2, t: n.y - h / 2, b: n.y + h / 2 };
 }
 
+/** Keep-out used for other wires. Splices get a wide berth so a pass-by does not look like a landing. */
+function keepOutOf(n: FlowNode): Box {
+  if (n.kind === "splice") {
+    const r = 34;
+    return { id: n.id, l: n.x - r, r: n.x + r, t: n.y - r, b: n.y + r };
+  }
+  return boxOf(n);
+}
+
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
 }
@@ -315,7 +324,7 @@ export function routeWirePts(
 ): Pt[] {
   const fromLane = typeof lane === "number" ? lane : lane.fromLane;
   const toLane = typeof lane === "number" ? -lane : lane.toLane;
-  const obstacles = nodes.filter((n) => n.id !== from.id && n.id !== to.id).map(boxOf);
+  const obstacles = nodes.filter((n) => n.id !== from.id && n.id !== to.id).map(keepOutOf);
   const W = bounds?.w ?? 1600;
   const H = bounds?.h ?? 800;
   const pairs = preferredSides(from, to);
@@ -500,7 +509,7 @@ export function routeMapWires(
     const a = byId[w.from];
     const b = byId[w.to];
     if (!a || !b) continue;
-    const obstacles = nodes.filter((n) => n.id !== a.id && n.id !== b.id).map(boxOf);
+    const obstacles = nodes.filter((n) => n.id !== a.id && n.id !== b.id).map(keepOutOf);
     let pts = routeWirePts(a, b, nodes, lanes.get(w.id) ?? 0, bounds, occupied);
     pts = nudgeOff(pts, occupied, obstacles, bounds);
     out.set(w.id, pts);

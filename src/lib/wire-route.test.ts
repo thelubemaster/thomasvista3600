@@ -44,6 +44,28 @@ test("wires from different boxes still split at a shared destination cavity-by-c
   assert.ok(Math.abs(y1 - y2) >= 8, `shared dest ports overlap ${y1} ${y2}`);
 });
 
+function distToSeg(p: { x: number; y: number }, a: { x: number; y: number }, b: { x: number; y: number }) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len2 = dx * dx + dy * dy;
+  if (len2 < 1e-6) return Math.hypot(p.x - a.x, p.y - a.y);
+  let t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t));
+}
+
+test("a wire that is not in a splice stays clear of the splice", () => {
+  const a = box("a", 80, 160);
+  const b = box("b", 420, 160);
+  const splice = { id: "s", x: 250, y: 160, label: "SPLICE", kind: "splice" as const, detail: "" };
+  const pts = routeWirePts(a, b, [a, b, splice], 0, { w: 520, h: 320 });
+  let nearest = Infinity;
+  for (let i = 0; i < pts.length - 1; i++) {
+    nearest = Math.min(nearest, distToSeg(splice, pts[i], pts[i + 1]));
+  }
+  assert.ok(nearest >= 28, `pass-by came within ${nearest.toFixed(1)}px of the splice`);
+});
+
 test("a wire into a splice lands on the splice, not a phantom 128px box", () => {
   const fuse = box("f", 80, 160);
   const splice = { id: "s", x: 220, y: 160, label: "SPLICE", kind: "splice" as const, detail: "" };
@@ -147,6 +169,30 @@ test("every wire ends on its two boxes, not in empty space", () => {
       if (!pts) continue;
       if (!onNode(pts[0], a)) bad.push(`${map.id}/${w.id} start ${pts[0].x.toFixed(0)},${pts[0].y.toFixed(0)} missed ${a.kind} ${a.id}`);
       if (!onNode(pts.at(-1)!, b)) bad.push(`${map.id}/${w.id} end ${pts.at(-1)!.x.toFixed(0)},${pts.at(-1)!.y.toFixed(0)} missed ${b.kind} ${b.id}`);
+    }
+  }
+  assert.deepEqual(bad, []);
+});
+
+test("circuit 19: a wire that is not in a splice stays out of that splice", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];
+  const map = parseMaps(src).find((m) => m.id === "19");
+  assert.ok(map);
+  const splices = map.nodes.filter((n) => n.kind === "splice");
+  assert.ok(splices.length >= 1);
+  const routed = routeMapWires(map.nodes as never, map.wires, { w: map.w, h: map.h });
+  const bad: string[] = [];
+  for (const sp of splices) {
+    for (const w of map.wires) {
+      if (w.from === sp.id || w.to === sp.id) continue;
+      const pts = routed.get(w.id);
+      if (!pts) continue;
+      let nearest = Infinity;
+      for (let i = 0; i < pts.length - 1; i++) {
+        nearest = Math.min(nearest, distToSeg(sp, pts[i], pts[i + 1]));
+      }
+      if (nearest < 24) bad.push(`${w.id} ${w.circuit} within ${nearest.toFixed(0)}px of ${sp.id}`);
     }
   }
   assert.deepEqual(bad, []);

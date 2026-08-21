@@ -35,9 +35,10 @@ function NodeCard({
         className={cn("cursor-pointer transition-opacity", dim && "opacity-30")}
         data-node={node.id}
       >
-        <circle r="16" fill="transparent" />
+        <circle r="22" fill="transparent" />
+        <circle r="14" fill="none" className="stroke-line" strokeWidth={1} strokeOpacity={0.45} />
         <circle r="6.5" className={selected ? "fill-accent stroke-accent" : "fill-fg stroke-line"} strokeWidth={1.2} />
-        <text y="20" textAnchor="middle" className="fill-muted font-mono" style={{ fontSize: 9, fontWeight: 600 }}>
+        <text y="24" textAnchor="middle" className="fill-muted font-mono" style={{ fontSize: 9, fontWeight: 600 }}>
           {node.sub ?? "SPLICE"}
         </text>
       </g>
@@ -155,7 +156,7 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
     }
     const obstacles = map.nodes.map((n) =>
       n.kind === "splice"
-        ? { l: n.x - 16, r: n.x + 16, t: n.y - 16, b: n.y + 16 }
+        ? { l: n.x - 28, r: n.x + 28, t: n.y - 28, b: n.y + 28 }
         : { l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 },
     );
     if (map.firewallX) {

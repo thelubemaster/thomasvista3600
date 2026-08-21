@@ -1,6 +1,6 @@
 {
-  "version": "1.2.16",
+  "version": "1.2.17",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Wires no longer run on top of each other. Each line gets its own path so you can follow it."
+  "notes": "Splices have a keep-out so a wire that does not belong in that splice does not look like it lands there."
 }
