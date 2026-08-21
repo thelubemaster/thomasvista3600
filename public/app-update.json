@@ -1,8 +1,8 @@
 {
-  "version": "1.2.11",
-  "apkVersion": "1.2.11",
-  "apkVersionCode": 18,
+  "version": "1.2.12",
+  "apkVersion": "1.2.12",
+  "apkVersionCode": 19,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Fuel filter 399 is a 6-way. Extra taps are harness splices, not extra pins."
+  "notes": "Every circuit drawing follows the same plug rules: wall hops land on a connector, labels sit mid-run, different cavities get different ports, and extra taps are harness splices."
 }

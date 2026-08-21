@@ -393,17 +393,18 @@ export type SchematicWire = {
 export const schematicWires: SchematicWire[] = [
   { id: "w-key-a2", from: "key", to: "a2", circuit: "13", color: "ign" },
   { id: "w-bat-d2", from: "bat", to: "d2", circuit: "14", color: "bat" },
-  { id: "w-d2-399", from: "d2", to: "ff399", circuit: "19D", color: "bat", label: "399-A" },
+  { id: "w-d2-399", from: "d2", to: "ff399", circuit: "19D", color: "bat", label: "A" },
   { id: "w-d2-431", from: "d2", to: "relay431", circuit: "19D", color: "bat", label: "30" },
-  { id: "w-431-399", from: "relay431", to: "ff399", circuit: "19D", color: "bat", label: "87" },
-  { id: "w-a2-399", from: "a2", to: "ff399", circuit: "19J", color: "ign", label: "399-B" },
-  { id: "w-399-431", from: "ff399", to: "relay431", circuit: "19F", color: "a", label: "85" },
+  { id: "w-a2-399", from: "a2", to: "ff399", circuit: "19J", color: "ign", label: "B" },
+  { id: "w-a2-431", from: "a2", to: "relay431", circuit: "19F", color: "a", label: "85" },
   { id: "w-399-2a", from: "ff399", to: "bulkhead", circuit: "19A", color: "a", label: "D → H5" },
   { id: "w-399-2b", from: "ff399", to: "bulkhead", circuit: "19B", color: "b", label: "E → E4" },
   { id: "w-399-2c", from: "ff399", to: "bulkhead", circuit: "19C", color: "c", label: "F → H6" },
-  { id: "w-2-401", from: "bulkhead", to: "inline", circuit: "19A/B/C", color: "ign" },
-  { id: "w-401-h", from: "inline", to: "heater", circuit: "19A", color: "bat" },
-  { id: "w-401-p", from: "inline", to: "probe", circuit: "19B", color: "c" },
+  { id: "w-2-401a", from: "bulkhead", to: "inline", circuit: "19A", color: "a", label: "H5 → A" },
+  { id: "w-2-401b", from: "bulkhead", to: "inline", circuit: "19B", color: "b", label: "E4 → B" },
+  { id: "w-2-401c", from: "bulkhead", to: "inline", circuit: "19C", color: "c", label: "H6 → C" },
+  { id: "w-401-h", from: "inline", to: "heater", circuit: "19A", color: "bat", label: "A" },
+  { id: "w-401-p", from: "inline", to: "probe", circuit: "19B", color: "c", label: "B" },
 ];
 
 export const circuit19Legend = [

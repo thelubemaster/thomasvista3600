@@ -4,7 +4,7 @@ export type ReadStop = { id: string; name: string; wall: boolean };
 export type ReadLine = { circuit: string; stops: ReadStop[]; crosses: boolean };
 
 const WALL_RE =
-  /dash connector|engine dash|front end|engine connector|bulkhead|firewall pass|hood conn|\(2a\)|\(2b\)/i;
+  /dash connector|engine dash|front end|engine connector|bulkhead|firewall pass|hood conn|body builder|\(2a\)|\(2b\)|\(194\)/i;
 
 type Node = { id: string; label: string; sub?: string; kind: string; x: number; y: number };
 type Wire = { from: string; to: string; circuit: string; color?: string };

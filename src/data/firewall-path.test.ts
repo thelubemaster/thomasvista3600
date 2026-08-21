@@ -55,7 +55,7 @@ function loadCore(): MapBlock[] {
   return parseMaps(readFileSync(join(here, "schematics.ts"), "utf8"));
 }
 
-const WALL_NODE = /dash connector|engine dash|front end|engine connector|bulkhead|firewall pass|hood conn/i;
+const WALL_NODE = /dash connector|engine dash|front end|engine connector|bulkhead|firewall pass|hood conn|body builder|\(194\)/i;
 
 function isWallNode(n: NamedX | undefined): boolean {
   if (!n) return false;
