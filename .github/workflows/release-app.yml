@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 12')
+          t = t.replace('versionCode 1', 'versionCode 13')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.5
-          name: 3600 Wiring 1.2.5
+          tag_name: v1.2.6
+          name: 3600 Wiring 1.2.6
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            Circuit numbers sit on tags that point at their own wire.
+            Plug faces match the book: dash connector shield, engine 2A latches, front 2B, fuel-filter 6-way, ISO micro plus.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk
