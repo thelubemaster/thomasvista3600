@@ -163,31 +163,41 @@ export function placeWireLabels(
     if (total < 8 || w.pts.length < 2) continue;
 
     const bun = bundlePos.get(w.id) ?? { i: 0, n: 1 };
-    const tSpread =
-      bun.n > 1 ? 0.28 + (bun.i / Math.max(1, bun.n - 1)) * 0.44 : 0.5;
+    const tMid = bun.n > 1 ? 0.5 + (bun.i - (bun.n - 1) / 2) * 0.16 : 0.5;
     const sidePref = bun.i % 2 === 0 ? 1 : -1;
+    const endPad = total < 90 ? Math.max(10, total * 0.18) : Math.max(56, total * 0.28);
 
     const cands: { score: number; lab: WireLabel }[] = [];
     const runList = runs(w.pts);
     const samples: number[] = [];
+    const ts = bun.n > 1 ? [tMid, 0.5, tMid + 0.06, tMid - 0.06] : [0.5, 0.42, 0.58, 0.46, 0.54];
     if (runList.length) {
-      for (const run of runList.slice(0, 3)) {
-        const inset = Math.min(18, run.len * 0.18);
-        const usable = Math.max(0, run.len - inset * 2);
-        const ts = bun.n > 1 ? [tSpread, 0.5, 1 - tSpread, 0.22, 0.78] : [0.5, 0.35, 0.65, 0.22, 0.78];
-        for (const t of ts) samples.push(run.fromS + inset + usable * t);
+      for (const run of runList.slice(0, 2)) {
+        if (run.len < 24) continue;
+        const inset = Math.min(run.len * 0.32, Math.max(28, run.len * 0.22));
+        const lo = run.fromS + inset;
+        const hi = run.toS - inset;
+        if (hi <= lo) {
+          samples.push((run.fromS + run.toS) / 2);
+          continue;
+        }
+        for (const t of ts) samples.push(lo + (hi - lo) * clamp(t, 0, 1));
       }
     }
-    samples.push(total * tSpread, total * 0.5, total * 0.33, total * 0.67);
+    for (const t of ts) samples.push(total * t);
     const uniq: number[] = [];
     for (const s of samples) {
-      const v = clamp(s, 10, total - 10);
-      if (!uniq.some((u) => Math.abs(u - v) < 4)) uniq.push(v);
+      const v = clamp(s, endPad, Math.max(endPad, total - endPad));
+      if (!uniq.some((u) => Math.abs(u - v) < 6)) uniq.push(v);
     }
 
     for (const s of uniq) {
       const hit = atLength(w.pts, s);
       if (!hit) continue;
+      const a0 = w.pts[0];
+      const a1 = w.pts[w.pts.length - 1];
+      const toEnd = Math.min(Math.hypot(hit.p.x - a0.x, hit.p.y - a0.y), Math.hypot(hit.p.x - a1.x, hit.p.y - a1.y));
+      if (total >= 90 && toEnd < 48) continue;
       let nx = -hit.ty;
       let ny = hit.tx;
       if (Math.abs(nx) + Math.abs(ny) < 0.2) {
@@ -195,7 +205,7 @@ export function placeWireLabels(
         ny = -1;
       }
       const minOff = (Math.abs(nx) * size.w + Math.abs(ny) * size.h) / 2 + 12;
-      const dists = [minOff, minOff + 10, minOff + 20, minOff + 32, minOff + 48, minOff + 64];
+      const dists = [minOff, minOff + 10, minOff + 20, minOff + 32, minOff + 48];
       for (const side of [sidePref, -sidePref]) {
         for (const dist of dists) {
           const textAt = {
@@ -208,10 +218,14 @@ export function placeWireLabels(
           const stem = Math.hypot(leaderTo.x - hit.p.x, leaderTo.y - hit.p.y);
           if (stem < 10) continue;
           if (boxesHit(box, { l: hit.p.x - 6, r: hit.p.x + 6, t: hit.p.y - 6, b: hit.p.y + 6 }, 0)) continue;
+          if (placedAt.some((p) => boxesHit(box, p.box))) continue;
           let score = (dist - minOff) * 0.45;
+          score += Math.abs(s / total - 0.5) * 520;
+          score += Math.max(0, 70 - toEnd) * 8;
           score += obstacleHits(box, obstacles) * 420;
+          score += obstacleHits({ l: hit.p.x - 10, r: hit.p.x + 10, t: hit.p.y - 10, b: hit.p.y + 10 }, obstacles) * 700;
           for (const p of placedAt) {
-            if (boxesHit(box, p.box)) score += 560;
+            if (boxesHit(box, p.box)) score += 2400;
             if (dist2(hit.p, p.attach) < 22 * 22) score += 180;
             if (dist2(textAt, p.textAt) < 28 * 28) score += 90;
           }
@@ -233,25 +247,29 @@ export function placeWireLabels(
     }
 
     if (!cands.length) {
-      const hit = atLength(w.pts, clamp(total * tSpread, 10, Math.max(10, total - 10)));
-      if (hit) {
+      for (const t of [0.5, 0.38, 0.62, 0.3, 0.7]) {
+        const hit = atLength(w.pts, clamp(total * t, endPad, Math.max(endPad, total - endPad)));
+        if (!hit) continue;
         const nx = Math.abs(hit.tx) >= Math.abs(hit.ty) ? 0 : 1;
         const ny = nx === 0 ? -1 : 0;
-        const dist = (Math.abs(nx) * size.w + Math.abs(ny) * size.h) / 2 + 14;
-        const textAt = { x: hit.p.x + nx * dist, y: hit.p.y + ny * dist };
-        const box = boxAt(textAt, size.w, size.h);
-        cands.push({
-          score: 9000,
-          lab: {
-            id: w.id,
-            circuit: w.circuit,
-            note: w.note,
-            attach: hit.p,
-            textAt,
-            box,
-            leaderTo: leaderToPill(hit.p, textAt, box),
-          },
-        });
+        for (const side of [1, -1]) {
+          const dist = (Math.abs(nx) * size.w + Math.abs(ny) * size.h) / 2 + 18;
+          const textAt = { x: hit.p.x + nx * side * dist, y: hit.p.y + ny * side * dist };
+          const box = boxAt(textAt, size.w, size.h);
+          const hitPlaced = placedAt.some((p) => boxesHit(box, p.box));
+          cands.push({
+            score: 8000 + (hitPlaced ? 3000 : 0) + Math.abs(t - 0.5) * 200,
+            lab: {
+              id: w.id,
+              circuit: w.circuit,
+              note: w.note,
+              attach: hit.p,
+              textAt,
+              box,
+              leaderTo: leaderToPill(hit.p, textAt, box),
+            },
+          });
+        }
       }
     }
 

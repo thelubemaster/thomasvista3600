@@ -85,6 +85,17 @@ test("leader runs from the pill to the attach point on the wire", () => {
   );
 });
 
+test("the mark sits on the middle of the wire, not at a connector", () => {
+  const pts = hLine(140, 80, 520);
+  const [lab] = placeWireLabels([{ id: "a", pts, circuit: "19A", note: "H5" }], [], { w: 600, h: 280 });
+  assert.ok(lab);
+  const a = pts[0];
+  const b = pts[pts.length - 1];
+  const toEnd = Math.min(Math.hypot(lab.attach.x - a.x, lab.attach.y - a.y), Math.hypot(lab.attach.x - b.x, lab.attach.y - b.y));
+  assert.ok(toEnd >= 90, `attach too close to a connector (${toEnd.toFixed(1)})`);
+  assert.ok(lab.attach.x > 160 && lab.attach.x < 440, `attach x=${lab.attach.x} is not mid-run`);
+});
+
 test("labels stay inside the drawing", () => {
   const wires = [
     { id: "a", pts: hLine(20, 40, 200), circuit: "13", note: null },
@@ -146,7 +157,7 @@ function parseMaps(src: string) {
 
 function labelMap(map: ReturnType<typeof parseMaps>[number]) {
   const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
-  const items = [];
+  const items: { id: string; pts: Pt[]; circuit: string; note: string | null }[] = [];
   for (const w of map.wires) {
     const a = byId[w.from];
     const b = byId[w.to];
@@ -157,7 +168,7 @@ function labelMap(map: ReturnType<typeof parseMaps>[number]) {
     items.push({ id: w.id, pts, circuit: w.circuit, note: w.label ?? null });
   }
   const obstacles: LabelBox[] = map.nodes.map((n) => ({ l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 }));
-  return placeWireLabels(items, obstacles, { w: map.w, h: map.h });
+  return { labels: placeWireLabels(items, obstacles, { w: map.w, h: map.h }), items };
 }
 
 test("circuit 19: 19A/19B/19C labels do not collide", () => {
@@ -165,12 +176,26 @@ test("circuit 19: 19A/19B/19C labels do not collide", () => {
   const src = readFileSync(join(here, "../data/schematics.ts"), "utf8");
   const map = parseMaps(src).find((m) => m.id === "19");
   assert.ok(map);
-  const labels = labelMap(map);
+  const { labels, items } = labelMap(map);
   const wall = labels.filter((l) => l.circuit === "19A" || l.circuit === "19B" || l.circuit === "19C");
   assert.ok(wall.length >= 6, `expected several 19A/B/C labels, got ${wall.length}`);
   for (const lab of labels) {
     const stem = Math.hypot(lab.leaderTo.x - lab.attach.x, lab.leaderTo.y - lab.attach.y);
     assert.ok(stem >= 10, `${lab.circuit} ${lab.id} stem ${stem}`);
+    const src = items.find((w) => w.id === lab.id);
+    if (!src) continue;
+    let len = 0;
+    for (let i = 0; i < src.pts.length - 1; i++) {
+      len += Math.abs(src.pts[i + 1].x - src.pts[i].x) + Math.abs(src.pts[i + 1].y - src.pts[i].y);
+    }
+    if (len < 120) continue;
+    const a = src.pts[0];
+    const b = src.pts[src.pts.length - 1];
+    const toEnd = Math.min(
+      Math.hypot(lab.attach.x - a.x, lab.attach.y - a.y),
+      Math.hypot(lab.attach.x - b.x, lab.attach.y - b.y),
+    );
+    assert.ok(toEnd >= 40, `circuit 19 ${lab.circuit} ${lab.id} marked at a connector (clearance ${toEnd.toFixed(0)})`);
   }
   for (let i = 0; i < labels.length; i++) {
     for (let j = i + 1; j < labels.length; j++) {
@@ -190,7 +215,7 @@ test("every circuit drawing: wire labels do not overlap each other", () => {
   assert.ok(maps.length > 10);
   const collisions: string[] = [];
   for (const map of maps) {
-    const labels = labelMap(map);
+    const { labels } = labelMap(map);
     for (let i = 0; i < labels.length; i++) {
       for (let j = i + 1; j < labels.length; j++) {
         if (overlap(labels[i].box, labels[j].box)) {

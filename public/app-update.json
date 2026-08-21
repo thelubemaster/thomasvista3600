@@ -1,8 +1,8 @@
 {
-  "version": "1.2.8",
-  "apkVersion": "1.2.8",
-  "apkVersionCode": 15,
+  "version": "1.2.9",
+  "apkVersion": "1.2.9",
+  "apkVersionCode": 16,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Wire number tags are see-through so the line under them stays visible."
+  "notes": "Wire marks sit on the middle of the run, not on the connector."
 }
