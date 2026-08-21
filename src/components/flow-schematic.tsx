@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
 import { isWallStop, readLines, type ReadLine } from "@/data/read-lines";
 import { placeWireLabels } from "@/lib/wire-label";
-import { polylineToPath, routeWirePts } from "@/lib/wire-route";
+import { polylineToPath, routeWirePts, wireLanes } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
 import { PartInspect } from "@/components/part-inspect";
 import { cn } from "@/lib/utils";
@@ -131,14 +131,13 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
 
   const drawn = useMemo(() => {
     const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
+    const lanes = wireLanes(map.wires);
     const items: { w: (typeof map.wires)[number]; pts: { x: number; y: number }[]; d: string }[] = [];
     for (const w of map.wires) {
       const a = byId[w.from];
       const b = byId[w.to];
       if (!a || !b) continue;
-      const siblings = map.wires.filter((x) => x.from === w.from && x.to === w.to);
-      const lane = siblings.length > 1 ? (siblings.indexOf(w) - (siblings.length - 1) / 2) * 12 : 0;
-      const pts = routeWirePts(a, b, map.nodes, lane, { w: W, h: H });
+      const pts = routeWirePts(a, b, map.nodes, lanes.get(w.id) ?? 0, { w: W, h: H });
       items.push({ w, pts, d: polylineToPath(pts) });
     }
     const obstacles = map.nodes.map((n) => ({

@@ -1,8 +1,8 @@
 {
-  "version": "1.2.9",
-  "apkVersion": "1.2.9",
-  "apkVersionCode": 16,
+  "version": "1.2.10",
+  "apkVersion": "1.2.10",
+  "apkVersionCode": 17,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Wire marks sit on the middle of the run, not on the connector."
+  "notes": "Wires into different cavities no longer stack on the same box port."
 }
