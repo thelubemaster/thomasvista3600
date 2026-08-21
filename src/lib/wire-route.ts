@@ -9,11 +9,14 @@ type Pt = { x: number; y: number };
 type Side = "L" | "R" | "T" | "B";
 type Box = { id: string; l: number; r: number; t: number; b: number };
 
+function nodeWH(n: FlowNode): { w: number; h: number } {
+  if (n.kind === "splice") return { w: 14, h: 14 };
+  return { w: BOX_W, h: BOX_H };
+}
+
 function boxOf(n: FlowNode): Box {
-  if (n.kind === "splice") {
-    return { id: n.id, l: n.x - 12, r: n.x + 12, t: n.y - 12, b: n.y + 12 };
-  }
-  return { id: n.id, l: n.x - BOX_W / 2, r: n.x + BOX_W / 2, t: n.y - BOX_H / 2, b: n.y + BOX_H / 2 };
+  const { w, h } = nodeWH(n);
+  return { id: n.id, l: n.x - w / 2, r: n.x + w / 2, t: n.y - h / 2, b: n.y + h / 2 };
 }
 
 function clamp(n: number, a: number, b: number) {
@@ -23,11 +26,13 @@ function clamp(n: number, a: number, b: number) {
 const FACE = 24;
 
 function port(n: FlowNode, side: Side, lane: number): Pt {
-  const l = clamp(lane, -FACE, FACE);
-  if (side === "R") return { x: n.x + BOX_W / 2, y: n.y + l };
-  if (side === "L") return { x: n.x - BOX_W / 2, y: n.y + l };
-  if (side === "T") return { x: n.x + l, y: n.y - BOX_H / 2 };
-  return { x: n.x + l, y: n.y + BOX_H / 2 };
+  const { w, h } = nodeWH(n);
+  const face = n.kind === "splice" ? 0 : FACE;
+  const l = clamp(lane, -face, face);
+  if (side === "R") return { x: n.x + w / 2, y: n.y + l };
+  if (side === "L") return { x: n.x - w / 2, y: n.y + l };
+  if (side === "T") return { x: n.x + l, y: n.y - h / 2 };
+  return { x: n.x + l, y: n.y + h / 2 };
 }
 
 export type WireEnd = { id: string; from: string; to: string; circuit: string; label?: string };
@@ -168,9 +173,11 @@ function vhv(p1: Pt, p2: Pt, my: number): Pt[] {
 function preferredSides(a: FlowNode, b: FlowNode): [Side, Side][] {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
+  const aw = nodeWH(a);
+  const bw = nodeWH(b);
   const out: [Side, Side][] = [];
-  if (Math.abs(dx) >= BOX_W * 0.35) out.push(dx >= 0 ? ["R", "L"] : ["L", "R"]);
-  if (Math.abs(dy) >= BOX_H * 0.35) out.push(dy >= 0 ? ["B", "T"] : ["T", "B"]);
+  if (Math.abs(dx) >= Math.max(aw.w, bw.w) * 0.35) out.push(dx >= 0 ? ["R", "L"] : ["L", "R"]);
+  if (Math.abs(dy) >= Math.max(aw.h, bw.h) * 0.35) out.push(dy >= 0 ? ["B", "T"] : ["T", "B"]);
   if (!out.length) out.push(dx >= 0 ? ["R", "L"] : ["L", "R"]);
   return out;
 }
@@ -277,38 +284,43 @@ export function routeWirePts(
   }
 
   const cands: Pt[][] = [];
+  const fw = nodeWH(from);
+  const tw = nodeWH(to);
   const xs = uniqueNums([
     ...obstacles.flatMap((o) => [o.l - PAD, o.r + PAD]),
-    Math.min(from.x, to.x) - BOX_W / 2 - 36,
-    Math.max(from.x, to.x) + BOX_W / 2 + 36,
+    Math.min(from.x, to.x) - Math.max(fw.w, tw.w) / 2 - 36,
+    Math.max(from.x, to.x) + Math.max(fw.w, tw.w) / 2 + 36,
     (from.x + to.x) / 2,
   ]).map((x) => clamp(x, 10, W - 10));
   const ys = uniqueNums([
     ...obstacles.flatMap((o) => [o.t - PAD, o.b + PAD]),
-    Math.min(from.y, to.y) - BOX_H / 2 - 28,
-    Math.max(from.y, to.y) + BOX_H / 2 + 28,
+    Math.min(from.y, to.y) - Math.max(fw.h, tw.h) / 2 - 28,
+    Math.max(from.y, to.y) + Math.max(fw.h, tw.h) / 2 + 28,
     (from.y + to.y) / 2,
   ]).map((y) => clamp(y, 10, H - 10));
+
+  const stubA = from.kind === "splice" ? 10 : STUB;
+  const stubB = to.kind === "splice" ? 10 : STUB;
 
   for (const [sa, sb] of sides) {
     const p1 = port(from, sa, fromLane);
     const p2 = port(to, sb, toLane);
     if (sa === "R" || sa === "L") {
-      const stubX = clamp(p1.x + (sa === "R" ? STUB : -STUB), 10, W - 10);
-      for (const mx of uniqueNums([stubX, p2.x + (sb === "L" ? -STUB : sb === "R" ? STUB : 0), ...xs].map((x) => x + fromLane))) {
+      const stubX = clamp(p1.x + (sa === "R" ? stubA : -stubA), 10, W - 10);
+      for (const mx of uniqueNums([stubX, p2.x + (sb === "L" ? -stubB : sb === "R" ? stubB : 0), ...xs].map((x) => x + fromLane))) {
         cands.push(hvh(p1, p2, clamp(mx, 10, W - 10)));
       }
     }
     if (sa === "T" || sa === "B") {
-      const stubY = clamp(p1.y + (sa === "B" ? STUB : -STUB), 10, H - 10);
-      for (const my of uniqueNums([stubY, p2.y + (sb === "T" ? -STUB : sb === "B" ? STUB : 0), ...ys].map((y) => y + fromLane))) {
+      const stubY = clamp(p1.y + (sa === "B" ? stubA : -stubA), 10, H - 10);
+      for (const my of uniqueNums([stubY, p2.y + (sb === "T" ? -stubB : sb === "B" ? stubB : 0), ...ys].map((y) => y + fromLane))) {
         cands.push(vhv(p1, p2, clamp(my, 10, H - 10)));
       }
     }
-    const top = clamp(Math.min(from.y, to.y) - BOX_H / 2 - 26 - Math.abs(fromLane), 10, H - 10);
-    const bot = clamp(Math.max(from.y, to.y) + BOX_H / 2 + 26 + Math.abs(fromLane), 10, H - 10);
-    const left = clamp(Math.min(from.x, to.x) - BOX_W / 2 - 30 - Math.abs(fromLane), 10, W - 10);
-    const right = clamp(Math.max(from.x, to.x) + BOX_W / 2 + 30 + Math.abs(fromLane), 10, W - 10);
+    const top = clamp(Math.min(from.y, to.y) - Math.max(fw.h, tw.h) / 2 - 26 - Math.abs(fromLane), 10, H - 10);
+    const bot = clamp(Math.max(from.y, to.y) + Math.max(fw.h, tw.h) / 2 + 26 + Math.abs(fromLane), 10, H - 10);
+    const left = clamp(Math.min(from.x, to.x) - Math.max(fw.w, tw.w) / 2 - 30 - Math.abs(fromLane), 10, W - 10);
+    const right = clamp(Math.max(from.x, to.x) + Math.max(fw.w, tw.w) / 2 + 30 + Math.abs(fromLane), 10, W - 10);
     cands.push([p1, { x: p1.x, y: top }, { x: p2.x, y: top }, p2]);
     cands.push([p1, { x: p1.x, y: bot }, { x: p2.x, y: bot }, p2]);
     cands.push([p1, { x: left, y: p1.y }, { x: left, y: p2.y }, p2]);

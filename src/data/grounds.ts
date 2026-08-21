@@ -172,7 +172,7 @@ export function withGrounds(map: FlowMap): FlowMap {
         label: spec.label,
         sub: spec.sub,
         kind: "source",
-        x: Math.min(Math.max(x + (slot % 3) * 20, 80), 1200),
+        x: Math.min(Math.max(x + (slot % 3) * 20, 80), Math.max((map.width ?? 1320) - 80, 80)),
         y,
         detail: spec.detail,
         page: "70 / 108",

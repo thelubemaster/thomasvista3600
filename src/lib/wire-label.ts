@@ -170,7 +170,7 @@ export function placeWireLabels(
     const cands: { score: number; lab: WireLabel }[] = [];
     const runList = runs(w.pts);
     const samples: number[] = [];
-    const ts = bun.n > 1 ? [tMid, 0.5, tMid + 0.06, tMid - 0.06] : [0.5, 0.42, 0.58, 0.46, 0.54];
+    const ts = bun.n > 1 ? [tMid, 0.5, tMid + 0.06, tMid - 0.06, tMid + 0.12, tMid - 0.12] : [0.5, 0.42, 0.58, 0.34, 0.66, 0.46, 0.54];
     if (runList.length) {
       for (const run of runList.slice(0, 2)) {
         if (run.len < 24) continue;
@@ -205,7 +205,7 @@ export function placeWireLabels(
         ny = -1;
       }
       const minOff = (Math.abs(nx) * size.w + Math.abs(ny) * size.h) / 2 + 12;
-      const dists = [minOff, minOff + 10, minOff + 20, minOff + 32, minOff + 48];
+      const dists = [minOff, minOff + 10, minOff + 20, minOff + 32, minOff + 48, minOff + 64, minOff + 84];
       for (const side of [sidePref, -sidePref]) {
         for (const dist of dists) {
           const textAt = {
@@ -247,34 +247,38 @@ export function placeWireLabels(
     }
 
     if (!cands.length) {
-      for (const t of [0.5, 0.38, 0.62, 0.3, 0.7]) {
+      for (const t of [0.5, 0.38, 0.62, 0.3, 0.7, 0.22, 0.78]) {
         const hit = atLength(w.pts, clamp(total * t, endPad, Math.max(endPad, total - endPad)));
         if (!hit) continue;
         const nx = Math.abs(hit.tx) >= Math.abs(hit.ty) ? 0 : 1;
         const ny = nx === 0 ? -1 : 0;
         for (const side of [1, -1]) {
-          const dist = (Math.abs(nx) * size.w + Math.abs(ny) * size.h) / 2 + 18;
-          const textAt = { x: hit.p.x + nx * side * dist, y: hit.p.y + ny * side * dist };
-          const box = boxAt(textAt, size.w, size.h);
-          const hitPlaced = placedAt.some((p) => boxesHit(box, p.box));
-          cands.push({
-            score: 8000 + (hitPlaced ? 3000 : 0) + Math.abs(t - 0.5) * 200,
-            lab: {
-              id: w.id,
-              circuit: w.circuit,
-              note: w.note,
-              attach: hit.p,
-              textAt,
-              box,
-              leaderTo: leaderToPill(hit.p, textAt, box),
-            },
-          });
+          for (const extra of [18, 36, 56]) {
+            const dist = (Math.abs(nx) * size.w + Math.abs(ny) * size.h) / 2 + extra;
+            const textAt = { x: hit.p.x + nx * side * dist, y: hit.p.y + ny * side * dist };
+            const box = boxAt(textAt, size.w, size.h);
+            if (!inBounds(box, bounds.w, bounds.h)) continue;
+            const hitPlaced = placedAt.some((p) => boxesHit(box, p.box));
+            cands.push({
+              score: 8000 + (hitPlaced ? 3000 : 0) + Math.abs(t - 0.5) * 200 + extra,
+              lab: {
+                id: w.id,
+                circuit: w.circuit,
+                note: w.note,
+                attach: hit.p,
+                textAt,
+                box,
+                leaderTo: leaderToPill(hit.p, textAt, box),
+              },
+            });
+          }
         }
       }
     }
 
     cands.sort((a, b) => a.score - b.score);
-    const pick = cands[0]?.lab;
+    const clean = cands.filter((c) => !placedAt.some((p) => boxesHit(c.lab.box, p.box)));
+    const pick = (clean[0] ?? cands[0])?.lab;
     if (pick) {
       placedAt.push(pick);
       placed.push(pick);

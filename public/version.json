@@ -1,6 +1,6 @@
 {
-  "version": "1.2.12",
+  "version": "1.2.13",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Every circuit drawing follows the same plug rules: wall hops land on a connector, labels sit mid-run, different cavities get different ports, and extra taps are harness splices."
+  "notes": "Wires land on their boxes again. Splice dots no longer leave a line hanging in empty space."
 }
