@@ -1,8 +1,8 @@
 {
-  "version": "1.2.15",
-  "apkVersion": "1.2.15",
-  "apkVersionCode": 22,
+  "version": "1.2.16",
+  "apkVersion": "1.2.16",
+  "apkVersionCode": 23,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 19: A2 19J goes to 399-B and splices there. The filter light and WIF are taps of 19J. 431-85 is coil 19F — 431 does not feed the light."
+  "notes": "Wires no longer run on top of each other. Each line gets its own path so you can follow it."
 }

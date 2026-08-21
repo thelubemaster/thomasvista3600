@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { routeWirePts, wireLanes } from "./wire-route.ts";
+import { routeMapWires, routeWirePts, runOverlap, wireLanes } from "./wire-route.ts";
 
 function box(id: string, x: number, y: number) {
   return { id, x, y, label: id, kind: "connector" as const, detail: "" };
@@ -54,6 +54,25 @@ test("a wire into a splice lands on the splice, not a phantom 128px box", () => 
   const start = pts[0];
   const onFuse = Math.abs(start.x - (fuse.x + 64)) < 1 || Math.abs(start.x - (fuse.x - 64)) < 1;
   assert.ok(onFuse, `fuse start ${start.x},${start.y} is not on the box`);
+});
+
+test("parallel wires do not stack on the same run", () => {
+  const a = box("a", 100, 160);
+  const b = box("b", 520, 160);
+  const wires = [
+    { id: "1", from: "a", to: "b", circuit: "19A", label: "D" },
+    { id: "2", from: "a", to: "b", circuit: "19B", label: "E" },
+    { id: "3", from: "a", to: "b", circuit: "19C", label: "F" },
+  ];
+  const paths = routeMapWires([a, b], wires, { w: 700, h: 320 });
+  const pts = wires.map((w) => paths.get(w.id)!);
+  assert.equal(pts.filter(Boolean).length, 3);
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const ov = runOverlap(pts[i], [pts[j]]);
+      assert.ok(ov < 8, `wire ${wires[i].circuit} stacks on ${wires[j].circuit} (${ov}px)`);
+    }
+  }
 });
 
 test("same cavity may share a port", () => {
@@ -119,15 +138,34 @@ test("every wire ends on its two boxes, not in empty space", () => {
   const bad: string[] = [];
   for (const map of maps) {
     const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
-    const lanes = wireLanes(map.wires);
+    const routed = routeMapWires(map.nodes as never, map.wires, { w: map.w, h: map.h });
     for (const w of map.wires) {
       const a = byId[w.from];
       const b = byId[w.to];
       if (!a || !b) continue;
-      const pts = routeWirePts(a as never, b as never, map.nodes as never, lanes.get(w.id) ?? 0, { w: map.w, h: map.h });
+      const pts = routed.get(w.id);
+      if (!pts) continue;
       if (!onNode(pts[0], a)) bad.push(`${map.id}/${w.id} start ${pts[0].x.toFixed(0)},${pts[0].y.toFixed(0)} missed ${a.kind} ${a.id}`);
       if (!onNode(pts.at(-1)!, b)) bad.push(`${map.id}/${w.id} end ${pts.at(-1)!.x.toFixed(0)},${pts.at(-1)!.y.toFixed(0)} missed ${b.kind} ${b.id}`);
     }
   }
   assert.deepEqual(bad, []);
+});
+
+test("circuit drawings: different wires do not run on top of each other", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];
+  const maps = parseMaps(src);
+  const stacked: string[] = [];
+  for (const map of maps) {
+    const routed = routeMapWires(map.nodes as never, map.wires, { w: map.w, h: map.h });
+    const ids = map.wires.map((w) => w.id).filter((id) => routed.has(id));
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const ov = runOverlap(routed.get(ids[i])!, [routed.get(ids[j])!]);
+        if (ov >= 24) stacked.push(`${map.id}: ${ids[i]} on ${ids[j]} (${ov.toFixed(0)}px)`);
+      }
+    }
+  }
+  assert.deepEqual(stacked, []);
 });

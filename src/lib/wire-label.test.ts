@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { placeWireLabels, type LabelBox, type Pt } from "./wire-label.ts";
-import { routeWirePts, wireLanes } from "./wire-route.ts";
+import { routeMapWires } from "./wire-route.ts";
 
 function hLine(y: number, x0 = 80, x1 = 520): Pt[] {
   return [
@@ -156,14 +156,11 @@ function parseMaps(src: string) {
 }
 
 function labelMap(map: ReturnType<typeof parseMaps>[number]) {
-  const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
-  const lanes = wireLanes(map.wires);
+  const routed = routeMapWires(map.nodes as never, map.wires, { w: map.w, h: map.h });
   const items: { id: string; pts: Pt[]; circuit: string; note: string | null }[] = [];
   for (const w of map.wires) {
-    const a = byId[w.from];
-    const b = byId[w.to];
-    if (!a || !b) continue;
-    const pts = routeWirePts(a as never, b as never, map.nodes as never, lanes.get(w.id) ?? 0, { w: map.w, h: map.h });
+    const pts = routed.get(w.id);
+    if (!pts) continue;
     items.push({ id: w.id, pts, circuit: w.circuit, note: w.label ?? null });
   }
   const obstacles: LabelBox[] = map.nodes.map((n) =>
