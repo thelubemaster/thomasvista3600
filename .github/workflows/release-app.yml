@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 13')
+          t = t.replace('versionCode 1', 'versionCode 14')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.6
-          name: 3600 Wiring 1.2.6
+          tag_name: v1.2.7
+          name: 3600 Wiring 1.2.7
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            Plug faces match the book: dash connector shield, engine 2A latches, front 2B, fuel-filter 6-way, ISO micro plus.
+            Book tab: the page list scrolls, and tapping a sheet opens that CTS-5123V page in the app.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

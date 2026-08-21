@@ -1,7 +1,7 @@
 {
   "name": "thomasvista3600",
   "private": true,
-  "version": "1.2.6",
+  "version": "1.2.7",
   "type": "module",
   "description": "3600 Wiring — T444E 7.3 electrical circuit diagrams app",
   "homepage": "https://thelubemaster.github.io/thomasvista3600/",
@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test src/data/firewall-path.test.ts src/lib/wire-label.test.ts src/lib/plug-face.test.ts"
+    "test": "node --experimental-strip-types --test src/data/firewall-path.test.ts src/lib/wire-label.test.ts src/lib/plug-face.test.ts src/lib/book-pdf.test.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.117.3",
@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
     "lucide-react": "^0.468.0",
+    "pdfjs-dist": "^4.10.38",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.6.0",

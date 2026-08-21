@@ -325,7 +325,14 @@ export default function App() {
             {fuseView === "table" ? <CircuitTable query={query} /> : null}
           </div>
         ) : null}
-        {tab === "book" ? <Manual query={query} /> : null}
+        {tab === "book" ? (
+          <Manual
+            query={query}
+            onOpenDrawing={(id) => {
+              jump("circuits", id);
+            }}
+          />
+        ) : null}
         {tab === "job" ? <JobBook query={query} /> : null}
       </main>
 
