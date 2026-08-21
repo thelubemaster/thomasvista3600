@@ -46,7 +46,7 @@ export const extras: Record<string, Extra> = {
     power: "Key on A2 · Battery on D2",
     engineCritical: true,
     ifCut: "Heater and WIF die. 19H to the start switch also lives on (399) C. Engine may still run if the 7.3 CEC is powered.",
-    cab: "A2 → 19J → (399) B and WATER-IN-FUEL MODULE (470). D2 → 19D → (399) A and HEATER RELAY (431). 19H from (399) C to start switch. 470 PROBE/TEST splice at 399 E/F.",
+    cab: "A2 → 19J → (399) B. Splice at B: filter light 19M, 470 IGN, 431-85 as 19F (coil only). D2 → 19D → 431-30 → 431-87 → (399) A. 19H from (399) C to start switch. 470 PROBE/TEST splice at 399 E/F.",
     engine: "(399) D/E/F → DASH CONNECTOR (2) H5/E4/H6 → IN-LINE (401) A/B/C → heater / probe / vacuum switch",
     relay: "FUEL FILTER HEATER RELAY (431)",
     more: "Only 19A / 19B / 19C cross the firewall at (2). 470 and 1CR stay in the cab. 19D / 19E / 19F / 19H / 19J stay in the cab.",

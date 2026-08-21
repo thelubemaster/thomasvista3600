@@ -85,6 +85,29 @@ test("no circuit drawing jumps the firewall without a connector", () => {
   assert.deepEqual(bad, []);
 });
 
+test("circuit 19: A2 19J splices at 399-B — 431-85 is coil 19F, not a load out", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const fromA2 = map.wires.filter((w) => w.from === "a2");
+  assert.deepEqual(
+    fromA2.map((w) => `${w.to}:${w.circuit}`),
+    ["splice19J:19J"],
+  );
+  const to431 = map.wires.filter((w) => w.to === "relay431");
+  assert.ok(to431.some((w) => w.circuit === "19D" && w.from === "d2"));
+  assert.ok(to431.some((w) => w.circuit === "19F" && w.from === "splice19J"));
+  assert.equal(
+    to431.some((w) => w.circuit === "19J"),
+    false,
+    "19J does not go into 431",
+  );
+  const out431 = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19D");
+  assert.deepEqual(
+    out431.map((w) => `${w.to}:${w.circuit}`),
+    ["ff399:19D"],
+  );
+});
+
 test("circuit 19: 19D goes into 431 pin 30 and out pin 87 to 399-A", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);

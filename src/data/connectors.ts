@@ -436,7 +436,7 @@ export const connectors: Connector[] = [
     page: "50 / 88",
     hyd: true,
     pins: [
-      { cavity: "A", circuit: "19D", dest: "Heater power from D2 / relay 431-30" },
+      { cavity: "A", circuit: "19D", dest: "Heater power from relay 431-87 (D2 into 431-30)" },
       { cavity: "B", circuit: "19J", dest: "Key-on from A2 — WIF jumper / filter lamp" },
       { cavity: "C", circuit: "19H", dest: "18PK to the start switch" },
       { cavity: "D", circuit: "19A", dest: "Dash connector (2) H5 → in-line 401-A heater" },
