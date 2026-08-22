@@ -1,8 +1,8 @@
 {
-  "version": "1.2.18",
-  "apkVersion": "1.2.18",
-  "apkVersionCode": 25,
+  "version": "1.2.19",
+  "apkVersion": "1.2.19",
+  "apkVersionCode": 26,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Drawings stay sharp when you zoom. The schematic is redrawn at zoom size instead of stretching a small bitmap."
+  "notes": "Circuit 18: glow-plug current returns on the engine block. 18-G wait lamp is what crosses FRONT END (2B) G3."
 }

@@ -36,10 +36,10 @@ export const extras: Record<string, Extra> = {
     power: "Battery (load) + CEC (coil)",
     engineCritical: true,
     ifCut: "No glow. Cold start fails. Warm restart may still work.",
-    cab: "Wait lamp on cluster 28-5",
-    engine: "Front 2B-G3 is 18-G glow ground. Plugs on the head.",
+    cab: "Wait lamp on cluster 28-5 via FRONT END (2B) G3 (18-G).",
+    engine: "Fat 18 to the plugs. Plug return is the head / block — not 2B. 18-G wait lamp leaves toward 2B-G3.",
     relay: "Glow plug relay",
-    more: "Diesel wait-to-start. Front-end G3 is the ground, not the hot.",
+    more: "2B-G3 is the wait lamp, not the glow-plug current return.",
   },
   "19": {
     fuse: "A2 5A INST (19J) + D2 20A FUEL HTR (19D). B1 is 92D, not 19.",

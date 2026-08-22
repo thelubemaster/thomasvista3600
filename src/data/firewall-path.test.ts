@@ -85,6 +85,24 @@ test("no circuit drawing jumps the firewall without a connector", () => {
   assert.deepEqual(bad, []);
 });
 
+test("circuit 18: plug return stays on the engine; 18-G wait lamp crosses at 2B-G3", () => {
+  const map = loadCore().find((m) => m.id === "18");
+  assert.ok(map && map.firewallX);
+  const plugGnd = map.wires.filter((w) => w.from === "plugs" || w.to === "plugs");
+  assert.equal(
+    plugGnd.some((w) => w.from === "front" || w.to === "front"),
+    false,
+    "glow plugs do not land on FRONT END (2B)",
+  );
+  assert.ok(
+    plugGnd.some((w) => /gnd/i.test(w.to) || /gnd/i.test(w.from) || w.circuit === "11"),
+    "plugs return on engine ground",
+  );
+  const wait = map.wires.filter((w) => w.circuit === "18-G");
+  assert.ok(wait.some((w) => w.from === "front" || w.to === "front"), "18-G lands on FRONT END G3");
+  assert.ok(wait.some((w) => w.from === "cl" || w.to === "cl"), "18-G reaches the cluster wait lamp");
+});
+
 test("circuit 19: A2 19J splices at 399-B — 431-85 is coil 19F, not a load out", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);
