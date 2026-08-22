@@ -287,6 +287,9 @@ test("circuit 19: 19D and 19C do not die at a splice", () => {
   assert.ok(lamp && lamp.circuit === "19K", "434 is 19K on page 50, not 19M");
   const test470 = map.wires.find((w) => w.to === "mod470" && w.from === "diode1cr");
   assert.ok(test470 && test470.circuit === "19M", "470 TEST is 19M through 1CR");
+  const aFrom399 = continues("19A", "ff399");
+  assert.ok(aFrom399.some((s) => s.startsWith("relay431:")), `19A overlay is 431-87 ${aFrom399}`);
+  assert.ok(aFrom399.some((s) => s.startsWith("splice19A:")), `19A cab goes to the wall ${aFrom399}`);
 });
 
 test("circuit 19 boxes stay on the canvas and do not sit on each other", () => {

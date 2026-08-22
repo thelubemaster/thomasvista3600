@@ -107,11 +107,11 @@ export const relayFaces: RelayFace[] = [
     layout: "iso4",
     pins: [
       { id: "4", iso: "30", circuit: "19D", role: "Load in", goes: "Overlay 399-A. D2-B 14GY is on cab 399-A — printed page 50", power: "Battery" },
-      { id: "3", iso: "87", circuit: "19D", role: "Load out", goes: "19D splices to 19A, through 399-D and DASH CONNECTOR (2) H5 to the FUEL HEATER", power: "Battery" },
+      { id: "3", iso: "87", circuit: "19A", role: "Load out", goes: "Straight to 399-D (19A), through the plug and DASH CONNECTOR (2) H5 to the FUEL HEATER. No jumper", power: "Battery" },
       { id: "2", iso: "85", circuit: "19F", role: "Coil +", goes: "Overlay 399-B splice (18GY)", power: "Key / IGN" },
       { id: "1", iso: "86", circuit: "19E", role: "Coil −", goes: "CAB GROUND (18GY)", power: "Ground" },
     ],
-    more: "30 is 19D from overlay 399-A (D2 is cab 399-A). 87 is 19D that splices to 19A and crosses the firewall at (2) H5 to the FUEL HEATER. Truck trace: 87 19D goes to 19A through the wall. 85=19F, 86=19E.",
+    more: "399 is a pass-through. 30 is 19D on cavity A (D2 on the other face). 87 is 19A on cavity D, straight through to (2) H5 and the FUEL HEATER. 19A does not jumper into B. 85=19F, 86=19E.",
   },
   {
     id: "615",

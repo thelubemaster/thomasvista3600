@@ -46,7 +46,7 @@ export const extras: Record<string, Extra> = {
     power: "Key on A2 · Battery on D2",
     engineCritical: true,
     ifCut: "Heater and WIF die. 19H to the start switch also lives on (399) C. Engine may still run if the 7.3 CEC is powered.",
-    cab: "Cab 399: A=19D to D2, B=19J to A2, C=19H to START, D/E/F=19A/B/C to DASH CONNECTOR (2). Overlay A=19D to 431-30. 431-87 is 19D spliced to 19A at overlay 399-D, then through the plug and (2) H5 to the FUEL HEATER. Overlay B splice: 470 IGN, 19K to 434, 19F to 431-85.",
+    cab: "399 is a pass-through. A 19D D2↔431-30. B 19J A2↔overlay B (470 IGN, 19K 434, 19F 431-85). C 19H start↔19M 1CR. D 19A 431-87 straight↔(2) H5 heater — no jumper. E 19B 470↔(2) E4. F 19C overlay↔(2) H6.",
     engine: "Cab 399-D/E/F → DASH CONNECTOR (2) H5/E4/H6 → IN-LINE (401) A/B/C → fuel heater / water probe / vacuum switch",
     relay: "FUEL FILTER HEATER RELAY (431)",
     more: "Page 50: D2 is on cab 399-A; 431 is on overlay 399-A. Only 19A / 19B / 19C cross at (2). 434 is 19K. 470 TEST is 19M, not 19C.",

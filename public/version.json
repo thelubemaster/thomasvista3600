@@ -1,6 +1,6 @@
 {
-  "version": "1.2.30",
+  "version": "1.2.31",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "431-87 19D splices to 19A and crosses DASH CONNECTOR (2) H5 to the fuel heater — matches the cab trace."
+  "notes": "399 is a pass-through 6-way. 19A goes straight to 431-87 with no jumper."
 }

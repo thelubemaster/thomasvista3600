@@ -120,29 +120,33 @@ test("circuit 19: A2 19J lands on cab 399-B — 431-85 is coil 19F from the over
     false,
     "19J does not go into 431",
   );
-  const out431 = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19D");
+  const out431 = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19A");
   assert.deepEqual(
     out431.map((w) => `${w.to}:${w.circuit}`),
-    ["spliceJmp:19D"],
+    ["ff399:19A"],
   );
 });
 
-test("circuit 19: 19D is D2 → cab 399-A → overlay 399-A → 431-30; 87 splices to 19A", () => {
+test("circuit 19: 399-A is 19D D2↔431-30; 399-D is 19A 431-87 straight, no jumper", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);
   const intoRel = map.wires.filter((w) => w.to === "relay431" && w.circuit === "19D");
-  const outRel = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19D");
+  const out87 = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19A");
   assert.deepEqual(
     intoRel.map((w) => `${w.from}->${w.to}`),
     ["ff399->relay431"],
   );
   assert.deepEqual(
-    outRel.map((w) => `${w.from}->${w.to}`),
-    ["relay431->spliceJmp"],
+    out87.map((w) => `${w.from}->${w.to}`),
+    ["relay431->ff399"],
   );
   assert.ok(map.wires.some((w) => w.from === "d2" && w.to === "ff399" && w.circuit === "19D"));
-  assert.equal(map.nodes.some((n) => n.id === "splice19D"), false);
-  assert.equal(map.nodes.some((n) => n.id === "tempSw"), false, "page 50 has no temp-switch box");
+  assert.equal(map.nodes.some((n) => n.id === "spliceJmp"), false, "19A does not jumper");
+  assert.equal(
+    map.wires.some((w) => w.circuit === "19A" && (w.from === "spliceWlB" || w.to === "spliceWlB")),
+    false,
+    "19A does not jumper into overlay B",
+  );
 });
 
 test("fuel filter 399 is a through 6-way so twelve wires land on it", () => {
@@ -198,9 +202,8 @@ test("circuit 19: D2 is on cab 399-A, 431 is on overlay 399-A — printed page 5
   assert.ok(d2.x > plug.x, "D2 is on the cab / firewall side of 399");
   assert.ok(rel.x < plug.x, "431 is on the warning-light overlay side of 399");
   assert.ok(wall.x > plug.x, "firewall is on the cab face of 399");
-  assert.ok(htr.x > wall.x, "431-87 19D splices to 19A and the heater is after the wall");
-  assert.ok(map.wires.some((w) => w.from === "relay431" && w.to === "spliceJmp" && w.circuit === "19D"));
-  assert.ok(map.wires.some((w) => (w.from === "spliceJmp" && w.to === "ff399") || (w.from === "ff399" && w.to === "spliceJmp")));
+  assert.ok(htr.x > wall.x, "19A through 399-D goes to the heater after the wall");
+  assert.ok(map.wires.some((w) => w.from === "relay431" && w.to === "ff399" && w.circuit === "19A"));
 });
 
 test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {
