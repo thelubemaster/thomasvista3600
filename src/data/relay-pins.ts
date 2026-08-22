@@ -106,12 +106,12 @@ export const relayFaces: RelayFace[] = [
     fused: "D2 20A FUEL HTR (battery)",
     layout: "iso4",
     pins: [
-      { id: "4", iso: "30", circuit: "19D", role: "Load in", goes: "FUSE D2-B (20A FUEL HTR, battery) straight into the relay — not through 399", power: "Battery" },
-      { id: "3", iso: "87", circuit: "19D", role: "Load out", goes: "Cab face of FUEL FILTER (399) A → overlay heater", power: "Battery" },
-      { id: "2", iso: "85", circuit: "19F", role: "Coil +", goes: "FUEL FILTER (399) cavity B — temp switch (18GY)", power: "Key / IGN" },
+      { id: "4", iso: "30", circuit: "19D", role: "Load in", goes: "Overlay 399-A. D2-B 14GY is on cab 399-A — printed page 50", power: "Battery" },
+      { id: "3", iso: "87", circuit: "19D", role: "Load out", goes: "FILTER HEATER element. Not a 399 pin", power: "Battery" },
+      { id: "2", iso: "85", circuit: "19F", role: "Coil +", goes: "Overlay 399-B splice (18GY)", power: "Key / IGN" },
       { id: "1", iso: "86", circuit: "19E", role: "Coil −", goes: "CAB GROUND (18GY)", power: "Ground" },
     ],
-    more: "Four wires on printed page 50. 30 and 87 are both 19D (heater load from FUSE D2). 85 is 19F from FUEL FILTER (399) B (temp). 86 is 19E to CAB GROUND. 19J is on the same B splice but goes to WIF (433), not into this relay.",
+    more: "Printed page 50: 431 sits on the warning-light side of 399. 30 is 19D from overlay 399-A (D2 is on the cab face of A). 87 is 19D to the heater element. 85 is 19F from the overlay B splice. 86 is 19E CAB GROUND. 434 is 19K off that B splice, not a 431 output.",
   },
   {
     id: "615",

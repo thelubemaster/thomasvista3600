@@ -89,7 +89,7 @@ export const allCircuits: CircuitRow[] = [
     name: "FUEL SHUT-OFF SOLENOID, FUEL FILTER — DASH CONNECTOR (2) H6",
     power: "Key / IGN",
     engineCritical: true,
-    notes: "Dash connector 2 cavity H6. Also WIF probe path.",
+    notes: "Dash connector 2 cavity H6. Vacuum switch after 401-C.",
   },
   {
     id: "19D",

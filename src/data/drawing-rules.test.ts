@@ -185,5 +185,10 @@ test("fuel filter 399 is a through 6-way so twelve wires land on it", () => {
     .map((w) => byId.get(w.from === "ff399" ? w.to : w.from))
     .filter((n) => n && n.x > plug.x)
     .map((n) => n!.id);
-  assert.ok(rightIds.includes("relay431") && rightIds.includes("splice19A"));
+  assert.ok(rightIds.includes("d2") && rightIds.includes("splice19A"));
+  const leftIds = hits
+    .map((w) => byId.get(w.from === "ff399" ? w.to : w.from))
+    .filter((n) => n && n.x < plug.x)
+    .map((n) => n!.id);
+  assert.ok(leftIds.includes("relay431"));
 });

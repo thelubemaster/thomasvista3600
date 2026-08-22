@@ -275,18 +275,18 @@ test("circuit 19: 19D and 19C do not die at a splice", () => {
     return names;
   }
   const dFrom399 = continues("19D", "ff399");
-  assert.ok(dFrom399.some((s) => s.startsWith("filtHtr:")), `overlay 19D ${dFrom399}`);
-  assert.ok(dFrom399.some((s) => s.startsWith("relay431:")), `cab 19D ${dFrom399}`);
+  assert.ok(dFrom399.some((s) => s.startsWith("d2:")), `cab 19D ${dFrom399}`);
+  assert.ok(dFrom399.some((s) => s.startsWith("relay431:")), `overlay 19D ${dFrom399}`);
   const cFrom399 = continues("19C", "ff399");
   assert.ok(cFrom399.length >= 2, `19C on 399 ${cFrom399}`);
   const cabC = map.wires.find((w) => w.circuit === "19C" && (w.from === "splice19C" || w.to === "splice19C") && w.from !== "ff399" && w.to !== "ff399");
   assert.ok(cabC, "cab 19C continues past the splice");
   const other = cabC.from === "splice19C" ? cabC.to : cabC.from;
   assert.equal(other, "bulkhead");
-  const ovC = map.wires.find((w) => w.circuit === "19C" && (w.from === "spliceWlF" || w.to === "spliceWlF") && w.from !== "ff399" && w.to !== "ff399");
-  assert.ok(ovC, "overlay 19C continues past the splice");
-  const ovOther = ovC.from === "spliceWlF" ? ovC.to : ovC.from;
-  assert.equal(ovOther, "mod470");
+  const lamp = map.wires.find((w) => w.to === "lamp434" || w.from === "lamp434");
+  assert.ok(lamp && lamp.circuit === "19K", "434 is 19K on page 50, not 19M");
+  const test470 = map.wires.find((w) => w.to === "mod470" && w.from === "diode1cr");
+  assert.ok(test470 && test470.circuit === "19M", "470 TEST is 19M through 1CR");
 });
 
 test("circuit 19 boxes stay on the canvas and do not sit on each other", () => {

@@ -46,10 +46,10 @@ export const extras: Record<string, Extra> = {
     power: "Key on A2 · Battery on D2",
     engineCritical: true,
     ifCut: "Heater and WIF die. 19H to the start switch also lives on (399) C. Engine may still run if the 7.3 CEC is powered.",
-    cab: "399 is a 6-way in-line (cab harness | warning-light overlay). D2 → 431-30 does not go through 399. 431-87 → cab 399-A. A2 → cab 399-B (splice: 434 and 431-85 as 19F). 19H cab 399-C to start switch. Cab 399-D/E/F → DASH CONNECTOR (2) H5/E4/H6. Overlay face is heater / temp / 1CR / 470 — no fuse, no 431.",
-    engine: "Cab 399-D/E/F → DASH CONNECTOR (2) H5/E4/H6 → IN-LINE (401) A/B/C → heater / probe / vacuum switch",
+    cab: "Printed page 50 / 88. Cab 399: A=19D to D2, B=19J to A2, C=19H to START (page 10), D/E/F=19A/B/C to DASH CONNECTOR (2) H5/E4/H6. Overlay 399: A=19D to 431-30, B=19J splice (470 IGN, 19K to 434, 19F to 431-85, jumper to D), C=19M through 1CR to 470 TEST, E=19B to 470 PROBE. 431-87 is the filter heater.",
+    engine: "Cab 399-D/E/F → DASH CONNECTOR (2) H5/E4/H6 → IN-LINE (401) A/B/C → fuel heater / water probe / vacuum switch",
     relay: "FUEL FILTER HEATER RELAY (431)",
-    more: "Unplug 399: overlay face does not read to a fuse or to 431. Cab face still has 19J/19D toward the fuse box and 19A/B/C through the wall. Only 19A / 19B / 19C cross at (2).",
+    more: "Page 50: D2 is on cab 399-A; 431 is on overlay 399-A. Only 19A / 19B / 19C cross at (2). 434 is 19K. 470 TEST is 19M, not 19C.",
   },
   "26": {
     fuse: "Charging sense — through cluster",

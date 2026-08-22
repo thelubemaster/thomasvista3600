@@ -338,20 +338,26 @@ export function routeWirePts(
   const W = bounds?.w ?? 1600;
   const H = bounds?.h ?? 800;
   const pairs = preferredSides(from, to);
-  const extras: [Side, Side][] = [
-    ["R", "L"],
-    ["L", "R"],
-    ["B", "T"],
-    ["T", "B"],
-    ["R", "T"],
-    ["R", "B"],
-    ["L", "T"],
-    ["L", "B"],
-    ["T", "L"],
-    ["T", "R"],
-    ["B", "L"],
-    ["B", "R"],
-  ];
+  const extras: [Side, Side][] =
+    isEndPlug(from) || isEndPlug(to)
+      ? [
+          ["R", "L"],
+          ["L", "R"],
+        ]
+      : [
+          ["R", "L"],
+          ["L", "R"],
+          ["B", "T"],
+          ["T", "B"],
+          ["R", "T"],
+          ["R", "B"],
+          ["L", "T"],
+          ["L", "B"],
+          ["T", "L"],
+          ["T", "R"],
+          ["B", "L"],
+          ["B", "R"],
+        ];
   const seen = new Set<string>();
   const sides: [Side, Side][] = [];
   for (const pair of [...pairs, ...extras]) {
