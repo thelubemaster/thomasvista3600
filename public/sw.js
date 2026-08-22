@@ -1,4 +1,4 @@
-const CACHE = "wiring-3600-v1.2.31";
+const CACHE = "wiring-3600-v1.2.32";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());

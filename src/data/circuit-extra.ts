@@ -49,7 +49,7 @@ export const extras: Record<string, Extra> = {
     cab: "399 is a pass-through. A 19D D2↔431-30. B 19J A2↔overlay B (470 IGN, 19K 434, 19F 431-85). C 19H start↔19M 1CR. D 19A 431-87 straight↔(2) H5 heater — no jumper. E 19B 470↔(2) E4. F 19C overlay↔(2) H6.",
     engine: "Cab 399-D/E/F → DASH CONNECTOR (2) H5/E4/H6 → IN-LINE (401) A/B/C → fuel heater / water probe / vacuum switch",
     relay: "FUEL FILTER HEATER RELAY (431)",
-    more: "Page 50: D2 is on cab 399-A; 431 is on overlay 399-A. Only 19A / 19B / 19C cross at (2). 434 is 19K. 470 TEST is 19M, not 19C.",
+    more: "Page 50: D2 is on cab 399-A; 431 is on overlay 399-A. Only 19A / 19B / 19C cross at (2). 434 is a 1-cavity 19K lamp (page 96) — ground is dash/cluster, not through 399. 470 TEST is 19M, not 19C.",
   },
   "26": {
     fuse: "Charging sense — through cluster",

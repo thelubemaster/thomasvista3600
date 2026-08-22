@@ -283,8 +283,14 @@ test("circuit 19: 19D and 19C do not die at a splice", () => {
   assert.ok(cabC, "cab 19C continues past the splice");
   const other = cabC.from === "splice19C" ? cabC.to : cabC.from;
   assert.equal(other, "bulkhead");
-  const lamp = map.wires.find((w) => w.to === "lamp434" || w.from === "lamp434");
-  assert.ok(lamp && lamp.circuit === "19K", "434 is 19K on page 50, not 19M");
+  const lamp = map.wires.filter((w) => w.to === "lamp434" || w.from === "lamp434");
+  assert.equal(lamp.length, 1, "434 is a one-wire 19K lamp");
+  assert.equal(lamp[0]?.circuit, "19K", "434 is 19K on page 50, not 19M");
+  assert.equal(
+    lamp.some((w) => w.from === "ff399" || w.to === "ff399" || /gnd/i.test(w.from) || /gnd/i.test(w.to)),
+    false,
+    "434 ground does not go through 399",
+  );
   const test470 = map.wires.find((w) => w.to === "mod470" && w.from === "diode1cr");
   assert.ok(test470 && test470.circuit === "19M", "470 TEST is 19M through 1CR");
   const aFrom399 = continues("19A", "ff399");

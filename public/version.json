@@ -1,6 +1,6 @@
 {
-  "version": "1.2.31",
+  "version": "1.2.32",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "399 is a pass-through 6-way. 19A goes straight to 431-87 with no jumper."
+  "notes": "434 is a one-wire 19K lamp. Ground is dash/cluster, not through 399."
 }

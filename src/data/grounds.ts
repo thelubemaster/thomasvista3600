@@ -11,6 +11,8 @@ function nodeCavities(n: FlowNode): number | null {
     return 4;
   }
   if (n.kind === "fuse") return 2;
+  const pinN = n.pins?.trim();
+  if (pinN && /^\d+$/.test(pinN)) return Number(pinN);
   return null;
 }
 

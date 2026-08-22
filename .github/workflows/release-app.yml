@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 38')
+          t = t.replace('versionCode 1', 'versionCode 39')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.31
-          name: 3600 Wiring 1.2.31
+          tag_name: v1.2.32
+          name: 3600 Wiring 1.2.32
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            399 is a pass-through 6-way. 19A goes straight to 431-87 — no jumper.
+            434 is a one-wire 19K lamp. Ground is dash/cluster, not through 399.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

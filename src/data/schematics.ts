@@ -60,7 +60,7 @@ const flowMapsCore: FlowMap[] = [
     height: 860,
     width: 2100,
     nodes: [
-      { id: "lamp434", label: "FUEL FILTER LIGHT (434)", sub: "19K", kind: "load", x: 130, y: 340, detail: "19K 18GY from the overlay splice at 399-B. Not 19M. Printed page 50.", page: "50", look: "Dash lamp.", pins: "2" },
+      { id: "lamp434", label: "FUEL FILTER LIGHT (434)", sub: "19K only", kind: "load", x: 130, y: 340, detail: "19K 18GY from the overlay splice at 399-B. Printed page 96 is a 1-cavity warning-light plug — 19K only. Return is the dash / cluster lamp ground, not a harness wire back to 399. 399 has no ground cavity. Printed page 50 / 96.", page: "50 / 96", look: "1-cavity dash lamp.", pins: "1" },
       { id: "mod470", label: "WATER-IN-FUEL MODULE (470)", sub: "A IGN / B OUT / D PROBE / C TEST", kind: "module", x: 130, y: 500, detail: "Printed page 50. A IGN=19J from overlay 399-B. B OUTPUT=19L to WIF LIGHT (433). D PROBE=19B from overlay 399-E. C LAMP TEST=19M through 1CR from overlay 399-C. Not 19C.", page: "50", look: "4-wire module on the warning-light overlay.", pins: "A IGN / B OUT / D PROBE / C TEST" },
       { id: "wif433", label: "WIF LIGHT (433)", sub: "19L / 19-GA", kind: "load", x: 130, y: 700, detail: "19L from 470-B. Other side 19-GA 18WH CAB GROUND. Printed page 50.", page: "50", look: "Dash lamp.", pins: "2" },
       { id: "gndWl", label: "CAB GROUND", sub: "19E / 19-GA", kind: "source", x: 130, y: 800, detail: "431 pin 86 = 19E 18GY. WIF lamp 19-GA. Printed page 50.", page: "50", look: "Ring terminal.", pins: "—" },
@@ -119,7 +119,6 @@ const flowMapsCore: FlowMap[] = [
       { id: "w28", from: "heater", to: "gndEng", circuit: "11", color: "gnd" },
       { id: "w29", from: "probe", to: "gndEng", circuit: "11", color: "gnd" },
       { id: "w30", from: "vac", to: "gndEng", circuit: "11", color: "gnd" },
-      { id: "w32", from: "lamp434", to: "gndWl", circuit: "11", color: "gnd" },
       { id: "w33", from: "mod470", to: "gndWl", circuit: "11", color: "gnd" },
     ],
     legend: [
@@ -128,7 +127,7 @@ const flowMapsCore: FlowMap[] = [
       { id: "19A", cavity: "D: 431-87 ↔ (2) H5 ↔ 401-A heater", note: "Pass-through. Straight to 87. Does not jumper into B or anything else." },
       { id: "19J", cavity: "B: A2 ↔ overlay B splice", note: "Pass-through. Overlay taps 470 IGN, 19K to 434, 19F to 431-85." },
       { id: "19F", cavity: "overlay B splice → 431-85", note: "Coil only. Not a 399 pin of its own." },
-      { id: "19K", cavity: "overlay B splice → 434", note: "Filter light. Not 19M." },
+      { id: "19K", cavity: "overlay B splice → 434", note: "Filter light hot only. Ground is the dash lamp / cluster return, not through 399." },
       { id: "19M", cavity: "C overlay → 1CR → 470 TEST", note: "Pass-through C. Cab C is 19H to START." },
       { id: "19H", cavity: "C cab → START (page 10)", note: "Pass-through C. Overlay C is 19M." },
       { id: "19B", cavity: "E: 470 PROBE ↔ (2) E4 ↔ 401-B", note: "Pass-through." },

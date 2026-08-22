@@ -206,6 +206,25 @@ test("circuit 19: D2 is on cab 399-A, 431 is on overlay 399-A — printed page 5
   assert.ok(map.wires.some((w) => w.from === "relay431" && w.to === "ff399" && w.circuit === "19A"));
 });
 
+test("circuit 19: 434 is 19K only — no ground back to 399", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const hits = map.wires.filter((w) => w.from === "lamp434" || w.to === "lamp434");
+  assert.deepEqual(
+    hits.map((w) => `${w.from}->${w.to}:${w.circuit}`),
+    ["spliceWlB->lamp434:19K"],
+  );
+  assert.equal(
+    map.wires.some(
+      (w) =>
+        (w.from === "lamp434" || w.to === "lamp434") &&
+        (w.from === "ff399" || w.to === "ff399" || /gnd/i.test(w.from) || /gnd/i.test(w.to) || w.circuit === "11"),
+    ),
+    false,
+    "434 ground is not a harness wire to 399",
+  );
+});
+
 test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);

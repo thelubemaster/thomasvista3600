@@ -41,3 +41,45 @@ test("withGrounds does not add a sixth wire to 5-cavity crank relay 661", () => 
   assert.equal(hits.length, 4, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
   assert.equal(hits.some((w) => w.circuit === "97AV"), false);
 });
+
+test("withGrounds does not invent a 434 ground back to 399", () => {
+  const map = withGrounds({
+    id: "19",
+    number: "19",
+    title: "FUEL SHUT-OFF SOLENOID, FUEL FILTER",
+    blurb: "",
+    engineCritical: true,
+    power: "Key + Battery",
+    defaultId: "lamp434",
+    nodes: [
+      {
+        id: "lamp434",
+        label: "FUEL FILTER LIGHT (434)",
+        sub: "19K only",
+        kind: "load",
+        x: 130,
+        y: 340,
+        detail: "One-wire dash lamp.",
+        look: "1-cavity dash lamp.",
+        pins: "1",
+      },
+      { id: "spliceWlB", label: "SPLICE", kind: "splice", x: 280, y: 190, detail: "" },
+      { id: "ff399", label: "FUEL FILTER (399)", kind: "connector", x: 620, y: 325, detail: "", pins: "A B C D E F" },
+    ],
+    wires: [{ id: "w10", from: "spliceWlB", to: "lamp434", circuit: "19K", color: "c", label: "434" }],
+  } as FlowMap);
+  const hits = map.wires.filter((w) => w.from === "lamp434" || w.to === "lamp434");
+  assert.equal(hits.length, 1, hits.map((w) => `${w.id}:${w.from}->${w.to}:${w.circuit}`).join(", "));
+  assert.equal(hits[0]?.circuit, "19K");
+  assert.equal(
+    map.wires.some((w) => w.color === "gnd" && (w.from === "lamp434" || w.to === "lamp434")),
+    false,
+  );
+  assert.equal(
+    map.wires.some(
+      (w) =>
+        (w.from === "lamp434" && w.to === "ff399") || (w.from === "ff399" && w.to === "lamp434"),
+    ),
+    false,
+  );
+});
