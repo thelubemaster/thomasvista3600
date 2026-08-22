@@ -121,9 +121,9 @@ test("5-pin relays are not counted as 4-pin", () => {
   assert.equal(cavityCount({ id: "r662", kind: "relay", label: "CEC MODULE PWR RELAY W/T444E (662)", look: "ISO 4-cavity." }), 4);
 });
 
-test("399 is a 6-way device; dash (2) and 401 are through plugs", () => {
+test("399 is a 6-way through-plug; dash (2) and 401 are through plugs", () => {
   assert.equal(cavityCount({ id: "ff399", kind: "connector", label: "FUEL FILTER (399)", pins: "A B C D E F" }), 6);
-  assert.equal(maxIncidentWires({ id: "ff399", kind: "connector", label: "FUEL FILTER (399)", pins: "A B C D E F" }), 6);
+  assert.equal(maxIncidentWires({ id: "ff399", kind: "connector", label: "FUEL FILTER (399)", pins: "A B C D E F" }), 12);
   assert.equal(cavityCount({ id: "inline", kind: "connector", label: "IN-LINE (401)", look: "3-cavity.", pins: "A B C" }), 3);
   assert.equal(maxIncidentWires({ id: "inline", kind: "connector", label: "IN-LINE (401)", look: "3-cavity.", pins: "A B C" }), 6);
   assert.equal(cavityCount({ id: "sw", kind: "connector", label: "Stop switch 51", look: "2-cavity on the hyd stop switch.", pins: "A B" }), 2);
@@ -162,9 +162,11 @@ test("a hop that meets the firewall line still has to be a wall plug", () => {
   assert.deepEqual(bad, []);
 });
 
-test("fuel filter 399 is a 6-way so only six wires land on it", () => {
+test("fuel filter 399 is a through 6-way so twelve wires land on it", () => {
   const map = loadAll().find((m) => m.id === "19");
   assert.ok(map);
   const hits = map.wires.filter((w) => w.from === "ff399" || w.to === "ff399");
-  assert.equal(hits.length, 6, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
+  assert.equal(hits.length, 12, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
+  const mate = map.wires.filter((w) => w.from === "ffMate" || w.to === "ffMate");
+  assert.equal(mate.length, 6, "mate face is the other six");
 });

@@ -27,6 +27,8 @@ export function isThroughPlug(n: PlugNode): boolean {
   const t = `${n.id} ${n.label} ${n.sub ?? ""} ${n.look ?? ""}`;
   if (WALL_RE.test(t)) return true;
   if (/in-line|inline \(401\)|401\)/i.test(t)) return true;
+  // 6-cavity fuel-filter plug: cab harness on one face, mate on the other.
+  if (n.id === "ff399" || /^fuel filter \(399\)$/i.test((n.label ?? "").trim())) return true;
   return false;
 }
 

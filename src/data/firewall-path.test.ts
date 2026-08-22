@@ -143,11 +143,12 @@ test("circuit 19: 19D goes into 431 pin 30 and out pin 87 to 399-A", () => {
   assert.equal(map.nodes.some((n) => n.id === "splice19D"), false);
 });
 
-test("fuel filter 399 is a 6-way so only six wires land on it", () => {
+test("fuel filter 399 is a through 6-way so twelve wires land on it", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);
   const hits = map.wires.filter((w) => w.from === "ff399" || w.to === "ff399");
-  assert.equal(hits.length, 6, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
+  assert.equal(hits.length, 12, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
+  assert.equal(hits.filter((w) => w.from === "ffMate" || w.to === "ffMate").length, 6);
 });
 
 test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {

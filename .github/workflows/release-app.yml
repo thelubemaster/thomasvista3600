@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 29')
+          t = t.replace('versionCode 1', 'versionCode 30')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.22
-          name: 3600 Wiring 1.2.22
+          tag_name: v1.2.23
+          name: 3600 Wiring 1.2.23
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            662 matches 396: 30=14B in, 87=97CT out. Headlights both beams. Horn 61-3. Shop hops use the wall.
+            Fuel filter 399 is a 6-way through-plug: 6 wires on the cab harness, 6 on the mate.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

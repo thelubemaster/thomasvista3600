@@ -432,7 +432,7 @@ export const connectors: Connector[] = [
     id: "filter-399",
     tag: "399",
     name: "FUEL FILTER (399)",
-    harness: "Engine / cab",
+    harness: "Cab 6-way through-plug (6 + 6)",
     page: "50 / 88",
     hyd: true,
     pins: [

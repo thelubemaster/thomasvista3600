@@ -1,8 +1,8 @@
 {
-  "version": "1.2.22",
-  "apkVersion": "1.2.22",
-  "apkVersionCode": 29,
+  "version": "1.2.23",
+  "apkVersion": "1.2.23",
+  "apkVersionCode": 30,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "662 matches 396: 30=14B in, 87=97CT out. Headlights both beams. Horn 61-3. Shop hops use the wall."
+  "notes": "Fuel filter 399 is a 6-way through-plug: 6 wires on the cab harness, 6 on the mate."
 }
