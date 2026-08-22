@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 31')
+          t = t.replace('versionCode 1', 'versionCode 32')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.24
-          name: 3600 Wiring 1.2.24
+          tag_name: v1.2.25
+          name: 3600 Wiring 1.2.25
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            399 is one 6-way box: six wires together on the cab end, six together on the mate end.
+            399-A 19D is the filter heater, 399-B 19J is the temp switch, 399-C 19H is the start switch.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk
