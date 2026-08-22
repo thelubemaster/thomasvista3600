@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 26')
+          t = t.replace('versionCode 1', 'versionCode 27')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.19
-          name: 3600 Wiring 1.2.19
+          tag_name: v1.2.20
+          name: 3600 Wiring 1.2.20
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            Circuit 18: glow-plug current returns on the engine block. 18-G wait lamp is what crosses FRONT END (2B) G3.
+            Crank relay 661 stays a 5-way. No extra ground stuffed onto a full plug.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

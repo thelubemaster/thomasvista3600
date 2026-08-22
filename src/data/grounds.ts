@@ -1,5 +1,15 @@
 import type { FlowMap, FlowNode, FlowWire } from "@/data/schematics";
 
+function nodeCavities(n: FlowNode): number | null {
+  const t = `${n.label} ${n.sub ?? ""} ${n.look ?? ""} ${n.pins ?? ""}`;
+  const lookN = /(\d+)\s*[-–]?\s*(?:way|cavity|cavities|pin|pins)\b/i.exec(t);
+  if (lookN) return Number(lookN[1]);
+  if (/\bISO 4\b/i.test(t)) return 4;
+  if (n.kind === "relay") return 4;
+  if (n.kind === "fuse") return 2;
+  return null;
+}
+
 type GndSpec = {
   id: string;
   label: string;
@@ -126,6 +136,10 @@ function alreadyGrounded(id: string, wires: FlowWire[]) {
   );
 }
 
+function incidentCount(id: string, wires: FlowWire[]) {
+  return wires.filter((w) => w.from === id || w.to === id).length;
+}
+
 export function withGrounds(map: FlowMap): FlowMap {
   if (map.id === "11") return map;
 
@@ -138,6 +152,8 @@ export function withGrounds(map: FlowMap): FlowMap {
     if (alreadyGrounded(n.id, wires)) return false;
     if (/ground|gnd|battery|j1 stud|feed stud|ign 13|acc 12|st 17|^ign$|^acc$|^st /i.test(n.label)) return false;
     if (/^(IGN|ACC|ST)\b/.test(n.label)) return false;
+    const cav = nodeCavities(n);
+    if (cav != null && incidentCount(n.id, wires) >= cav) return false;
     return true;
   });
 
