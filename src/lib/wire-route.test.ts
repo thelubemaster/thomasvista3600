@@ -198,6 +198,32 @@ test("circuit 19: a wire that is not in a splice stays out of that splice", () =
   assert.deepEqual(bad, []);
 });
 
+test("circuit 17 starter parts do not sit on top of each other", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];
+  const map = parseMaps(src).find((m) => m.id === "17");
+  assert.ok(map);
+  const ids = ["mag", "sol", "motor"];
+  const parts = ids.map((id) => map.nodes.find((n) => n.id === id));
+  assert.ok(parts.every(Boolean), "J30 / J31 / 436 must all be on circuit 17");
+  const hw = 64;
+  const hh = 28;
+  const gap = 12;
+  for (let i = 0; i < parts.length; i++) {
+    for (let j = i + 1; j < parts.length; j++) {
+      const a = parts[i]!;
+      const b = parts[j]!;
+      const overlapX = Math.abs(a.x - b.x) < hw * 2 + gap;
+      const overlapY = Math.abs(a.y - b.y) < hh * 2 + gap;
+      assert.equal(
+        overlapX && overlapY,
+        false,
+        `${a.id} at ${a.x},${a.y} overlaps ${b.id} at ${b.x},${b.y}`,
+      );
+    }
+  }
+});
+
 test("circuit drawings: different wires do not run on top of each other", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];

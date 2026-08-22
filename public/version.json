@@ -1,6 +1,6 @@
 {
-  "version": "1.2.20",
+  "version": "1.2.21",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Crank relay 661 stays a 5-way. No extra ground stuffed onto a full plug."
+  "notes": "Circuit 17: J30 / J31 / starter body no longer overlap. Relay 615 is Allison MD overlay, not a typical 3600."
 }

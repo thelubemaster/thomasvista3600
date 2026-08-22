@@ -181,9 +181,8 @@ export const fuses: Fuse[] = [
     size: "10A",
     source: "key",
     description: "Neutral safety + idle verification",
-    relay: "Transmission Neutral Relay (615)",
     engineCritical: true,
-    notes: "Start-enable circuit, not the high-current starter feed. Blown H1 = no crank.",
+    notes: "Start-enable 97P to DASH CONNECTOR (2) B6. Not the fat starter cable. Blown H1 = no crank. Relay 615 is Allison MD overlay only — a typical 3600 does not use it.",
   },
 ];
 
@@ -253,12 +252,12 @@ export const relays: Relay[] = [
   },
   {
     id: "615",
-    name: "TRANSMISSION NEUTRAL RELAY (615)",
+    name: "TRANSMISSION NEUTRAL RELAY W/MD TRANSMISSION (615)",
     fused: "Via H1 circuits",
     loadSide: "Key-related",
     coilSide: "Transmission position",
-    engineCritical: true,
-    notes: "Needed for a proper starting interlock. Mating end page 101: 4=143C, 3=97P, 1=97AV, 2=123.",
+    engineCritical: false,
+    notes: "Allison MD overlay, printed page 101. W/MD is Allison MD automatic, not a manual trans. A typical 3600 uses NEUTRAL POSITION SWITCH W/AUTO XMSN instead. Mating end: 4=143C, 3=97P, 1=97AV, 2=123.",
   },
   {
     id: "662",

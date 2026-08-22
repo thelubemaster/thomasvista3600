@@ -787,7 +787,7 @@ export const connectors: Connector[] = [
     id: "neutral-615",
     tag: "615",
     name: "TRANSMISSION NEUTRAL RELAY W/MD TRANSMISSION (615)",
-    harness: "Cab / MD trans",
+    harness: "Cab — Allison MD overlay (not a typical 3600)",
     page: "101",
     hyd: true,
     pins: [

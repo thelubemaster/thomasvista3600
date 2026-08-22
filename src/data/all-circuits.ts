@@ -54,7 +54,7 @@ export const allCircuits: CircuitRow[] = [
     name: "STARTER CONTROL",
     power: "Mixed",
     engineCritical: true,
-    notes: "63 ST is crank-only (from battery 15 through the key). H1 is key-on IGN, not battery. Solenoid is battery.",
+    notes: "63 ST is crank-only (from battery 15 through the key). H1 is key-on IGN, not battery. J30 magnetic switch, J31 solenoid, 436 starter body are three parts. Relay 615 is Allison MD overlay, not a typical 3600.",
   },
   {
     id: "18 / 18-G",

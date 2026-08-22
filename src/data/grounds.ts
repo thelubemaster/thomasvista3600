@@ -154,6 +154,8 @@ export function withGrounds(map: FlowMap): FlowMap {
     if (/^(IGN|ACC|ST)\b/.test(n.label)) return false;
     const cav = nodeCavities(n);
     if (cav != null && incidentCount(n.id, wires) >= cav) return false;
+    // 661 pin 2 is NC empty — do not invent a chassis ground there.
+    if (n.relayId === "661" || /crank relay \(661\)/i.test(n.label)) return false;
     return true;
   });
 

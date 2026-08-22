@@ -475,7 +475,7 @@ function ShopParts({
       <IsoRelay position={[-1.18, 0.68, 0.72]} selected={selected === "r387"} lit={lit("r387")} label="START RELAY W/ T444E & I6-HEUI (387)" onPick={() => onSelect("r387")} leads={lead("r387")} />
       <IsoRelay position={[-1.32, 0.68, 0.72]} selected={selected === "r661"} lit={lit("r661")} label="CRANK RELAY (661)" onPick={() => onSelect("r661")} leads={lead("r661")} />
       <IsoRelay position={[-0.92, 0.68, 0.72]} selected={selected === "r431"} lit={lit("r431")} label="FUEL FILTER HEATER RELAY (431)" onPick={() => onSelect("r431")} leads={lead("r431")} />
-      <IsoRelay position={[-1.18, 0.56, 0.72]} selected={selected === "r615"} lit={lit("r615")} label="TRANSMISSION NEUTRAL RELAY W/MD TRANSMISSION (615)" onPick={() => onSelect("r615")} leads={lead("r615")} />
+      <IsoRelay position={[-1.18, 0.56, 0.72]} selected={selected === "r615"} lit={lit("r615")} label="615 Allison MD overlay (not a typical 3600)" onPick={() => onSelect("r615")} leads={lead("r615")} />
       <IsoRelay position={[-1.05, 0.56, 0.72]} selected={selected === "r300"} lit={lit("r300")} label="HYDRAULIC BRAKE BOOSTER RELAY (300)" onPick={() => onSelect("r300")} leads={lead("r300")} />
       <IsoRelay position={[-0.92, 0.56, 0.72]} selected={selected === "r61"} lit={lit("r61")} label="HORN RELAY (61)" onPick={() => onSelect("r61")} leads={lead("r61")} />
       <IsoRelay position={[-0.78, 0.78, -1.52]} selected={selected === "r396"} lit={lit("r396")} label="CEC MODULE RELAY (396)" onPick={() => onSelect("r396")} leads={lead("r396")} />

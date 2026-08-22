@@ -118,9 +118,9 @@ export const relayFaces: RelayFace[] = [
     tag: "615",
     name: "TRANSMISSION NEUTRAL RELAY W/MD TRANSMISSION",
     page: "101",
-    where: "Cab / MD trans overlay",
+    where: "Cab — Allison MD overlay only. Not a typical 3600. W/MD is Allison MD automatic, not a manual trans",
     look: "ISO 4-cavity. Mating end: 4=143C, 3=97P, 1=97AV, 2=123.",
-    engineCritical: true,
+    engineCritical: false,
     fused: "H1 10A START (key)",
     layout: "iso4",
     pins: [
@@ -129,7 +129,7 @@ export const relayFaces: RelayFace[] = [
       { id: "1", iso: "86", circuit: "97AV", role: "Coil −", goes: "97AV on cavity 1", power: "Signal" },
       { id: "2", iso: "85", circuit: "123", role: "Coil +", goes: "Trans control 123 on cavity 2", power: "Signal" },
     ],
-    more: "Four wires. This is why H1 blown = no crank. Trans must be in park/neutral to close 30–87.",
+    more: "Four wires on printed page 101. W/MD TRANSMISSION means Allison MD (WTEC) automatic — not a manual trans, and not the default 3600 hydraulic auto. A typical 3600 uses NEUTRAL POSITION SWITCH W/AUTO XMSN. If you do not have an MD/Allison electronic trans, you do not have this cube. 97AV from cavity 1 does not land on CRANK RELAY (661) pin 2; that pin is empty on page 104.",
   },
   {
     id: "661",
@@ -148,7 +148,7 @@ export const relayFaces: RelayFace[] = [
       { id: "1", iso: "86", circuit: "97L", role: "Coil −", goes: "CEC / clutch path. 97L 18YL", power: "Signal" },
       { id: "2", iso: "87a", circuit: "—", role: "NC", goes: "Empty", power: "Signal" },
     ],
-    more: "Optional overcrank. On a 3600: 5=17C in, 4=17A out, 3=97H, 1=97L. If the bus has no overcrank option this plug may be jumpered or unused — START RELAY (387) still cranks.",
+    more: "Optional overcrank. On a 3600: 5=17C in, 4=17A out, 3=97H, 1=97L. Pin 2 is empty — not 97AV from 615. If the bus has no overcrank option this plug may be jumpered or unused — START RELAY (387) still cranks.",
   },
   {
     id: "662",

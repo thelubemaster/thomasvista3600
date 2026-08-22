@@ -70,7 +70,7 @@ export const dxSteps: DxStep[] = [
     where: "Fuse panel cover — H1. Red 10A. Cover says START.",
     do: "Key ON (not START). Probe both sides of H1 to ground. Pull it and look. It is IGN-fed, not battery.",
     expect: "Both sides ~12 V key ON. Fuse intact.",
-    caution: "H1 blown = no crank. It feeds TRANSMISSION NEUTRAL RELAY (615) / 97P, not the fat starter cable.",
+    caution: "H1 blown = no crank. It feeds 97P to DASH CONNECTOR (2) B6 (neutral start-enable), not the fat starter cable. Relay 615 is Allison MD overlay only.",
     jumps: [
       { tab: "panel", hint: "H1", label: "Fuse H1" },
       { tab: "circuits", hint: "17", label: "Circuit 17" },
@@ -118,11 +118,11 @@ export const dxSteps: DxStep[] = [
     id: "nc-86-dead",
     title: "86 dead — work back the START feed",
     where: "Key ST → STARTER INTERRUPT (shipped jumpered) → CRANK RELAY (661) → 387 pin 86.",
-    do: "Check the interrupt is jumpered. If 661 is fitted, 5=17C in, 4=17A out. Park/neutral. 615 must close 97P.",
+    do: "Check the interrupt is jumpered. If 661 is fitted, 5=17C in, 4=17A out. Park/neutral on the AUTO XMSN switch. Skip 615 unless the bus has Allison MD.",
     expect: "17C 16PK live at the interrupt in START. If 661 is unused, the plug is jumpered and 17C continues to 387.",
     jumps: [
       { tab: "relays", hint: "661", label: "661 crank inhibit" },
-      { tab: "relays", hint: "615", label: "615 neutral" },
+      { tab: "circuits", hint: "17", label: "Circuit 17" },
     ],
     choices: [
       { id: "fixed", label: "Feed is back · 86 is hot in START", next: "nc-85" },
@@ -253,7 +253,7 @@ export const dxResults: Record<string, DxResult> = {
   "r-h1": {
     id: "r-h1",
     title: "Fix H1 first",
-    body: "H1 10A START is IGN, cover START. Replace it. If it blows again, 615 / 97P is shorted — not the starter motor.",
+    body: "H1 10A START is IGN, cover START. Replace it. If it blows again, 97P is shorted — not the starter motor. 615 is only in the picture on an Allison MD bus.",
     jumps: [{ tab: "panel", hint: "H1", label: "H1 on the cover" }],
   },
   "r-wrong-relay": {
@@ -268,7 +268,7 @@ export const dxResults: Record<string, DxResult> = {
   "r-86-open": {
     id: "r-86-open",
     title: "START feed never reaches 387",
-    body: "Work key ST 17C through the interrupt jumper, optional 661, park/neutral 615. 86 must go hot in START before 85 matters.",
+    body: "Work key ST 17C through the interrupt jumper, optional 661, and the AUTO XMSN park/neutral switch. 86 must go hot in START before 85 matters. 615 is Allison MD overlay — most 3600s do not have it.",
     jumps: [
       { tab: "circuits", hint: "17", label: "Circuit 17" },
       { tab: "relays", hint: "661", label: "661" },

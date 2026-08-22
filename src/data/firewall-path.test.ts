@@ -168,3 +168,17 @@ test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {
   assert.ok(names.includes("399") || names.some((n) => /399/.test(n)));
   assert.ok(line.stops.some((s) => s.wall), "includes the wall plug");
 });
+
+test("circuit 17: 97P from H1 lands on DASH CONNECTOR (2), not relay 615", () => {
+  const map = loadCore().find((m) => m.id === "17");
+  assert.ok(map);
+  assert.equal(map.nodes.some((n) => n.id === "r615"), false, "615 is MD overlay — not on the 3600 drawing");
+  const fromH1 = map.wires.filter((w) => w.from === "h1" && w.circuit === "97P");
+  assert.deepEqual(
+    fromH1.map((w) => `${w.to}:${w.circuit}`),
+    ["bulk:97P"],
+  );
+  assert.equal(map.wires.some((w) => w.circuit === "97AV"), false, "97AV does not land on 661 pin 2");
+  const on661 = map.wires.filter((w) => w.from === "r661" || w.to === "r661");
+  assert.ok(on661.length <= 5, on661.map((w) => w.id).join(", "));
+});

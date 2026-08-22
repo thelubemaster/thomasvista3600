@@ -28,8 +28,8 @@ export const extras: Record<string, Extra> = {
     ifCut: "Starter will not crank. Engine can still run if already started.",
     cab: "Key 63 ST → start relay 387 → dash 2-G6",
     engine: "Engine 2A-G6 → starter solenoid J31",
-    relay: "Start relay 387 + neutral 615",
-    more: "Circuit 17F is the firewall cavity. Black cab harness on the start relay.",
+    relay: "Start relay 387. Neutral is the AUTO XMSN switch — not 615",
+    more: "Circuit 17F is 2-G6 to magnetic switch J30. J31 is the solenoid on the starter; 436 is the starter body. 615 is Allison MD overlay only.",
   },
   "18": {
     fuse: "High-current fusible link at glow relay",
