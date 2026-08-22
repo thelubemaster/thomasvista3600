@@ -1,8 +1,8 @@
 {
-  "version": "1.2.29",
-  "apkVersion": "1.2.29",
-  "apkVersionCode": 36,
+  "version": "1.2.30",
+  "apkVersion": "1.2.30",
+  "apkVersionCode": 37,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 19 matches printed page 50: D2 on cab 399-A, 431 on overlay 399-A, 434 is 19K, 470 TEST is 19M through 1CR."
+  "notes": "431-87 19D splices to 19A and crosses DASH CONNECTOR (2) H5 to the fuel heater — matches the cab trace."
 }

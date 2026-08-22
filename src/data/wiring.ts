@@ -372,7 +372,7 @@ export const schematicNodes: SchematicNode[] = [
   { id: "bat", label: "BATTERY FEED (14)", sub: "Always hot", kind: "source", detail: "Feeds FUSE D2 (19D) with the key off.", page: "8–9" },
   { id: "a2", label: "FUSE A2 5A INST", sub: "Key · 19J", kind: "fuse", detail: "19J 18GY to the splice at FUEL FILTER (399) B.", page: "10 / 50 / 76" },
   { id: "d2", label: "FUSE D2 20A FUEL HTR", sub: "Battery · 19D", kind: "fuse", detail: "19D 14GY to cab 399-A. Overlay A is 431-30. Printed page 50 / 77.", page: "50 / 77" },
-  { id: "relay431", label: "HEATER RELAY (431)", sub: "Overlay · 4 wires", kind: "module", detail: "30=19D from overlay 399-A. 87=19D to the heater. 85=19F from overlay B. 86=19E CAB GROUND.", page: "50" },
+  { id: "relay431", label: "HEATER RELAY (431)", sub: "Overlay · 4 wires", kind: "module", detail: "30=19D from overlay 399-A. 87=19D splices to 19A through 399-D and the firewall to the FUEL HEATER. 85=19F. 86=19E.", page: "50" },
   { id: "splice19J", label: "SPLICE AT OVERLAY 399-B", sub: "19J / 19F / 19K", kind: "connector", detail: "A2 19J through cab 399-B. Overlay B taps 470 IGN, 434 as 19K, 431-85 as 19F.", page: "50" },
   { id: "ff399", label: "FUEL FILTER (399)", sub: "Cab | warning-light 6-way", kind: "connector", detail: "Cab: D2, A2, start 19H, 19A/B/C to dash (2). Overlay: 431-30, B splice, 1CR, jumper, 470 PROBE. Printed page 50 / 88.", page: "50 / 88" },
   { id: "bulkhead", label: "DASH CONNECTOR (2)", sub: "H5 E4 H6", kind: "connector", detail: "H5=19A. E4=19B. H6=19C. Only these three cross the firewall.", page: "50 / 78" },

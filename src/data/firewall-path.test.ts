@@ -123,11 +123,11 @@ test("circuit 19: A2 19J lands on cab 399-B — 431-85 is coil 19F from the over
   const out431 = map.wires.filter((w) => w.from === "relay431" && w.circuit === "19D");
   assert.deepEqual(
     out431.map((w) => `${w.to}:${w.circuit}`),
-    ["filtHtr:19D"],
+    ["spliceJmp:19D"],
   );
 });
 
-test("circuit 19: 19D is D2 → cab 399-A → overlay 399-A → 431-30, 87 to the heater", () => {
+test("circuit 19: 19D is D2 → cab 399-A → overlay 399-A → 431-30; 87 splices to 19A", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);
   const intoRel = map.wires.filter((w) => w.to === "relay431" && w.circuit === "19D");
@@ -138,7 +138,7 @@ test("circuit 19: 19D is D2 → cab 399-A → overlay 399-A → 431-30, 87 to th
   );
   assert.deepEqual(
     outRel.map((w) => `${w.from}->${w.to}`),
-    ["relay431->filtHtr"],
+    ["relay431->spliceJmp"],
   );
   assert.ok(map.wires.some((w) => w.from === "d2" && w.to === "ff399" && w.circuit === "19D"));
   assert.equal(map.nodes.some((n) => n.id === "splice19D"), false);
@@ -189,7 +189,7 @@ test("circuit 19: D2 is on cab 399-A, 431 is on overlay 399-A — printed page 5
   const d2 = byId.get("d2");
   const rel = byId.get("relay431");
   const wall = byId.get("bulkhead");
-  const htr = byId.get("filtHtr");
+  const htr = byId.get("heater");
   assert.ok(plug && d2 && rel && wall && htr);
   assert.ok(
     map.wires.some((w) => w.from === "d2" && w.to === "ff399" && w.circuit === "19D"),
@@ -198,7 +198,9 @@ test("circuit 19: D2 is on cab 399-A, 431 is on overlay 399-A — printed page 5
   assert.ok(d2.x > plug.x, "D2 is on the cab / firewall side of 399");
   assert.ok(rel.x < plug.x, "431 is on the warning-light overlay side of 399");
   assert.ok(wall.x > plug.x, "firewall is on the cab face of 399");
-  assert.ok(htr.x < plug.x, "431-87 heater stays on the overlay, not a 399 pin");
+  assert.ok(htr.x > wall.x, "431-87 19D splices to 19A and the heater is after the wall");
+  assert.ok(map.wires.some((w) => w.from === "relay431" && w.to === "spliceJmp" && w.circuit === "19D"));
+  assert.ok(map.wires.some((w) => (w.from === "spliceJmp" && w.to === "ff399") || (w.from === "ff399" && w.to === "spliceJmp")));
 });
 
 test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {

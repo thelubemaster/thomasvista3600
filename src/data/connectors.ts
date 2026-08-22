@@ -439,7 +439,7 @@ export const connectors: Connector[] = [
       { cavity: "A", circuit: "19D", dest: "Cab: D2-B 14GY. Overlay: 431-30. Printed page 50." },
       { cavity: "B", circuit: "19J", dest: "Cab: A2 18GY. Overlay: splice to 470 IGN, 19K to 434, 19F to 431-85, jumper to D" },
       { cavity: "C", circuit: "19H / 19M", dest: "Cab: 19H to START (page 10). Overlay: 19M through 1CR to 470 TEST" },
-      { cavity: "D", circuit: "19A", dest: "Cab: dash (2) H5 → 401-A heater. Overlay: N/FUEL FILTER jumper from B" },
+      { cavity: "D", circuit: "19A", dest: "Cab: (2) H5 → 401-A heater. Overlay: 431-87 19D spliced to 19A (plus N/FUEL FILTER jumper from B)" },
       { cavity: "E", circuit: "19B", dest: "Cab: dash (2) E4 → 401-B water probe. Overlay: 470 PROBE" },
       { cavity: "F", circuit: "19C", dest: "Cab: dash (2) H6 → 401-C vacuum. Overlay: warning-light face of the same 19C" },
     ],
@@ -480,7 +480,7 @@ export const connectors: Connector[] = [
     hyd: true,
     pins: [
       { cavity: "30", circuit: "19D", dest: "Overlay 399-A. D2-B is on cab 399-A (printed page 50)" },
-      { cavity: "87", circuit: "19D", dest: "FILTER HEATER element — not a 399 pin" },
+      { cavity: "87", circuit: "19D", dest: "19D splices to 19A → 399-D → (2) H5 → 401-A FUEL HEATER" },
       { cavity: "85", circuit: "19F", dest: "Overlay 399-B splice" },
       { cavity: "86", circuit: "19E", dest: "CAB GROUND 18GY" },
     ],

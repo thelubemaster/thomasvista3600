@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 36')
+          t = t.replace('versionCode 1', 'versionCode 37')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.29
-          name: 3600 Wiring 1.2.29
+          tag_name: v1.2.30
+          name: 3600 Wiring 1.2.30
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            Circuit 19 matched to printed page 50 / 88: D2 on cab 399-A, heater relay 431 on overlay 399-A, 434 is 19K, 470 TEST is 19M through 1CR.
+            431-87 19D splices to 19A and crosses DASH CONNECTOR (2) H5 to the fuel heater. Matches the cab trace.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk
