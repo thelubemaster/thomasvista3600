@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 33')
+          t = t.replace('versionCode 1', 'versionCode 34')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.26
-          name: 3600 Wiring 1.2.26
+          tag_name: v1.2.27
+          name: 3600 Wiring 1.2.27
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            D2 goes straight to heater relay 431 — not through 399. Unplug 399: overlay face is dead to the fuse; cab face still has the fuse-box wire and the firewall run.
+            Circuit 19: boxes stay on the drawing. 399 is a tall 6-way so the six wires do not stack. D2 still goes straight to 431.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

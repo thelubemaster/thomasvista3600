@@ -1,6 +1,6 @@
 {
-  "version": "1.2.26",
+  "version": "1.2.27",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "D2 goes straight to heater relay 431. Unplug 399: overlay face is dead to the fuse; cab face still has the fuse-box wire and the firewall run."
+  "notes": "Circuit 19: boxes stay on the drawing, 399 is tall so the six wires do not stack, D2 still goes straight to 431."
 }

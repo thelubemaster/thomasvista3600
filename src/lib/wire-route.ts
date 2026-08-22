@@ -9,8 +9,16 @@ type Pt = { x: number; y: number };
 type Side = "L" | "R" | "T" | "B";
 type Box = { id: string; l: number; r: number; t: number; b: number };
 
-function nodeWH(n: FlowNode): { w: number; h: number } {
+/** Box size. 6–8 cavity through-plugs are tall so one wire per pin is not crushed into 56px. */
+export function nodeWH(n: { kind?: string; pins?: string }): { w: number; h: number } {
   if (n.kind === "splice") return { w: 14, h: 14 };
+  const parts = (n.pins ?? "")
+    .split(/[\s,/]+/)
+    .map((s) => s.replace(/=.*$/, "").trim())
+    .filter((s) => s && s !== "—" && !/^many$/i.test(s));
+  if (n.kind === "connector" && parts.length >= 6 && parts.length <= 8) {
+    return { w: BOX_W, h: Math.max(BOX_H, parts.length * 64) };
+  }
   return { w: BOX_W, h: BOX_H };
 }
 
@@ -37,8 +45,8 @@ const RUN_GAP = 14;
 
 function port(n: FlowNode, side: Side, lane: number): Pt {
   const { w, h } = nodeWH(n);
-  const face = n.kind === "splice" ? 6 : FACE;
-  const scaled = n.kind === "splice" ? lane * (6 / FACE) : lane;
+  const face = n.kind === "splice" ? 6 : Math.max(FACE, h / 2 - 10);
+  const scaled = n.kind === "splice" ? lane * (6 / FACE) : lane * (face / FACE);
   const l = clamp(scaled, -face, face);
   if (side === "R") return { x: n.x + w / 2, y: n.y + l };
   if (side === "L") return { x: n.x - w / 2, y: n.y + l };

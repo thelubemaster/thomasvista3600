@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
 import { isWallStop, readLines, type ReadLine } from "@/data/read-lines";
 import { placeWireLabels } from "@/lib/wire-label";
-import { polylineToPath, routeMapWires } from "@/lib/wire-route";
+import { nodeWH, polylineToPath, routeMapWires } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
 import { PartInspect } from "@/components/part-inspect";
 import { cn } from "@/lib/utils";
@@ -46,6 +46,7 @@ function NodeCard({
   }
 
   const isGnd = /ground/i.test(node.label);
+  const { w, h } = nodeWH(node);
   const kindRing =
     isGnd
       ? "stroke-[var(--color-wire-gnd)]"
@@ -63,25 +64,25 @@ function NodeCard({
 
   return (
     <g
-      transform={`translate(${node.x - 64} ${node.y - 28})`}
+      transform={`translate(${node.x - w / 2} ${node.y - h / 2})`}
       className={cn("cursor-pointer transition-opacity", dim && "opacity-30")}
       data-node={node.id}
     >
-      <rect x={-16} y={-16} width={160} height={88} fill="transparent" />
+      <rect x={-16} y={-16} width={w + 32} height={h + 32} fill="transparent" />
       <rect
-        width="128"
-        height="56"
+        width={w}
+        height={h}
         rx="8"
         className={cn(isGnd ? "fill-[#3a3832]" : wall ? "fill-[#2a2218]" : "fill-raised", selected ? "stroke-accent" : kindRing)}
         strokeWidth={selected || wall ? 2.4 : 1.2}
       />
       {wall ? (
-        <text x="64" y="12" textAnchor="middle" className="fill-accent font-mono" style={{ fontSize: 9, fontWeight: 600 }}>
+        <text x={w / 2} y="12" textAnchor="middle" className="fill-accent font-mono" style={{ fontSize: 9, fontWeight: 600 }}>
           WALL
         </text>
       ) : null}
       <text
-        x="64"
+        x={w / 2}
         y={wall ? 28 : 22}
         textAnchor="middle"
         className="fill-fg font-mono"
@@ -89,7 +90,7 @@ function NodeCard({
       >
         {node.label}
       </text>
-      <text x="64" y={wall ? 44 : 42} textAnchor="middle" className="fill-muted font-sans" style={{ fontSize: 11 }}>
+      <text x={w / 2} y={wall ? 44 : 42} textAnchor="middle" className="fill-muted font-sans" style={{ fontSize: 11 }}>
         {node.sub}
       </text>
     </g>
@@ -154,11 +155,11 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
       if (!pts) continue;
       items.push({ w, pts, d: polylineToPath(pts) });
     }
-    const obstacles = map.nodes.map((n) =>
-      n.kind === "splice"
-        ? { l: n.x - 28, r: n.x + 28, t: n.y - 28, b: n.y + 28 }
-        : { l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 },
-    );
+    const obstacles = map.nodes.map((n) => {
+      if (n.kind === "splice") return { l: n.x - 28, r: n.x + 28, t: n.y - 28, b: n.y + 28 };
+      const { w, h } = nodeWH(n);
+      return { l: n.x - w / 2 - 6, r: n.x + w / 2 + 6, t: n.y - h / 2 - 8, b: n.y + h / 2 + 8 };
+    });
     if (map.firewallX) {
       obstacles.push({ l: 0, r: W, t: 0, b: 22 });
       obstacles.push({ l: map.firewallX - 4, r: W, t: H - 22, b: H });

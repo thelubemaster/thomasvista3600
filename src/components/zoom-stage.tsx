@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { Maximize2, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const MIN = 0.2;
+const MIN = 0.12;
 const MAX = 5;
 /** Finger jitter on a phone is bigger than 5px — don't start a pan that soon. */
 const DRAG = 16;
@@ -166,7 +166,7 @@ export function ZoomStage({
     <div
       className={cn(
         "relative flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface",
-        className ?? "h-[min(58svh,36rem)] sm:h-[min(68svh,40rem)]",
+        className ?? "h-[min(64svh,40rem)] sm:h-[min(74svh,46rem)]",
       )}
     >
       <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-xs border border-border bg-raised/95 p-0.5">

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { routeMapWires, routeWirePts, runOverlap, wireLanes } from "./wire-route.ts";
+import { nodeWH, routeMapWires, routeWirePts, runOverlap, wireLanes } from "./wire-route.ts";
 
 function box(id: string, x: number, y: number) {
   return { id, x, y, label: id, kind: "connector" as const, detail: "" };
@@ -109,7 +109,7 @@ test("same cavity may share a port", () => {
 });
 
 function parseMaps(src: string) {
-  const maps: { id: string; w: number; h: number; nodes: { id: string; x: number; y: number; kind: string; label: string; detail: string }[]; wires: { id: string; from: string; to: string; circuit: string; label?: string }[] }[] = [];
+  const maps: { id: string; w: number; h: number; nodes: { id: string; x: number; y: number; kind: string; label: string; detail: string; pins?: string }[]; wires: { id: string; from: string; to: string; circuit: string; label?: string }[] }[] = [];
   const re = /\n  \{\n    id: "([^"]+)",\n    number: "([^"]+)",/g;
   const hits: { id: string; start: number }[] = [];
   let m: RegExpExecArray | null;
@@ -119,7 +119,7 @@ function parseMaps(src: string) {
     const block = src.slice(hits[i].start, end);
     const width = /width:\s*(\d+)/.exec(block);
     const height = /height:\s*(\d+)/.exec(block);
-    const nodes: { id: string; x: number; y: number; kind: string; label: string; detail: string }[] = [];
+    const nodes: { id: string; x: number; y: number; kind: string; label: string; detail: string; pins?: string }[] = [];
     const nodeRe = /\{ id: "([^"]+)",[\s\S]*?x: (\d+),\s*y: (\d+)/g;
     const wiresStart = block.indexOf("wires:");
     let n: RegExpExecArray | null;
@@ -133,6 +133,7 @@ function parseMaps(src: string) {
         kind: /kind: "([^"]+)"/.exec(slice)?.[1] ?? "load",
         label: /label: "([^"]+)"/.exec(slice)?.[1] ?? n[1],
         detail: "",
+        pins: /pins: "([^"]+)"/.exec(slice)?.[1],
       });
     }
     const wires: { id: string; from: string; to: string; circuit: string; label?: string }[] = [];
@@ -143,10 +144,11 @@ function parseMaps(src: string) {
   return maps;
 }
 
-function onNode(p: { x: number; y: number }, n: { x: number; y: number; kind: string }) {
+function onNode(p: { x: number; y: number }, n: { x: number; y: number; kind: string; pins?: string }) {
   if (n.kind === "splice") return Math.hypot(p.x - n.x, p.y - n.y) <= 10;
-  const hw = 64;
-  const hh = 28;
+  const { w, h } = nodeWH(n);
+  const hw = w / 2;
+  const hh = h / 2;
   const onV = Math.abs(Math.abs(p.x - n.x) - hw) < 1.5 && Math.abs(p.y - n.y) <= hh + 1;
   const onH = Math.abs(Math.abs(p.y - n.y) - hh) < 1.5 && Math.abs(p.x - n.x) <= hw + 1;
   return onV || onH;
@@ -222,6 +224,41 @@ test("circuit 17 starter parts do not sit on top of each other", () => {
       );
     }
   }
+});
+
+test("circuit 19 boxes stay on the canvas and do not sit on each other", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];
+  const map = parseMaps(src).find((m) => m.id === "19");
+  assert.ok(map);
+  const clipped: string[] = [];
+  const piled: string[] = [];
+  for (const n of map.nodes) {
+    const { w, h } = nodeWH(n);
+    const l = n.x - w / 2;
+    const r = n.x + w / 2;
+    const t = n.y - h / 2;
+    const b = n.y + h / 2;
+    if (l < 8) clipped.push(`${n.id} off left ${l.toFixed(0)}`);
+    if (r > map.w - 8) clipped.push(`${n.id} off right ${r.toFixed(0)}/${map.w}`);
+    if (t < 24) clipped.push(`${n.id} off top ${t.toFixed(0)}`);
+    if (b > map.h - 8) clipped.push(`${n.id} off bottom ${b.toFixed(0)}/${map.h}`);
+  }
+  const boxes = map.nodes.filter((n) => n.kind !== "splice");
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i]!;
+      const b = boxes[j]!;
+      const aw = nodeWH(a);
+      const bw = nodeWH(b);
+      const gap = 12;
+      const hitX = Math.abs(a.x - b.x) < aw.w / 2 + bw.w / 2 + gap;
+      const hitY = Math.abs(a.y - b.y) < aw.h / 2 + bw.h / 2 + gap;
+      if (hitX && hitY) piled.push(`${a.id}@${a.x},${a.y} on ${b.id}@${b.x},${b.y}`);
+    }
+  }
+  assert.deepEqual(clipped, []);
+  assert.deepEqual(piled, []);
 });
 
 test("circuit drawings: different wires do not run on top of each other", () => {

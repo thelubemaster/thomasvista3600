@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { placeWireLabels, type LabelBox, type Pt } from "./wire-label.ts";
-import { routeMapWires } from "./wire-route.ts";
+import { nodeWH, routeMapWires } from "./wire-route.ts";
 
 function hLine(y: number, x0 = 80, x1 = 520): Pt[] {
   return [
@@ -107,7 +107,7 @@ test("labels stay inside the drawing", () => {
   }
 });
 
-type Node = { id: string; x: number; y: number; label: string; kind: string; detail: string; sub?: string };
+type Node = { id: string; x: number; y: number; label: string; kind: string; detail: string; sub?: string; pins?: string };
 type Wire = { id: string; from: string; to: string; circuit: string; label?: string };
 
 function parseMaps(src: string) {
@@ -136,6 +136,7 @@ function parseMaps(src: string) {
         label: /label: "([^"]+)"/.exec(slice)?.[1] ?? n[1],
         kind: /kind: "([^"]+)"/.exec(slice)?.[1] ?? "load",
         detail: "",
+        pins: /pins: "([^"]+)"/.exec(slice)?.[1],
       });
     }
     const wires: Wire[] = [];
@@ -163,11 +164,11 @@ function labelMap(map: ReturnType<typeof parseMaps>[number]) {
     if (!pts) continue;
     items.push({ id: w.id, pts, circuit: w.circuit, note: w.label ?? null });
   }
-  const obstacles: LabelBox[] = map.nodes.map((n) =>
-    n.kind === "splice"
-      ? { l: n.x - 28, r: n.x + 28, t: n.y - 28, b: n.y + 28 }
-      : { l: n.x - 70, r: n.x + 70, t: n.y - 36, b: n.y + 36 },
-  );
+  const obstacles: LabelBox[] = map.nodes.map((n) => {
+    if (n.kind === "splice") return { l: n.x - 28, r: n.x + 28, t: n.y - 28, b: n.y + 28 };
+    const { w, h } = nodeWH(n);
+    return { l: n.x - w / 2 - 6, r: n.x + w / 2 + 6, t: n.y - h / 2 - 8, b: n.y + h / 2 + 8 };
+  });
   return { labels: placeWireLabels(items, obstacles, { w: map.w, h: map.h }), items };
 }
 
