@@ -9,16 +9,8 @@ type Pt = { x: number; y: number };
 type Side = "L" | "R" | "T" | "B";
 type Box = { id: string; l: number; r: number; t: number; b: number };
 
-/** Box size. 6–8 cavity through-plugs are tall so one wire per pin is not crushed into 56px. */
 export function nodeWH(n: { kind?: string; pins?: string }): { w: number; h: number } {
   if (n.kind === "splice") return { w: 14, h: 14 };
-  const parts = (n.pins ?? "")
-    .split(/[\s,/]+/)
-    .map((s) => s.replace(/=.*$/, "").trim())
-    .filter((s) => s && s !== "—" && !/^many$/i.test(s));
-  if (n.kind === "connector" && parts.length >= 6 && parts.length <= 8) {
-    return { w: BOX_W, h: Math.max(BOX_H, parts.length * 64) };
-  }
   return { w: BOX_W, h: BOX_H };
 }
 
@@ -45,8 +37,8 @@ const RUN_GAP = 14;
 
 function port(n: FlowNode, side: Side, lane: number): Pt {
   const { w, h } = nodeWH(n);
-  const face = n.kind === "splice" ? 6 : Math.max(FACE, h / 2 - 10);
-  const scaled = n.kind === "splice" ? lane * (6 / FACE) : lane * (face / FACE);
+  const face = n.kind === "splice" ? 6 : FACE;
+  const scaled = n.kind === "splice" ? lane * (6 / FACE) : lane;
   const l = clamp(scaled, -face, face);
   if (side === "R") return { x: n.x + w / 2, y: n.y + l };
   if (side === "L") return { x: n.x - w / 2, y: n.y + l };
@@ -245,12 +237,22 @@ function vertChannel(p1: Pt, p2: Pt, x: number, stubA: number, stubB: number, sa
   return [p1, { x: p1.x, y: y1 }, { x, y: y1 }, { x, y: y2 }, { x: p2.x, y: y2 }, p2];
 }
 
+function isEndPlug(n: FlowNode): boolean {
+  return n.kind === "connector" && /399|through|in-line 6/i.test(`${n.id} ${n.label} ${n.sub ?? ""}`);
+}
+
 function preferredSides(a: FlowNode, b: FlowNode): [Side, Side][] {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const aw = nodeWH(a);
   const bw = nodeWH(b);
   const out: [Side, Side][] = [];
+  // 399 is a through 6-way: neighbors stay on the left or right end, never the top/bottom.
+  if (isEndPlug(a) || isEndPlug(b)) {
+    out.push(dx >= 0 ? ["R", "L"] : ["L", "R"]);
+    out.push(dx >= 0 ? ["L", "R"] : ["R", "L"]);
+    return out;
+  }
   if (Math.abs(dx) >= Math.max(aw.w, bw.w) * 0.35) out.push(dx >= 0 ? ["R", "L"] : ["L", "R"]);
   if (Math.abs(dy) >= Math.max(aw.h, bw.h) * 0.35) out.push(dy >= 0 ? ["B", "T"] : ["T", "B"]);
   if (!out.length) out.push(dx >= 0 ? ["R", "L"] : ["L", "R"]);

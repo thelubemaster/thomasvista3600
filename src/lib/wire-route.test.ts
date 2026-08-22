@@ -226,6 +226,69 @@ test("circuit 17 starter parts do not sit on top of each other", () => {
   }
 });
 
+test("circuit 19: 399 has six wires on the left end and six on the right", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];
+  const map = parseMaps(src).find((m) => m.id === "19");
+  assert.ok(map);
+  const plug = map.nodes.find((n) => n.id === "ff399");
+  assert.ok(plug);
+  const routed = routeMapWires(map.nodes as never, map.wires, { w: map.w, h: map.h });
+  const { w, h } = nodeWH(plug);
+  let left = 0;
+  let right = 0;
+  let tb = 0;
+  const dead: string[] = [];
+  for (const w0 of map.wires.filter((x) => x.from === "ff399" || x.to === "ff399")) {
+    const pts = routed.get(w0.id);
+    assert.ok(pts && pts.length >= 2, w0.id);
+    const end = w0.from === "ff399" ? pts[0] : pts[pts.length - 1];
+    const onL = Math.abs(end.x - (plug.x - w / 2)) < 2 && Math.abs(end.y - plug.y) <= h / 2 + 2;
+    const onR = Math.abs(end.x - (plug.x + w / 2)) < 2 && Math.abs(end.y - plug.y) <= h / 2 + 2;
+    const onT = Math.abs(end.y - (plug.y - h / 2)) < 2;
+    const onB = Math.abs(end.y - (plug.y + h / 2)) < 2;
+    if (onL) left += 1;
+    else if (onR) right += 1;
+    else if (onT || onB) tb += 1;
+    const otherId = w0.from === "ff399" ? w0.to : w0.from;
+    const other = map.nodes.find((n) => n.id === otherId);
+    if (!other) dead.push(`${w0.id} missing ${otherId}`);
+  }
+  assert.equal(tb, 0, "399 wires must leave the left or right end, not the top/bottom");
+  assert.equal(left, 6, `left end ${left}`);
+  assert.equal(right, 6, `right end ${right}`);
+  assert.deepEqual(dead, []);
+});
+
+test("circuit 19: 19D and 19C do not die at a splice", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];
+  const map = parseMaps(src).find((m) => m.id === "19");
+  assert.ok(map);
+  const byId = Object.fromEntries(map.nodes.map((n) => [n.id, n]));
+  function continues(circuit: string, fromId: string) {
+    const outs = map.wires.filter((w) => w.circuit === circuit && (w.from === fromId || w.to === fromId));
+    const names = outs.map((w) => {
+      const other = w.from === fromId ? w.to : w.from;
+      return `${other}:${byId[other]?.kind}`;
+    });
+    return names;
+  }
+  const dFrom399 = continues("19D", "ff399");
+  assert.ok(dFrom399.some((s) => s.startsWith("filtHtr:")), `overlay 19D ${dFrom399}`);
+  assert.ok(dFrom399.some((s) => s.startsWith("relay431:")), `cab 19D ${dFrom399}`);
+  const cFrom399 = continues("19C", "ff399");
+  assert.ok(cFrom399.length >= 2, `19C on 399 ${cFrom399}`);
+  const cabC = map.wires.find((w) => w.circuit === "19C" && (w.from === "splice19C" || w.to === "splice19C") && w.from !== "ff399" && w.to !== "ff399");
+  assert.ok(cabC, "cab 19C continues past the splice");
+  const other = cabC.from === "splice19C" ? cabC.to : cabC.from;
+  assert.equal(other, "bulkhead");
+  const ovC = map.wires.find((w) => w.circuit === "19C" && (w.from === "spliceWlF" || w.to === "spliceWlF") && w.from !== "ff399" && w.to !== "ff399");
+  assert.ok(ovC, "overlay 19C continues past the splice");
+  const ovOther = ovC.from === "spliceWlF" ? ovC.to : ovC.from;
+  assert.equal(ovOther, "mod470");
+});
+
 test("circuit 19 boxes stay on the canvas and do not sit on each other", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const src = readFileSync(join(here, "../data/schematics.ts"), "utf8").split("export const flowMaps")[0];

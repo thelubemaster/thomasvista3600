@@ -1,8 +1,8 @@
 {
-  "version": "1.2.27",
-  "apkVersion": "1.2.27",
-  "apkVersionCode": 34,
+  "version": "1.2.28",
+  "apkVersion": "1.2.28",
+  "apkVersionCode": 35,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 19: boxes stay on the drawing, 399 is tall so the six wires do not stack, D2 still goes straight to 431."
+  "notes": "399 shows all 12 wires: 6 on the left end, 6 on the right. 19D goes to the filter heater; 19C continues to the wall and to 470."
 }
