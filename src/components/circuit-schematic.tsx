@@ -135,10 +135,15 @@ export function CircuitSchematic() {
 
       <ZoomStage>
         <svg
-          width={W}
-          height={H}
+          width="100%"
+          height="100%"
           viewBox={`0 0 ${W} ${H}`}
-          className="block max-w-none"
+          data-drawing-w={W}
+          data-drawing-h={H}
+          preserveAspectRatio="xMinYMin meet"
+          className="block h-full w-full"
+          shapeRendering="geometricPrecision"
+          textRendering="geometricPrecision"
           role="img"
           aria-label="Circuit 19 wiring schematic"
           onClick={() => setSelected("bulkhead")}

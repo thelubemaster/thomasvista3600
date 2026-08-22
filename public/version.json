@@ -1,6 +1,6 @@
 {
-  "version": "1.2.17",
+  "version": "1.2.18",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Splices have a keep-out so a wire that does not belong in that splice does not look like it lands there."
+  "notes": "Drawings stay sharp when you zoom. The schematic is redrawn at zoom size instead of stretching a small bitmap."
 }

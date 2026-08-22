@@ -7,6 +7,16 @@ const MAX = 5;
 /** Finger jitter on a phone is bigger than 5px — don't start a pan that soon. */
 const DRAG = 16;
 
+function drawingSize(el: HTMLElement | null): { w: number; h: number } {
+  const svg = el?.querySelector("svg");
+  if (!svg) return { w: 1320, h: 520 };
+  const dw = Number(svg.getAttribute("data-drawing-w"));
+  const dh = Number(svg.getAttribute("data-drawing-h"));
+  if (dw > 0 && dh > 0) return { w: dw, h: dh };
+  const vb = svg.viewBox.baseVal;
+  return { w: vb.width || 1320, h: vb.height || 520 };
+}
+
 function clamp(n: number) {
   return Math.min(MAX, Math.max(MIN, n));
 }
@@ -29,6 +39,7 @@ export function ZoomStage({
   const [tx, setTx] = useState(16);
   const [ty, setTy] = useState(16);
   const [panning, setPanning] = useState(false);
+  const [box, setBox] = useState({ w: 1320, h: 520 });
 
   const scaleRef = useRef(scale);
   const txRef = useRef(tx);
@@ -89,15 +100,14 @@ export function ZoomStage({
   const fitToView = useCallback(() => {
     const el = viewport.current;
     if (!el) return;
-    const svg = el.querySelector("svg");
-    const cw = svg?.width.baseVal.value || svg?.viewBox.baseVal.width || 1320;
-    const ch = svg?.height.baseVal.value || svg?.viewBox.baseVal.height || 520;
+    const size = drawingSize(el);
+    setBox(size);
     const vw = el.clientWidth;
     const vh = el.clientHeight;
-    if (!vw || !vh || !cw || !ch) return;
+    if (!vw || !vh || !size.w || !size.h) return;
     const pad = 16;
-    const s = clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch));
-    apply(s, (vw - cw * s) / 2, (vh - ch * s) / 2);
+    const s = clamp(Math.min((vw - pad * 2) / size.w, (vh - pad * 2) / size.h));
+    apply(s, (vw - size.w * s) / 2, (vh - size.h * s) / 2);
   }, [apply]);
 
   useEffect(() => {
@@ -271,11 +281,10 @@ export function ZoomStage({
         }}
         onDoubleClick={(e) => zoomAt(e.clientX, e.clientY, scaleRef.current * 1.35)}
       >
-        <div
-          className="origin-top-left will-change-transform"
-          style={{ transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}
-        >
-          {children}
+        <div style={{ transform: `translate(${tx}px, ${ty}px)` }}>
+          <div style={{ width: box.w * scale, height: box.h * scale }}>
+            {children}
+          </div>
         </div>
       </div>
     </div>
