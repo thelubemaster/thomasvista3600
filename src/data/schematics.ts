@@ -61,7 +61,7 @@ const flowMapsCore: FlowMap[] = [
     width: 2100,
     nodes: [
       { id: "lamp434", label: "FUEL FILTER LIGHT (434)", sub: "19K only", kind: "load", x: 130, y: 340, detail: "19K 18GY from the overlay splice at 399-B. Printed page 96 is a 1-cavity warning-light plug — 19K only. Return is the dash / cluster lamp ground, not a harness wire back to 399. 399 has no ground cavity. Printed page 50 / 96.", page: "50 / 96", look: "1-cavity dash lamp.", pins: "1" },
-      { id: "mod470", label: "WATER-IN-FUEL MODULE (470)", sub: "A IGN / B OUT / D PROBE / C TEST", kind: "module", x: 130, y: 500, detail: "Printed page 50. A IGN=19J from overlay 399-B. B OUTPUT=19L to WIF LIGHT (433). D PROBE=19B from overlay 399-E. C LAMP TEST=19M through 1CR from overlay 399-C. Not 19C.", page: "50", look: "4-wire module on the warning-light overlay.", pins: "A IGN / B OUT / D PROBE / C TEST" },
+      { id: "mod470", label: "WATER-IN-FUEL MODULE (470)", sub: "4 wires · A B C D", kind: "module", x: 130, y: 500, detail: "Four wires only. A IGN=19J from overlay 399-B. B OUTPUT=19L to WIF LIGHT (433). D PROBE=19B from overlay 399-E. C LAMP TEST=19M through 1CR from overlay 399-C. No ground pin — printed page 50 / 97.", page: "50 / 97", look: "4-cavity weather pack on the warning-light overlay.", pins: "A=IGN / B=OUT / D=PROBE / C=TEST" },
       { id: "wif433", label: "WIF LIGHT (433)", sub: "19L / 19-GA", kind: "load", x: 130, y: 700, detail: "19L from 470-B. Other side 19-GA 18WH CAB GROUND. Printed page 50.", page: "50", look: "Dash lamp.", pins: "2" },
       { id: "gndWl", label: "CAB GROUND", sub: "19E / 19-GA", kind: "source", x: 130, y: 800, detail: "431 pin 86 = 19E 18GY. WIF lamp 19-GA. Printed page 50.", page: "50", look: "Ring terminal.", pins: "—" },
       { id: "relay431", label: "FUEL FILTER HEATER RELAY (431)", sub: "30=19D · 87=19A", kind: "relay", x: 280, y: 100, detail: "Pass-through 399. 30 is 19D from overlay A (D2 on cab A). 87 is 19A straight to overlay D — no jumper. That 19A goes through 399-D, DASH CONNECTOR (2) H5, 401-A, FUEL HEATER. 85=19F, 86=19E.", page: "50", look: "ISO 4-cavity.", pins: "30 87 85 86", relayId: "431" },
@@ -119,7 +119,6 @@ const flowMapsCore: FlowMap[] = [
       { id: "w28", from: "heater", to: "gndEng", circuit: "11", color: "gnd" },
       { id: "w29", from: "probe", to: "gndEng", circuit: "11", color: "gnd" },
       { id: "w30", from: "vac", to: "gndEng", circuit: "11", color: "gnd" },
-      { id: "w33", from: "mod470", to: "gndWl", circuit: "11", color: "gnd" },
     ],
     legend: [
       { id: "399", cavity: "pass-through A–F", note: "A 19D D2↔431-30. B 19J A2↔overlay B. C 19H/19M start↔1CR. D 19A 431-87↔(2) H5. E 19B 470↔(2) E4. F 19C overlay↔(2) H6." },
@@ -134,6 +133,7 @@ const flowMapsCore: FlowMap[] = [
       { id: "19C", cavity: "F: overlay ↔ (2) H6 ↔ 401-C vacuum", note: "Pass-through." },
       { id: "19E", cavity: "431-86 → CAB GROUND", note: "18GY. Not through 399." },
       { id: "19L", cavity: "470-B → 433", note: "WIF lamp. Return 19-GA. Not through 399." },
+      { id: "470", cavity: "A B C D only", note: "A 19J IGN, B 19L OUT, C 19M TEST, D 19B PROBE. No ground pin." },
     ],
   },
   {

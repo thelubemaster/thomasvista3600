@@ -454,7 +454,7 @@ export const connectors: Connector[] = [
     pins: [
       { cavity: "A", circuit: "19A", dest: "Fuel heater" },
       { cavity: "B", circuit: "19B", dest: "Water probe" },
-      { cavity: "C", circuit: "19C", dest: "Vacuum switch — 470 lamp-test is 1CR on the cab side of 399-F" },
+      { cavity: "C", circuit: "19C", dest: "Vacuum switch. 470 lamp-test is 1CR on overlay 399-C, not this pin" },
     ],
   },
   {
@@ -462,13 +462,13 @@ export const connectors: Connector[] = [
     tag: "470",
     name: "WATER-IN-FUEL MODULE (470)",
     harness: "Warning-light overlay",
-    page: "97",
+    page: "50 / 97",
     hyd: true,
     pins: [
-      { cavity: "A IGN", circuit: "19J", dest: "Overlay 399-B / A2" },
-      { cavity: "B OUT", circuit: "19L", dest: "WIF LIGHT (433). Return 19-GA" },
-      { cavity: "D PROBE", circuit: "19B", dest: "Overlay 399-E. Engine probe is cab 399-E → (2) E4 → 401-B" },
-      { cavity: "C TEST", circuit: "19M", dest: "1CR from overlay 399-C. Not 19C" },
+      { cavity: "A", circuit: "19J", dest: "IGN from overlay 399-B / A2" },
+      { cavity: "B", circuit: "19L", dest: "OUT to WIF LIGHT (433). Lamp return 19-GA is on 433, not 470" },
+      { cavity: "C", circuit: "19M", dest: "TEST through 1CR from overlay 399-C. Not 19C" },
+      { cavity: "D", circuit: "19B", dest: "PROBE from overlay 399-E. Engine probe is cab 399-E → (2) E4 → 401-B" },
     ],
   },
   {

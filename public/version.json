@@ -1,6 +1,6 @@
 {
-  "version": "1.2.32",
+  "version": "1.2.33",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "434 is a one-wire 19K lamp. Ground is dash/cluster, not through 399."
+  "notes": "WIF module 470 is four wires. No ground pin."
 }

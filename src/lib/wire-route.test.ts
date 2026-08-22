@@ -293,6 +293,12 @@ test("circuit 19: 19D and 19C do not die at a splice", () => {
   );
   const test470 = map.wires.find((w) => w.to === "mod470" && w.from === "diode1cr");
   assert.ok(test470 && test470.circuit === "19M", "470 TEST is 19M through 1CR");
+  const mod470 = map.wires.filter((w) => w.to === "mod470" || w.from === "mod470");
+  assert.equal(mod470.length, 4, "470 is a 4-cavity module");
+  assert.deepEqual(
+    mod470.map((w) => w.circuit).sort(),
+    ["19B", "19J", "19L", "19M"],
+  );
   const aFrom399 = continues("19A", "ff399");
   assert.ok(aFrom399.some((s) => s.startsWith("relay431:")), `19A overlay is 431-87 ${aFrom399}`);
   assert.ok(aFrom399.some((s) => s.startsWith("splice19A:")), `19A cab goes to the wall ${aFrom399}`);

@@ -83,3 +83,44 @@ test("withGrounds does not invent a 434 ground back to 399", () => {
     false,
   );
 });
+
+test("withGrounds does not add a fifth wire to 4-cavity WIF module 470", () => {
+  const map = withGrounds({
+    id: "19",
+    number: "19",
+    title: "FUEL SHUT-OFF SOLENOID, FUEL FILTER",
+    blurb: "",
+    engineCritical: true,
+    power: "Key + Battery",
+    defaultId: "mod470",
+    nodes: [
+      {
+        id: "mod470",
+        label: "WATER-IN-FUEL MODULE (470)",
+        sub: "4 wires · A B C D",
+        kind: "module",
+        x: 130,
+        y: 500,
+        detail: "Four wires only.",
+        look: "4-cavity weather pack on the warning-light overlay.",
+        pins: "A=IGN / B=OUT / D=PROBE / C=TEST",
+      },
+      { id: "spliceWlB", label: "SPLICE", kind: "splice", x: 280, y: 190, detail: "" },
+      { id: "wif433", label: "WIF LIGHT (433)", kind: "load", x: 130, y: 700, detail: "", pins: "2" },
+      { id: "ff399", label: "FUEL FILTER (399)", kind: "connector", x: 620, y: 325, detail: "", pins: "A B C D E F" },
+      { id: "diode1cr", label: "BLOCKING DIODE (1CR)", kind: "load", x: 280, y: 280, detail: "", look: "2-pin diode.", pins: "A / B" },
+    ],
+    wires: [
+      { id: "w11", from: "spliceWlB", to: "mod470", circuit: "19J", color: "ign", label: "470 IGN" },
+      { id: "w12", from: "mod470", to: "wif433", circuit: "19L", color: "a", label: "OUT" },
+      { id: "w18", from: "ff399", to: "mod470", circuit: "19B", color: "b", label: "E → PROBE" },
+      { id: "w21", from: "diode1cr", to: "mod470", circuit: "19M", color: "c", label: "TEST" },
+    ],
+  } as FlowMap);
+  const hits = map.wires.filter((w) => w.from === "mod470" || w.to === "mod470");
+  assert.equal(hits.length, 4, hits.map((w) => `${w.id}:${w.from}->${w.to}:${w.circuit}`).join(", "));
+  assert.deepEqual(
+    hits.map((w) => w.circuit).sort(),
+    ["19B", "19J", "19L", "19M"],
+  );
+});

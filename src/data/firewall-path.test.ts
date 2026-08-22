@@ -206,6 +206,22 @@ test("circuit 19: D2 is on cab 399-A, 431 is on overlay 399-A — printed page 5
   assert.ok(map.wires.some((w) => w.from === "relay431" && w.to === "ff399" && w.circuit === "19A"));
 });
 
+test("circuit 19: 470 is four wires — IGN OUT PROBE TEST, no ground", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const hits = map.wires.filter((w) => w.from === "mod470" || w.to === "mod470");
+  assert.equal(hits.length, 4, hits.map((w) => `${w.id}:${w.from}->${w.to}:${w.circuit}`).join(", "));
+  assert.deepEqual(
+    hits.map((w) => w.circuit).sort(),
+    ["19B", "19J", "19L", "19M"],
+  );
+  assert.equal(
+    hits.some((w) => w.circuit === "11" || /gnd/i.test(w.from) || /gnd/i.test(w.to)),
+    false,
+    "470 has no ground pin on page 50",
+  );
+});
+
 test("circuit 19: 434 is 19K only — no ground back to 399", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map);

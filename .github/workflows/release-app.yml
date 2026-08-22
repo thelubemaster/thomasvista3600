@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 39')
+          t = t.replace('versionCode 1', 'versionCode 40')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.32
-          name: 3600 Wiring 1.2.32
+          tag_name: v1.2.33
+          name: 3600 Wiring 1.2.33
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            434 is a one-wire 19K lamp. Ground is dash/cluster, not through 399.
+            WIF module 470 is four wires: A 19J, B 19L, C 19M, D 19B. No ground pin.
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk
