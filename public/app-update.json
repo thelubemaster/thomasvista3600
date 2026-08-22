@@ -1,8 +1,8 @@
 {
-  "version": "1.2.23",
-  "apkVersion": "1.2.23",
-  "apkVersionCode": 30,
+  "version": "1.2.24",
+  "apkVersion": "1.2.24",
+  "apkVersionCode": 31,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Fuel filter 399 is a 6-way through-plug: 6 wires on the cab harness, 6 on the mate."
+  "notes": "399 is one 6-way box: six wires together on the cab end, six together on the mate end."
 }

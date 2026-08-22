@@ -167,6 +167,18 @@ test("fuel filter 399 is a through 6-way so twelve wires land on it", () => {
   assert.ok(map);
   const hits = map.wires.filter((w) => w.from === "ff399" || w.to === "ff399");
   assert.equal(hits.length, 12, hits.map((w) => `${w.id}:${w.from}->${w.to}`).join(", "));
-  const mate = map.wires.filter((w) => w.from === "ffMate" || w.to === "ffMate");
-  assert.equal(mate.length, 6, "mate face is the other six");
+  const byId = new Map(map.nodes.map((n) => [n.id, n]));
+  const plug = byId.get("ff399");
+  assert.ok(plug);
+  let left = 0;
+  let right = 0;
+  for (const w of hits) {
+    const other = byId.get(w.from === "ff399" ? w.to : w.from);
+    if (!other) continue;
+    if (other.x < plug.x) left += 1;
+    if (other.x > plug.x) right += 1;
+  }
+  assert.equal(left, 6, `cab-end wires ${left}`);
+  assert.equal(right, 6, `mate-end wires ${right}`);
+  assert.equal(map.nodes.some((n) => n.id === "ffMate"), false);
 });
