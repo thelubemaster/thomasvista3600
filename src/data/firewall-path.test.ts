@@ -153,15 +153,50 @@ test("fuel filter 399 is a through 6-way so twelve wires land on it", () => {
   assert.ok(plug);
   let left = 0;
   let right = 0;
+  const leftIds: string[] = [];
+  const rightIds: string[] = [];
   for (const w of hits) {
     const other = byId.get(w.from === "ff399" ? w.to : w.from);
     if (!other) continue;
-    if (other.x < plug.x) left += 1;
-    if (other.x > plug.x) right += 1;
+    if (other.x < plug.x) {
+      left += 1;
+      leftIds.push(other.id);
+    }
+    if (other.x > plug.x) {
+      right += 1;
+      rightIds.push(other.id);
+    }
   }
-  assert.equal(left, 6);
-  assert.equal(right, 6);
+  assert.equal(left, 6, `overlay-end wires ${left}: ${leftIds.join(", ")}`);
+  assert.equal(right, 6, `cab-end wires ${right}: ${rightIds.join(", ")}`);
   assert.equal(map.nodes.some((n) => n.id === "ffMate"), false);
+  assert.ok(leftIds.includes("filtHtr"), "overlay face has FILTER HEATER");
+  assert.equal(leftIds.includes("relay431"), false, "431 is not on the overlay face");
+  assert.ok(rightIds.includes("relay431"), "cab face has 431-87");
+  assert.ok(rightIds.includes("splice19J"), "cab face has A2 19J");
+  assert.ok(rightIds.includes("splice19A") && rightIds.includes("splice19B") && rightIds.includes("splice19C"), "cab face has 19A/B/C to the wall");
+  assert.equal(rightIds.includes("filtHtr"), false);
+});
+
+test("circuit 19: D2 feeds 431 directly — power does not go through 399", () => {
+  const map = loadCore().find((m) => m.id === "19");
+  assert.ok(map);
+  const byId = new Map(map.nodes.map((n) => [n.id, n]));
+  const plug = byId.get("ff399");
+  const d2 = byId.get("d2");
+  const rel = byId.get("relay431");
+  const wall = byId.get("bulkhead");
+  const htr = byId.get("filtHtr");
+  assert.ok(plug && d2 && rel && wall && htr);
+  assert.equal(
+    map.wires.some((w) => (w.from === "d2" && w.to === "ff399") || (w.from === "ff399" && w.to === "d2")),
+    false,
+    "D2 does not land on 399",
+  );
+  assert.ok(d2.x > plug.x && rel.x > plug.x, "D2 and 431 sit on the cab side of 399 so 19D in never crosses the plug");
+  assert.ok(wall.x > plug.x, "firewall is on the cab face of 399");
+  assert.ok(htr.x < plug.x, "filter heater is the overlay face — dead to the fuse when 399 is unplugged");
+  assert.equal(Math.min(d2.x, rel.x) > plug.x, true);
 });
 
 test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {

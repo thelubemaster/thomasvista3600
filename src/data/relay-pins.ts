@@ -106,8 +106,8 @@ export const relayFaces: RelayFace[] = [
     fused: "D2 20A FUEL HTR (battery)",
     layout: "iso4",
     pins: [
-      { id: "4", iso: "30", circuit: "19D", role: "Load in", goes: "FUSE D2-B (20A FUEL HTR, battery) into the relay", power: "Battery" },
-      { id: "3", iso: "87", circuit: "19D", role: "Load out", goes: "FUEL FILTER (399) cavity A → heater element", power: "Battery" },
+      { id: "4", iso: "30", circuit: "19D", role: "Load in", goes: "FUSE D2-B (20A FUEL HTR, battery) straight into the relay — not through 399", power: "Battery" },
+      { id: "3", iso: "87", circuit: "19D", role: "Load out", goes: "Cab face of FUEL FILTER (399) A → overlay heater", power: "Battery" },
       { id: "2", iso: "85", circuit: "19F", role: "Coil +", goes: "FUEL FILTER (399) cavity B — temp switch (18GY)", power: "Key / IGN" },
       { id: "1", iso: "86", circuit: "19E", role: "Coil −", goes: "CAB GROUND (18GY)", power: "Ground" },
     ],

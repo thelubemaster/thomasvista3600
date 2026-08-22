@@ -1,6 +1,6 @@
 {
-  "version": "1.2.25",
+  "version": "1.2.26",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "399-A 19D is the filter heater, 399-B 19J is the temp switch, 399-C 19H is the start switch."
+  "notes": "D2 goes straight to heater relay 431. Unplug 399: overlay face is dead to the fuse; cab face still has the fuse-box wire and the firewall run."
 }
