@@ -1,8 +1,8 @@
 {
-  "version": "1.2.21",
-  "apkVersion": "1.2.21",
-  "apkVersionCode": 28,
+  "version": "1.2.22",
+  "apkVersion": "1.2.22",
+  "apkVersionCode": 29,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 17: J30 / J31 / starter body no longer overlap. Relay 615 is Allison MD overlay, not a typical 3600."
+  "notes": "662 matches 396: 30=14B in, 87=97CT out. Headlights both beams. Horn 61-3. Shop hops use the wall."
 }

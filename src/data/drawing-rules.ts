@@ -72,7 +72,14 @@ export function cavityCount(n: PlugNode): number | null {
   if (/firewall pass/i.test(t)) return 1;
   if (/yellow|green|natural|cluster (left|ctr|right|center)/i.test(t) && /17/.test(t)) return 17;
   if (n.kind === "fuse") return 2;
-  if (n.kind === "relay") return 4;
+  if (n.kind === "relay") {
+    if (/\bISO 5\b|5-cavity|5-pin|iso5|micro/i.test(t) && /661|300|284|286/.test(t)) return 5;
+    if (/\bISO 5\b|5-cavity|5-pin|iso5/i.test(t)) return 5;
+    if (/\b661\b|\b300\b|\b284\b|\b286\b/.test(t)) return 5;
+    const fromPins = parsePinList(n.pins);
+    if (fromPins != null) return fromPins;
+    return 4;
+  }
   return parsePinList(n.pins);
 }
 

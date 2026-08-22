@@ -113,6 +113,14 @@ function isWallNode(n: PlugNode | undefined): boolean {
   return n.kind === "connector" && WALL_NODE.test(`${n.id} ${n.label ?? ""}`);
 }
 
+test("5-pin relays are not counted as 4-pin", () => {
+  assert.equal(cavityCount({ id: "r661", kind: "relay", label: "CRANK RELAY (661)", pins: "1 2 3 4 5" }), 5);
+  assert.equal(cavityCount({ id: "r300", kind: "relay", label: "HYDRAULIC BRAKE BOOSTER RELAY (300)", look: "5-cavity square." }), 5);
+  assert.equal(cavityCount({ id: "r284", kind: "relay", label: "ABS WARNING LIGHT RELAY (284)", look: "5-cavity micro." }), 5);
+  assert.equal(cavityCount({ id: "r387", kind: "relay", label: "START RELAY (387)", look: "Black 4-cavity." }), 4);
+  assert.equal(cavityCount({ id: "r662", kind: "relay", label: "CEC MODULE PWR RELAY W/T444E (662)", look: "ISO 4-cavity." }), 4);
+});
+
 test("399 is a 6-way device; dash (2) and 401 are through plugs", () => {
   assert.equal(cavityCount({ id: "ff399", kind: "connector", label: "FUEL FILTER (399)", pins: "A B C D E F" }), 6);
   assert.equal(maxIncidentWires({ id: "ff399", kind: "connector", label: "FUEL FILTER (399)", pins: "A B C D E F" }), 6);

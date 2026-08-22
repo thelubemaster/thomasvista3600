@@ -4,8 +4,12 @@ function nodeCavities(n: FlowNode): number | null {
   const t = `${n.label} ${n.sub ?? ""} ${n.look ?? ""} ${n.pins ?? ""}`;
   const lookN = /(\d+)\s*[-–]?\s*(?:way|cavity|cavities|pin|pins)\b/i.exec(t);
   if (lookN) return Number(lookN[1]);
+  if (/\bISO 5\b|5-cavity|5-pin|iso5/i.test(t)) return 5;
   if (/\bISO 4\b/i.test(t)) return 4;
-  if (n.kind === "relay") return 4;
+  if (n.kind === "relay") {
+    if (/\b661\b|\b300\b|\b284\b|\b286\b/.test(t)) return 5;
+    return 4;
+  }
   if (n.kind === "fuse") return 2;
   return null;
 }
@@ -154,8 +158,9 @@ export function withGrounds(map: FlowMap): FlowMap {
     if (/^(IGN|ACC|ST)\b/.test(n.label)) return false;
     const cav = nodeCavities(n);
     if (cav != null && incidentCount(n.id, wires) >= cav) return false;
-    // 661 pin 2 is NC empty — do not invent a chassis ground there.
-    if (n.relayId === "661" || /crank relay \(661\)/i.test(n.label)) return false;
+    // 661 pin 2 is NC empty. 662/396 coil is 97CM, not chassis ground.
+    if (n.relayId === "661" || n.relayId === "662" || n.relayId === "396") return false;
+    if (/crank relay \(661\)|module pwr relay|module relay \(396\)/i.test(n.label)) return false;
     return true;
   });
 

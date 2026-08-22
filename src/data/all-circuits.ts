@@ -380,10 +380,10 @@ export const allCircuits: CircuitRow[] = [
   },
   {
     id: "84",
-    name: "HORN / FOG/DRIVE LIGHTS (F3)",
+    name: "NOT A CID — F3-B is 85 / 64",
     power: "Battery",
     engineCritical: false,
-    notes: "Fuse F3-B.",
+    notes: "There is no circuit 84. Fuse F3-B is horn 85 and fog 64.",
   },
   {
     id: "85 / 85A–D",

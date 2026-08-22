@@ -46,6 +46,12 @@ const RELAY_LEADS: Record<string, { iso: string; hex: string }[]> = {
     { iso: "85", hex: WIRE_HEX.key },
     { iso: "86", hex: WIRE_HEX.sig },
   ],
+  r662: [
+    { iso: "30", hex: WIRE_HEX.hot },
+    { iso: "87", hex: WIRE_HEX.hot },
+    { iso: "85", hex: WIRE_HEX.key },
+    { iso: "86", hex: WIRE_HEX.sig },
+  ],
   r431: [
     { iso: "30", hex: WIRE_HEX.hot },
     { iso: "87", hex: WIRE_HEX.hot },
@@ -99,6 +105,7 @@ const CUSTOM = new Set([
   "hydPump",
   "r387",
   "r396",
+  "r662",
   "r431",
   "r615",
   "r300",
