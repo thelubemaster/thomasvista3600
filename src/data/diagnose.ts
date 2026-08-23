@@ -348,7 +348,7 @@ export const dxResults: Record<string, DxResult> = {
   "r-cec-pwr": {
     id: "r-cec-pwr",
     title: "CEC is dark",
-    body: "MODULE POWER RELAY 396 / T444E 662. 14B battery in, 97CT keep-alive. Pull it and the computer dies. Not 387.",
+    body: "MODULE POWER RELAY 396 / T444E 662. 14B from POS BATT / 426 into pin 1. 97CT out pin 3 through ENGINE DASH (3) F to C2 — not into the CEC. Pull it and the computer dies. Not 387.",
     jumps: [{ tab: "relays", hint: "662", label: "662" }],
   },
   "r-fuel": {

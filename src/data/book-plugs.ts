@@ -33,7 +33,7 @@ export const BOOK_PLUG_GROUPS = [
     id: "engine",
     label: "Engine",
     page: "86–91",
-    ids: ["cec-379", "diag-384", "aps-382", "start-387", "modpwr-396", "speedo-303", "backup-304", "tot-345", "bap-406", "ats-398", "ata-p", "ata-n"],
+    ids: ["cec-379", "diag-384", "aps-382", "start-387", "modpwr-396", "batt-426", "speedo-303", "backup-304", "tot-345", "bap-406", "ats-398", "ata-p", "ata-n"],
   },
   {
     id: "cab",

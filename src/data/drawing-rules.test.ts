@@ -127,6 +127,8 @@ test("399 is a 6-way through-plug; dash (2) and 401 are through plugs", () => {
   assert.equal(cavityCount({ id: "inline", kind: "connector", label: "IN-LINE (401)", look: "3-cavity.", pins: "A B C" }), 3);
   assert.equal(maxIncidentWires({ id: "inline", kind: "connector", label: "IN-LINE (401)", look: "3-cavity.", pins: "A B C" }), 6);
   assert.equal(cavityCount({ id: "sw", kind: "connector", label: "Stop switch 51", look: "2-cavity on the hyd stop switch.", pins: "A B" }), 2);
+  assert.equal(cavityCount({ id: "batt426", kind: "connector", label: "BATTERY HARNESS (426)", look: "2-cavity through. A=11-G B=14B.", pins: "A B" }), 2);
+  assert.equal(maxIncidentWires({ id: "batt426", kind: "connector", label: "BATTERY HARNESS (426)", look: "2-cavity through. A=11-G B=14B.", pins: "A B" }), 4);
 });
 
 test("no plug gets more landing wires than it has cavities", () => {

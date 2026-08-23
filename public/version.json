@@ -1,6 +1,6 @@
 {
-  "version": "1.2.36",
+  "version": "1.2.37",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Chevrons on each wire show current from → to."
+  "notes": "Circuit 14: 662 97CT goes to C2 through (3) F, not into the CEC."
 }

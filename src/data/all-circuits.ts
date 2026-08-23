@@ -33,7 +33,7 @@ export const allCircuits: CircuitRow[] = [
     name: "BATTERY FEED",
     power: "Battery",
     engineCritical: true,
-    notes: "Always hot. C2 module power + 40A ECM fuse keep the CEC alive.",
+    notes: "Always hot. C2 10A DIAG is 97CT to (3) F / 662-3 and 97C to 384-C. Engine 14B into 662 is POS BATT / 426, not C2. No 40A ECM fuse on the T444E page.",
   },
   {
     id: "14A / 14B / 14C",
@@ -124,7 +124,7 @@ export const allCircuits: CircuitRow[] = [
     name: "AUTO CRUISE/ENGINE CONTROLS — DIAGNOSTIC & MODULE PWR (97C/97CT)",
     power: "Battery",
     engineCritical: true,
-    notes: "Fuse C2-B. Keeps CEC powered. Two wires off the 10A DIAG fuse.",
+    notes: "C2 10A from J1 14B: 97C to 384-C and 97CT through (3) F to 662-3. 97CT is not a CEC pin.",
   },
   {
     id: "97P",

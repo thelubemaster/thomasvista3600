@@ -84,7 +84,7 @@ export const manual: ManualEntry[] = [
   { id: "stop-hyd", page: "65", title: "STOP LIGHT SWITCH W/004040 (HYDRAULIC BRAKES)", section: "Light systems", hyd: "3600 hyd", engineCritical: false, circuits: ["70"], mapId: "70", notes: "STOP LIGHT SWITCH W/004040 (51). FUSE D3 30A STOP." },
   { id: "shut", page: "66", title: "SHUTTER WIRING", section: "Light systems", hyd: "optional", engineCritical: false, circuits: ["23", "97K"], mapId: "23", notes: "FAN AND SHUTTER CONTROLS. From FUSE B1 (97K 18GY). RADIATOR SHUTTER SOLENOID (337)." },
 
-  { id: "modpwr", page: "70", title: "MODULE POWER & GROUND SYSTEM", section: "Electronic engines", hyd: "3600 hyd", engineCritical: true, circuits: ["11", "14", "97"], mapId: "97", notes: "CEC CONTROL MODULE (379). CEC MODULE RELAY (396). Required grounds 11-GW/GX/GY/GZ." },
+  { id: "modpwr", page: "70", title: "MODULE POWER & GROUND SYSTEM", section: "Electronic engines", hyd: "3600 hyd", engineCritical: true, circuits: ["11", "14", "97"], mapId: "14", notes: "T444E 662 / I6 396. 14B from 426 into the relay. 97CT through (3) F to C2 — not a CEC pin. Grounds 11-GW/GX/GY/GZ." },
   { id: "aps", page: "71", title: "ACCELERATOR, BAP & MAP SYSTEMS", section: "Electronic engines", hyd: "3600 hyd", engineCritical: true, circuits: ["99", "97"], mapId: "99", notes: "ACCELERATION POSITION SWITCH (382). BAROMETRIC PRESSURE SENSOR (406)." },
   { id: "cruise", page: "72", title: "CRUISE CONTROL, ELECTRIC HAND THROTTLE SYSTEM", section: "Electronic engines", hyd: "optional", engineCritical: false, circuits: ["97"], mapId: "72", notes: "CRUISE ON/OFF SWITCH (391) BLACK. CRUISE SET/RESUME SWITCH (392) WHITE." },
 

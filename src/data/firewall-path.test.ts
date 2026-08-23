@@ -261,15 +261,36 @@ test("circuit 19 read-line for 19B goes 399 → wall → 401", () => {
   assert.ok(line.stops.some((s) => s.wall), "includes the wall plug");
 });
 
-test("circuit 14: 662 is 30=14B in, 87=97CT out — same as 396", () => {
+test("circuit 14: 662 is 14B in from 426, 97CT out to (3) F — not into the CEC", () => {
   const map = loadCore().find((m) => m.id === "14");
-  assert.ok(map);
+  assert.ok(map && map.firewallX);
   const toRel = map.wires.filter((w) => w.to === "rel");
   const fromRel = map.wires.filter((w) => w.from === "rel");
-  assert.ok(toRel.some((w) => w.circuit === "14B" && w.from === "ecm"), "14B from 40A ECM into 662");
-  assert.ok(toRel.some((w) => w.circuit === "97CT" && w.from === "eng3"), "97CT from ENGINE DASH (3) onto 662");
-  assert.ok(fromRel.some((w) => w.circuit === "97CT" && w.to === "cec"));
-  assert.equal(toRel.some((w) => w.circuit === "97CT" && w.from === "c2"), false);
+  assert.ok(toRel.some((w) => w.circuit === "14B" && w.from === "batt426"), "14B from battery harness 426 into 662");
+  assert.ok(fromRel.some((w) => w.circuit === "97CT" && w.to === "eng3"), "97CT leaves 662 toward ENGINE DASH (3) F");
+  assert.ok(map.wires.some((w) => w.circuit === "97CT" && (w.from === "eng3" || w.to === "eng3") && (w.from === "c2" || w.to === "c2")));
+  assert.equal(
+    map.wires.some((w) => w.circuit === "97CT" && (w.from === "cec" || w.to === "cec")),
+    false,
+    "97CT does not land on the CEC",
+  );
+  assert.ok(toRel.some((w) => w.circuit === "97AH"));
+  assert.ok(toRel.some((w) => w.circuit === "97CM"));
+  assert.equal(fromRel.concat(toRel).length, 4, "662 is a 4-wire cube");
+  assert.ok(map.wires.some((w) => w.from === "cec" && w.to === "spliceCM" && w.circuit === "97CL"), "CEC DC/DC+ lands on the 97CM splice");
+  assert.ok(map.nodes.some((n) => n.id === "batt426"));
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "schematics.ts"), "utf8");
+  const start = src.indexOf('\n    id: "14"');
+  const end = src.indexOf('\n    id: "15"', start);
+  const block = src.slice(start, end);
+  assert.ok(block.includes("97AL"), "page 70 pin 41 97AL is on the 97CM splice");
+  assert.ok(/2-cavity through/.test(block), "426 is a through 2-way");
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
 });
 
 test("circuit 18 drawing does not send glow return through heater relay 431", () => {
@@ -395,7 +416,7 @@ test("shop hops for 17B, 18-G, 662, and 17F use a wall plug", () => {
     "17F does not land on J31",
   );
   assert.ok(worldWires.some((w) => w.from === "dash2" && w.to === "magSw"));
-  assert.ok(worldWires.some((w) => w.id === "w-eng3-r662-87"));
+  assert.ok(worldWires.some((w) => w.id === "w-r662-eng3-97ct"));
   assert.ok(worldWires.some((w) => w.id === "w-front-cl28-18g"));
   assert.ok(worldWires.some((w) => w.id === "w-pass17b-r387"));
 });

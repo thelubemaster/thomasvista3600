@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.2.36";
+export const APP_VERSION = "1.2.37";
 export const LIVE_ORIGIN = "https://thelubemaster.github.io/thomasvista3600";
 
 export function cmpVer(a: string, b: string) {

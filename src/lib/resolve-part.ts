@@ -68,6 +68,7 @@ const NODE_ALIAS: Record<string, string> = {
   r615: "neutral-615",
   r661: "crank-661",
   r662: "modpwr-662",
+  batt426: "batt-426",
   int: "abs-377",
   on: "cruise-391",
   set: "cruise-392",

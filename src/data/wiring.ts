@@ -70,7 +70,7 @@ export const fuses: Fuse[] = [
     description: "Diagnostic connector + module power relay",
     relay: "CEC / Module Power Relay",
     engineCritical: true,
-    notes: "Always hot. Two wires: diagnostic plug and Module Power Relay coil/control. Pair with the 40A ECM power fuse.",
+    notes: "Always hot from J1 14B. Two loads: 97CT 16VT to ENGINE DASH (3) F / 662-3, and 97C 14VT to 384-C. 97CT is not a CEC pin. Engine 14B into 662 is POS BATT / 426, not this fuse.",
   },
   {
     id: "C3",
@@ -217,11 +217,11 @@ export const relays: Relay[] = [
   {
     id: "396",
     name: "CEC MODULE RELAY (396)",
-    fused: "C2 10A BAT + 40A ECM fuse",
+    fused: "C2 10A DIAG on 97CT. 14B into pin 30 is POS BATT / 426.",
     loadSide: "Battery",
-    coilSide: "Key / ECM logic",
+    coilSide: "97AH / 97CM",
     engineCritical: true,
-    notes: "Keeps the CEC/ECM alive. Extremely critical.",
+    notes: "I6-HEUI module-power relay. T444E uses 662 for the same four circuits. 97CT goes to (3) F / C2, not into the CEC.",
   },
   {
     id: "GP",
@@ -262,11 +262,11 @@ export const relays: Relay[] = [
   {
     id: "662",
     name: "CEC MODULE PWR RELAY W/T444E (662)",
-    fused: "C2 10A + 40A ECM / 14B",
+    fused: "C2 10A DIAG on 97CT. 14B into pin 1 is POS BATT / 426.",
     loadSide: "Battery 14B",
     coilSide: "97AH / 97CM",
     engineCritical: true,
-    notes: "Same pinout as 396: 30=14B battery in, 87=97CT keep-alive out. Printed page 104.",
+    notes: "Printed page 70 / 104. 1=14B from 426-B, 3=97CT through (3) F to C2 — not a CEC pin. Coil 2=97AH 18VT, 4=97CM 10PL to CEC 21/22/41.",
   },
   {
     id: "100",

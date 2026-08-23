@@ -21,6 +21,16 @@ export const extras: Record<string, Extra> = {
     color: "Red/white on engine face",
     more: "Generator field. Keep if you want charging. Not needed to idle.",
   },
+  "14": {
+    fuse: "C2 10A DIAG (97CT / 97C). Engine 14B into 662 is POS BATT / 426, not C2.",
+    power: "Battery",
+    engineCritical: true,
+    ifCut: "CEC dies. No scan, no injectors, no glow command.",
+    cab: "J1 14B → C2. C2 loads 97CT (to (3) F / 662-87) and 97C (384-C). D2 is the same 14B bar but 19D to the filter.",
+    engine: "14B 10RD through battery harness (426) B into 662 pin 1. 97CT out pin 3 through (3) F. Coil 97AH pin 2 / 97CM pin 4 to CEC 21/22/41. 396 is I6-HEUI only.",
+    relay: "CEC MODULE PWR RELAY W/T444E (662)",
+    more: "Printed page 70 / 104. 97CT does not land on the CEC. CEC DC/DC+ is 97CL/97CK/97AL pins 21/22/41, tied to 97CM. VIGN 97CR is C1 / (3) V / CEC 24 — circuit 13. No 40A ECM fuse on the T444E page.",
+  },
   "17": {
     fuse: "H1 10A START (neutral path) + key ST",
     power: "Key START",
@@ -129,9 +139,9 @@ export const extras: Record<string, Extra> = {
     power: "Mixed — key and battery",
     engineCritical: true,
     ifCut: "CEC loses that pin. 97P (B6) = no crank. 97AP/97AU = engine control faults.",
-    cab: "C1 / C2 through the firewall to the CEC on the engine",
+    cab: "C1 97CR through (3) V to CEC 24. C2 97CT through (3) F to 662-3 — not into the CEC.",
     engine: "Engine dash 3 (A–V) carries most 97 family plus APS 99",
-    relay: "Module power 396",
+    relay: "CEC MODULE PWR RELAY W/T444E (662)",
     more: "Treat 97 as engine wiring. Cruise suffixes (97B/CA/CF/DH) are the only optional ones.",
   },
   "98": {

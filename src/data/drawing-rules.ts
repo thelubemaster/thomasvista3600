@@ -29,6 +29,8 @@ export function isThroughPlug(n: PlugNode): boolean {
   if (/in-line|inline \(401\)|401\)/i.test(t)) return true;
   // 6-cavity fuel-filter plug: cab harness on one face, mate on the other.
   if (n.id === "ff399" || /^fuel filter \(399\)$/i.test((n.label ?? "").trim())) return true;
+  // Printed page 70: BATTERY HARNESS (426) is a 2-way through. B=14B, A=11-G.
+  if (n.id === "batt426" || /battery harness \(426\)/i.test(t)) return true;
   return false;
 }
 

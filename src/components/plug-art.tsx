@@ -541,7 +541,42 @@ export function Alarm20Art(props: ArtProps) {
   return <Iso4Art {...props} />;
 }
 
-/** HYDRAULIC BRAKE BOOSTER RELAY (300) — printed page 85A engine harness. */
+/** CEC MODULE PWR RELAY W/T444E (662) — printed page 104. */
+export function ModPwr662Art({ pins, active, family, onPick }: ArtProps) {
+  const spots: { id: string; x: number; y: number }[] = [
+    { id: "2", x: 70, y: 48 },
+    { id: "1", x: 126, y: 48 },
+    { id: "4", x: 70, y: 104 },
+    { id: "3", x: 126, y: 104 },
+  ];
+  return (
+    <SvgPlate caption="CEC MODULE PWR RELAY (662) · p.104" find="T444E 4-cavity. Mating end: 1=14B 2=97AH 3=97CT 4=97CM.">
+      <rect x="52" y="32" width="140" height="140" rx="6" fill={paper} stroke={ink} strokeWidth="2.3" />
+      <path d="M 96 32 L 96 20 L 148 20 L 148 32" fill="none" stroke={ink} strokeWidth="1.6" />
+      {spots.map((s) => {
+        const pin = pinAny(pins, [s.id]);
+        return (
+          <Terminal
+            key={s.id}
+            x={s.x}
+            y={s.y}
+            w={40}
+            h={40}
+            cavity={s.id}
+            pin={pin}
+            active={active === s.id}
+            family={family}
+            onPick={onPick}
+            pick={s.id}
+            label={s.id}
+            inHole
+          />
+        );
+      })}
+    </SvgPlate>
+  );
+}
+
 export function Hyd300Art({ pins, active, family, onPick }: ArtProps) {
   const spots: { id: string; x: number; y: number }[] = [
     { id: "4", x: 102, y: 36 },
@@ -1191,10 +1226,11 @@ export function PlugArt({
   if (tag === "194") return <Body194Art {...p} />;
   if (tag === "459") return <Turn6Art {...p} />;
   if (tag === "300") return <Hyd300Art {...p} />;
-  if (["61", "387", "396", "431", "615", "100", "101", "423", "639", "661", "662", "995", "996"].includes(tag)) {
+  if (tag === "662") return <ModPwr662Art {...p} />;
+  if (["61", "387", "396", "431", "615", "100", "101", "423", "639", "661", "995", "996"].includes(tag)) {
     return <Iso4Art {...p} />;
   }
-  if (["50", "51", "301", "303", "304", "398", "345", "373", "374", "540", "763"].includes(tag)) return <Weather2Art {...p} />;
+  if (["50", "51", "301", "303", "304", "398", "345", "373", "374", "540", "763", "426"].includes(tag)) return <Weather2Art {...p} />;
   if (["47/48", "406", "382", "605"].includes(tag)) return <Weather3Art {...p} />;
   if (["502", "504", "503", "470", "284", "286"].includes(tag)) return <Weather4Art {...p} />;
   return <SealedRowArt {...p} />;
