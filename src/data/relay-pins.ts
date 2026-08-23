@@ -69,7 +69,7 @@ export const relayFaces: RelayFace[] = [
     fused: "E3 10A BRAKE (key) plus 90A from J31",
     layout: "iso5",
     pins: [
-      { id: "1", iso: "30", circuit: "90A", role: "Load in", goes: "J31 via 90-FL 16BK. 90B from E3-A / (2) A6 splices here", power: "Battery" },
+      { id: "1", iso: "30", circuit: "90A", role: "Load in", goes: "J31 via 90-FL 16BK. 90B is a tap of this same always-hot through (2) A6 to E3-A", power: "Battery" },
       { id: "2", iso: "87", circuit: "90H", role: "Load out", goes: "Pump motor on the engine. Cab 90H at (2) A7 is the diode-C sense, not the motor feed", power: "Battery" },
       { id: "3", iso: "86", circuit: "11", role: "Coil −", goes: "Engine ground", power: "Ground" },
       { id: "4", iso: "87a", circuit: "90N", role: "NC", goes: "Labeled 90N on page 85A. Unused on page 44", power: "Signal" },

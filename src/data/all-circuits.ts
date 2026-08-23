@@ -402,16 +402,16 @@ export const allCircuits: CircuitRow[] = [
   {
     id: "90B",
     name: "HYDRAULIC BRAKE PUMP MOTOR — 90B (E3 / DASH CONNECTOR 2-A6)",
-    power: "Key / IGN",
+    power: "Battery",
     engineCritical: false,
-    notes: "Fuse E3-A → dash 2-A6 → 300 pin 1, spliced with 90A from J31.",
+    notes: "Tap of always-hot 90A through (2) A6 into E3-A. E3-B is 90C to the switch. Not key-on into 300.",
   },
   {
     id: "90C",
     name: "HYDRAULIC BRAKE SWITCH W/004040 — 90C",
-    power: "Key / IGN",
+    power: "Battery",
     engineCritical: false,
-    notes: "Fuse E3-B → switch 50-A / monitor 49.",
+    notes: "E3-B out after the 90B tap is fused. Switch 50-A / monitor 49-K.",
   },
   {
     id: "90H",

@@ -323,7 +323,19 @@ test("circuit 90: relay 300 is on the engine; 90A does not cross DASH CONNECTOR 
     false,
     "90A does not land on DASH CONNECTOR (2)",
   );
-  assert.ok(map.wires.some((w) => w.from === "e3" && w.to === "bulk" && w.circuit === "90B"));
+  assert.ok(
+    map.wires.some(
+      (w) => w.circuit === "90B" && ((w.from === "e3" && w.to === "bulk") || (w.from === "bulk" && w.to === "e3")),
+    ),
+    "90B tap crosses (2) A6 between the 90A splice and E3",
+  );
+  assert.ok(map.wires.some((w) => w.from === "splice30" && w.to === "bulk" && w.circuit === "90B"));
+  assert.ok(map.wires.some((w) => w.from === "bulk" && w.to === "e3" && w.circuit === "90B"));
+  assert.equal(
+    map.wires.some((w) => w.from === "e3" && (w.to === "rel" || w.to === "splice30")),
+    false,
+    "E3 does not feed 300 — 90B is a tap off 90A toward the fuse",
+  );
   assert.ok(map.wires.some((w) => w.circuit === "90H" && (w.from === "pump" || w.to === "pump")));
   assert.ok(map.wires.some((w) => w.circuit === "90H" && (w.from === "bulk" || w.to === "bulk")));
   const on300 = map.wires.filter((w) => w.from === "rel" || w.to === "rel");

@@ -46,8 +46,8 @@ export const connectors: Connector[] = [
       { cavity: "E1-B", circuit: "12A", dest: "Accessory / ABS out" },
       { cavity: "E2-A", circuit: "14C", dest: "Battery into TAIL/PNL fuse" },
       { cavity: "E2-B", circuit: "56", dest: "Panel / marker / left-turn related feed" },
-      { cavity: "E3-A", circuit: "90B", dest: "Hyd brake pump / booster feed (hyd only)" },
-      { cavity: "E3-B", circuit: "90C", dest: "Hyd brake switch (50-A)" },
+      { cavity: "E3-A", circuit: "90B", dest: "Always-hot tap of 90A through (2) A6 — fuse IN. Not IGN" },
+      { cavity: "E3-B", circuit: "90C", dest: "Fuse OUT to hyd brake switch 50-A" },
       { cavity: "F1-A", circuit: "13E", dest: "IGN into ABS IGN fuse" },
       { cavity: "F1-B", circuit: "13J", dest: "Allison / ABS ignition out" },
       { cavity: "F2-A", circuit: "14C", dest: "Battery into ABS BATT fuse" },
@@ -78,7 +78,7 @@ export const connectors: Connector[] = [
     pins: [
       { cavity: "A4", circuit: "90M", dest: "300-5 / 90J splice → monitor 49-A" },
       { cavity: "A5", circuit: "90P", dest: "Booster 90P 14GY → monitor 49-G. Not a 301 pin" },
-      { cavity: "A6", circuit: "90B", dest: "E3-A key 90B to engine 300 pin 1 (spliced with 90A)" },
+      { cavity: "A6", circuit: "90B", dest: "Tap of 90A at 300-1, to E3-A. Not key-on into the relay" },
       { cavity: "A7", circuit: "90H", dest: "300 pin 2 (engine pump). Cab A7 is 90H into diode 47/48 C — the motor does not come through (2)" },
       { cavity: "B4", circuit: "47D", dest: "Speedometer → CEC 57 / cluster" },
       { cavity: "B5", circuit: "36-G", dest: "Fuel sender ground" },
@@ -111,7 +111,7 @@ export const connectors: Connector[] = [
     pins: [
       { cavity: "A4", circuit: "90M", dest: "Same as dash 2-A4 — 300-5 status to 49-A" },
       { cavity: "A5", circuit: "90P", dest: "Same as dash 2-A5 — booster 90P to 49-G, not 301" },
-      { cavity: "A6", circuit: "90B", dest: "Same as dash 2-A6 — key 90B to 300-1" },
+      { cavity: "A6", circuit: "90B", dest: "Same as dash 2-A6 — 90A tap to E3-A" },
       { cavity: "A7", circuit: "90H", dest: "Same as dash 2-A7 — 90H to diode C. Pump is on 300-2 engine-side" },
       { cavity: "B4", circuit: "47D", dest: "Speedo sensor 303" },
       { cavity: "B5", circuit: "36-G", dest: "Fuel sender ground" },

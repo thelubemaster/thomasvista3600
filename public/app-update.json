@@ -1,8 +1,8 @@
 {
-  "version": "1.2.34",
-  "apkVersion": "1.2.34",
-  "apkVersionCode": 41,
+  "version": "1.2.35",
+  "apkVersion": "1.2.35",
+  "apkVersionCode": 42,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 90: relay 300 is on the engine. 90A does not cross (2)."
+  "notes": "90B is a tap of always-hot 90A to fuse E3, not key-on into 300."
 }
