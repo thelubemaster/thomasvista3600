@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import type { Pin } from "@/data/connectors";
 import { circuitFamily } from "@/data/circuits";
 import {
@@ -27,6 +27,8 @@ export {
   FRONT2B_COLS,
   ISO_MICRO,
 } from "@/data/plug-face";
+
+const LitCavities = createContext<string[]>([]);
 
 type ArtProps = {
   pins: Pin[];
@@ -87,7 +89,10 @@ function Terminal({
   inHole?: boolean;
 }) {
   const vacant = empty(pin);
-  const lit = !vacant && !!family && circuitFamily(pin!.circuit) === family;
+  const extra = useContext(LitCavities);
+  const lit =
+    !vacant &&
+    ((!!family && circuitFamily(pin!.circuit) === family) || extra.includes(cavity));
   const on = !!active;
   const fill = on || lit ? "#c4783a" : paper;
   const stroke = on ? "#8a4e1c" : ink;
@@ -1272,41 +1277,42 @@ export function PlugArt({
   active,
   family,
   onPick,
+  litCavities,
 }: {
   tag: string;
   pins: Pin[];
   active?: string | null;
   family?: string;
   onPick: (cavity: string) => void;
+  litCavities?: string[];
 }) {
   const p = { pins, active, family, onPick };
-  if (tag === "FUSE") return <FuseBlockArt {...p} />;
-  if (tag === "2") return <Dash2Art {...p} />;
-  if (tag === "2A") return <Engine2AArt {...p} />;
-  if (tag === "2B" || tag === "2B-M") return <Front2BArt {...p} />;
-  if (tag === "3") return <Engine3Art {...p} />;
-  if (tag === "20") return <Alarm20Art {...p} />;
-  if (tag === "26") return <Cluster17Art {...p} color="YELLOW" />;
-  if (tag === "27") return <Cluster17Art {...p} color="GREEN" />;
-  if (tag === "28") return <Cluster17Art {...p} color="NATURAL" />;
-  if (tag === "63") return <Key63Art {...p} />;
-  if (tag === "71" || tag === "399") return <Filter6Art {...p} />;
-  if (tag === "401") return <Filter3Art {...p} />;
-  if (tag === "379") return <Cec60Art {...p} />;
-  if (tag === "384") return <Diag6Art {...p} />;
-  if (tag === "49") return <Monitor49Art {...p} />;
-  if (tag === "60") return <Headlamp60Art {...p} />;
-  if (tag === "194") return <Body194Art {...p} />;
-  if (tag === "459") return <Turn6Art {...p} />;
-  if (tag === "300") return <Hyd300Art {...p} />;
-  if (tag === "387") return <Start387Art {...p} />;
-  if (tag === "661") return <Crank661Art {...p} />;
-  if (tag === "662") return <ModPwr662Art {...p} />;
-  if (["61", "396", "431", "615", "100", "101", "423", "639", "995", "996"].includes(tag)) {
-    return <Iso4Art {...p} />;
-  }
-  if (["50", "51", "301", "303", "304", "398", "345", "373", "374", "540", "763", "426"].includes(tag)) return <Weather2Art {...p} />;
-  if (["47/48", "406", "382", "605"].includes(tag)) return <Weather3Art {...p} />;
-  if (["502", "504", "503", "470", "284", "286"].includes(tag)) return <Weather4Art {...p} />;
-  return <SealedRowArt {...p} />;
+  let inner: ReactNode = <SealedRowArt {...p} />;
+  if (tag === "FUSE") inner = <FuseBlockArt {...p} />;
+  else if (tag === "2") inner = <Dash2Art {...p} />;
+  else if (tag === "2A") inner = <Engine2AArt {...p} />;
+  else if (tag === "2B" || tag === "2B-M") inner = <Front2BArt {...p} />;
+  else if (tag === "3") inner = <Engine3Art {...p} />;
+  else if (tag === "20") inner = <Alarm20Art {...p} />;
+  else if (tag === "26") inner = <Cluster17Art {...p} color="YELLOW" />;
+  else if (tag === "27") inner = <Cluster17Art {...p} color="GREEN" />;
+  else if (tag === "28") inner = <Cluster17Art {...p} color="NATURAL" />;
+  else if (tag === "63") inner = <Key63Art {...p} />;
+  else if (tag === "71" || tag === "399") inner = <Filter6Art {...p} />;
+  else if (tag === "401") inner = <Filter3Art {...p} />;
+  else if (tag === "379") inner = <Cec60Art {...p} />;
+  else if (tag === "384") inner = <Diag6Art {...p} />;
+  else if (tag === "49") inner = <Monitor49Art {...p} />;
+  else if (tag === "60") inner = <Headlamp60Art {...p} />;
+  else if (tag === "194") inner = <Body194Art {...p} />;
+  else if (tag === "459") inner = <Turn6Art {...p} />;
+  else if (tag === "300") inner = <Hyd300Art {...p} />;
+  else if (tag === "387") inner = <Start387Art {...p} />;
+  else if (tag === "661") inner = <Crank661Art {...p} />;
+  else if (tag === "662") inner = <ModPwr662Art {...p} />;
+  else if (["61", "396", "431", "615", "100", "101", "423", "639", "995", "996"].includes(tag)) inner = <Iso4Art {...p} />;
+  else if (["50", "51", "301", "303", "304", "398", "345", "373", "374", "540", "763", "426"].includes(tag)) inner = <Weather2Art {...p} />;
+  else if (["47/48", "406", "382", "605"].includes(tag)) inner = <Weather3Art {...p} />;
+  else if (["502", "504", "503", "470", "284", "286"].includes(tag)) inner = <Weather4Art {...p} />;
+  return <LitCavities.Provider value={litCavities ?? []}>{inner}</LitCavities.Provider>;
 }

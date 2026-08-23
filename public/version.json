@@ -1,6 +1,6 @@
 {
-  "version": "1.2.39",
+  "version": "1.2.40",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Circuit 17: 17C and 97L wires show current-direction chevrons."
+  "notes": "Circuit 17: DASH CONNECTOR (2) shows G6=17F and B6=97P."
 }

@@ -301,7 +301,7 @@ const flowMapsCore: FlowMap[] = [
       { id: "w17Bpass", from: "fl17", to: "pass17b", circuit: "17B", color: "bat", label: "10PK" },
       { id: "w17Bcab", from: "pass17b", to: "rel", circuit: "17B", color: "bat", label: "4" },
       { id: "w87", from: "rel", to: "splice87", circuit: "17F", color: "a", label: "3" },
-      { id: "w10", from: "splice87", to: "bulk", circuit: "17F", color: "a" },
+      { id: "w10", from: "splice87", to: "bulk", circuit: "17F", color: "a", label: "G6" },
       { id: "w11", from: "bulk", to: "mag", circuit: "17F", color: "a", label: "G6 → J30" },
       { id: "wC10", from: "splice87", to: "pass17b", circuit: "17C", color: "a", label: "10PK" },
       { id: "wC10e", from: "pass17b", to: "sol", circuit: "17C", color: "a", label: "S" },

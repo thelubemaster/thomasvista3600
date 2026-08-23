@@ -5,6 +5,7 @@ import { circuitFamily, circuitLabel } from "@/data/circuits";
 import { findCircuitHits, type Connector, type Pin } from "@/data/connectors";
 import type { RelayFace, RelayPin } from "@/data/relay-pins";
 import type { FlowMap, FlowNode, FlowWire } from "@/data/schematics";
+import { pinsOnSchematic } from "@/lib/drawing-pins";
 import { resolvePart } from "@/lib/resolve-part";
 import { cn } from "@/lib/utils";
 
@@ -119,10 +120,11 @@ function ConnectorInspect({
   onClose: () => void;
   onPickNode: (id: string) => void;
 }) {
-  const onThis = useMemo(
-    () => conn.pins.filter((p) => family && circuitFamily(p.circuit) === family),
-    [conn, family],
-  );
+  const onThis = useMemo(() => {
+    const onDrawing = node ? pinsOnSchematic(conn, map, node.id) : [];
+    if (onDrawing.length) return onDrawing;
+    return conn.pins.filter((p) => family && circuitFamily(p.circuit) === family);
+  }, [conn, family, map, node]);
   const first =
     (hintCavity && onThis.find((p) => p.cavity === hintCavity)?.cavity) ||
     onThis[0]?.cavity ||
@@ -152,7 +154,7 @@ function ConnectorInspect({
     >
       {onThis.length ? (
         <p className="mb-2 rounded-xs border border-accent/40 bg-surface px-2 py-1.5 font-mono text-[11px] leading-snug text-fg">
-          Circuit {family} on this plug:{" "}
+          {node ? "On this drawing" : `Circuit ${family}`} on this plug:{" "}
           {onThis.map((p) => `${p.cavity}=${p.circuit}`).join(" · ")}
         </p>
       ) : null}
@@ -161,7 +163,14 @@ function ConnectorInspect({
         {relay ? (
           <RelaySocket face={relay} pinId={cavity ?? pin?.cavity ?? ""} onPick={setCavity} />
         ) : (
-          <PlugArt tag={conn.tag} pins={conn.pins} active={pin?.cavity} family={family} onPick={setCavity} />
+          <PlugArt
+            tag={conn.tag}
+            pins={conn.pins}
+            active={pin?.cavity}
+            family={family}
+            litCavities={onThis.map((p) => p.cavity)}
+            onPick={setCavity}
+          />
         )}
       </div>
 
@@ -196,11 +205,17 @@ function ConnectorInspect({
             )}
             disabled={!onThis.length}
           >
-            Circuit {family || map.number} · {onThis.length}
+            {node ? "This drawing" : `Circuit ${family || map.number}`} · {onThis.length}
           </button>
         </div>
 
-        <CavityTable rows={rows} active={pin?.cavity} family={family} onPick={setCavity} />
+        <CavityTable
+          rows={rows}
+          active={pin?.cavity}
+          family={family}
+          litCavities={onThis.map((p) => p.cavity)}
+          onPick={setCavity}
+        />
       </div>
 
       {hops.length ? <DrawingHops hops={hops} onPickNode={onPickNode} /> : null}
@@ -386,11 +401,13 @@ function CavityTable({
   rows,
   active,
   family,
+  litCavities,
   onPick,
 }: {
   rows: Pin[];
   active?: string;
   family: string;
+  litCavities?: string[];
   onPick: (cavity: string) => void;
 }) {
   return (
@@ -405,7 +422,8 @@ function CavityTable({
         </thead>
         <tbody>
           {rows.map((p) => {
-            const onCkt = family && circuitFamily(p.circuit) === family;
+            const onCkt =
+              (family && circuitFamily(p.circuit) === family) || Boolean(litCavities?.includes(p.cavity));
             return (
               <tr
                 key={p.cavity}
