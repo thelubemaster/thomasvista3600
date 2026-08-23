@@ -39,7 +39,7 @@ export const extras: Record<string, Extra> = {
     cab: "Key 63 ST 17C 16PK → interrupt → 661-5 → 661-4 17A → 387-2. 387-87: 17F to (2) G6 and 17C 10PK to J31 S. 387-1 17D through the wall to the thermal.",
     engine: "17F: 2A-G6 → J30. 17B: 17-FL at J31 → 387-4. 17C 10PK: 387-87 → J31 S. 97H CEC 46 through (3) U to 661-2. 97A CEC 26 through (3) I to the 97L splice.",
     relay: "Start relay 387. Crank inhibit 661 (optional). Neutral is the AUTO XMSN switch — not 615",
-    more: "Printed page 20 / 89 / 104. 387 pin 85 is thermal overcrank on the starter, not dash ground. 661 pin 2 is 97H; pin 3 is empty. 615 is Allison MD overlay only.",
+    more: "Printed page 20 / 89 / 104. 661 is optional cab-side inhibit — not in the engine bay. If you cannot find it, the interrupt is jumpered and 387 still cranks. 387 pin 85 is thermal overcrank on the starter. 615 is Allison MD overlay only.",
   },
   "18": {
     fuse: "High-current fusible link at glow relay",

@@ -212,7 +212,7 @@ export const relays: Relay[] = [
     loadSide: "Key / Ignition (17C in, 17A out on 3600)",
     coilSide: "CEC 97H + 97L",
     engineCritical: true,
-    notes: "Printed page 104 / 20. Optional crank inhibit. 3600 cavities: 5=17C, 4=17A, 2=97H, 1=97L. Pin 3 empty.",
+    notes: "Printed page 104 / 20. Optional cab-side inhibit — not in the engine bay. Often not fitted. 3600: 5=17C, 4=17A, 2=97H, 1=97L. Pin 3 empty.",
   },
   {
     id: "396",

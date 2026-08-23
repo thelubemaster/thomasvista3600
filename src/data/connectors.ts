@@ -902,7 +902,7 @@ export const connectors: Connector[] = [
     id: "crank-661",
     tag: "661",
     name: "CRANK RELAY (661)",
-    harness: "Cab — optional overcrank",
+    harness: "Optional cab-side inhibit. Not in the engine bay. Often not fitted.",
     page: "104",
     hyd: true,
     pins: [

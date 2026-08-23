@@ -118,8 +118,8 @@ export const dxSteps: DxStep[] = [
     id: "nc-86-dead",
     title: "86 dead — work back the START feed",
     where: "Key ST → STARTER INTERRUPT (shipped jumpered) → CRANK RELAY (661) → 387 pin 86.",
-    do: "Check the interrupt is jumpered. If 661 is fitted, 5=17C in, 4=17A out. Park/neutral on the AUTO XMSN switch. Skip 615 unless the bus has Allison MD.",
-    expect: "17C 16PK live at the interrupt in START. If 661 is unused, the plug is jumpered and 17C continues to 387.",
+    do: "Check the interrupt is jumpered. 661 is optional and often not on a 3600 — it is cab-side if fitted, not in the engine bay. If 661 is there: 5=17C in, 4=17A out. Park/neutral on the AUTO XMSN switch. Skip 615 unless the bus has Allison MD.",
+    expect: "17C 16PK live at the interrupt in START. No 661 cube is normal. The interrupt stays jumpered and 17C continues to 387.",
     jumps: [
       { tab: "relays", hint: "661", label: "661 crank inhibit" },
       { tab: "circuits", hint: "17", label: "Circuit 17" },

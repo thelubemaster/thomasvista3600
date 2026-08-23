@@ -136,7 +136,7 @@ export const relayFaces: RelayFace[] = [
     tag: "661",
     name: "CRANK RELAY (661)",
     page: "104 / 20",
-    where: "Cab — optional starter overcrank / crank inhibit",
+    where: "Optional. Cab side of ENGINE DASH (3) if fitted — not in the engine bay. Most 3600s never got this cube.",
     look: "5-cavity micro. Mating end printed page 104: 4 top, 2-3-5 across, 1 bottom.",
     engineCritical: true,
     fused: "Via key ST 17C. Coil from CEC 97H / 97L",
@@ -148,7 +148,7 @@ export const relayFaces: RelayFace[] = [
       { id: "1", iso: "86", circuit: "97L", role: "Coil −", goes: "AUTO XMSN 97L spliced with CEC 26 97A via (3) I", power: "Signal" },
       { id: "3", iso: "87a", circuit: "—", role: "NC", goes: "Unlabeled / empty on page 104. Not 97AV from 615.", power: "Signal" },
     ],
-    more: "Optional crank inhibit. On a 3600: 5=17C in, 4=17A out, 2=97H, 1=97L. Pin 3 is empty — not 97AV. If the bus has no overcrank option this plug may be jumpered or unused — START RELAY (387) still cranks.",
+    more: "OPTIONAL STARTER OVERCRANK PROTECTION on printed page 20. 97H from the CEC has to cross ENGINE DASH (3) U to reach 661, so the cube is cab-side if it exists. It is not J30, not J31, and not 387. On a 3600: 5=17C in, 4=17A out, 2=97H, 1=97L. Pin 3 empty. If you cannot find it, STARTER INTERRUPT is shipped jumpered and 17C goes on to 387 — the engine still cranks.",
   },
   {
     id: "662",
