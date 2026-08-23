@@ -1,8 +1,8 @@
 {
-  "version": "1.2.33",
-  "apkVersion": "1.2.33",
-  "apkVersionCode": 40,
+  "version": "1.2.34",
+  "apkVersion": "1.2.34",
+  "apkVersionCode": 41,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "WIF module 470 is four wires. No ground pin."
+  "notes": "Circuit 90: relay 300 is on the engine. 90A does not cross (2)."
 }

@@ -404,7 +404,7 @@ export const allCircuits: CircuitRow[] = [
     name: "HYDRAULIC BRAKE PUMP MOTOR — 90B (E3 / DASH CONNECTOR 2-A6)",
     power: "Key / IGN",
     engineCritical: false,
-    notes: "Fuse E3-A → dash 2-A6 → booster relay 300.",
+    notes: "Fuse E3-A → dash 2-A6 → 300 pin 1, spliced with 90A from J31.",
   },
   {
     id: "90C",
@@ -418,7 +418,7 @@ export const allCircuits: CircuitRow[] = [
     name: "HYDRAULIC BRAKE PUMP MOTOR — 90H (2-A7)",
     power: "Key / IGN",
     engineCritical: false,
-    notes: "Booster relay 300-87 → dash 2-A7 → pump.",
+    notes: "300 pin 2 → pump on the engine. (2) A7 is 90H into diode 47/48, not the motor feed.",
   },
   {
     id: "90M / 90P / 90R / 90S / 90T / 90U",

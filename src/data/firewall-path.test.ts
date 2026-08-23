@@ -303,6 +303,56 @@ test("circuit 98: 384 A/B are ATA splices, not C/D", () => {
   assert.equal(toDiag.some((w) => w.from === "eng3"), false);
 });
 
+test("circuit 90: relay 300 is on the engine; 90A does not cross DASH CONNECTOR (2)", () => {
+  const map = loadCore().find((m) => m.id === "90");
+  assert.ok(map && map.firewallX);
+  const byId = new Map(map.nodes.map((n) => [n.id, n]));
+  const rel = byId.get("rel");
+  const bulk = byId.get("bulk");
+  const sol = byId.get("sol");
+  const e3 = byId.get("e3");
+  const pump = byId.get("pump");
+  const diff = byId.get("diff");
+  assert.ok(rel && bulk && sol && e3 && pump && diff);
+  assert.ok(rel.x > map.firewallX, "300 is engine-side of (2)");
+  assert.ok(sol.x > map.firewallX, "J31 90A stays on the engine");
+  assert.ok(pump.x > map.firewallX, "pump is on the engine");
+  assert.ok(e3.x < map.firewallX, "E3 is in the cab");
+  assert.equal(
+    map.wires.some((w) => w.circuit === "90A" && (w.from === "bulk" || w.to === "bulk")),
+    false,
+    "90A does not land on DASH CONNECTOR (2)",
+  );
+  assert.ok(map.wires.some((w) => w.from === "e3" && w.to === "bulk" && w.circuit === "90B"));
+  assert.ok(map.wires.some((w) => w.circuit === "90H" && (w.from === "pump" || w.to === "pump")));
+  assert.ok(map.wires.some((w) => w.circuit === "90H" && (w.from === "bulk" || w.to === "bulk")));
+  const on300 = map.wires.filter((w) => w.from === "rel" || w.to === "rel");
+  assert.ok(on300.length <= 5, on300.map((w) => `${w.id}:${w.circuit}`).join(", "));
+  assert.equal(
+    map.wires.some((w) => (w.from === "diff" || w.to === "diff") && w.circuit === "90P"),
+    false,
+    "301 is 90K / 90L — 90P is not a 301 pin",
+  );
+  const on301 = map.wires.filter((w) => w.from === "diff" || w.to === "diff");
+  assert.deepEqual(
+    on301.map((w) => w.circuit).sort(),
+    ["90K", "90L"],
+  );
+  assert.equal(
+    map.wires.some((w) => w.circuit === "90J / 90M"),
+    false,
+    "90J stays on the engine; 90M is the wall wire",
+  );
+  assert.ok(map.wires.some((w) => w.from === "bulk" && w.to === "diode" && w.circuit === "90H"));
+  assert.ok(map.wires.some((w) => w.circuit === "90D" && (w.from === "diode" || w.to === "diode")));
+  assert.ok(map.wires.some((w) => w.circuit === "90U" && (w.from === "diode" || w.to === "diode")));
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
+});
+
 test("circuit 17: 97P from H1 lands on DASH CONNECTOR (2), not relay 615", () => {
   const map = loadCore().find((m) => m.id === "17");
   assert.ok(map);
