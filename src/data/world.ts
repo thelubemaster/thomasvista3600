@@ -53,6 +53,7 @@ export const circuitToggles = [
   { id: "14", title: "BATTERY FEED", crit: true },
   { id: "15", title: "KEY SWITCH FEED", crit: true },
   { id: "17", title: "STARTER CONTROL", crit: true },
+  { id: "17N", title: "STARTER CONTROL — NO 661", crit: true },
   { id: "18", title: "GLOW PLUGS/PRE-HEATER", crit: true },
   { id: "19", title: "FUEL SHUT-OFF SOLENOID, FUEL FILTER", crit: true },
   { id: "21", title: "ETHER START — I6-HEUI ONLY, not on 7.3", crit: false },

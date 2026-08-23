@@ -9,7 +9,8 @@ import { pinsOnSchematic } from "./drawing-pins.ts";
 function loadCircuit17() {
   const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../data/schematics.ts"), "utf8");
   const start = src.indexOf('\n    id: "17"');
-  const end = src.indexOf('\n    id: "18"', start);
+  const end17n = src.indexOf('\n    id: "17N"', start);
+  const end = end17n > start ? end17n : src.indexOf('\n    id: "18"', start);
   const block = src.slice(start, end);
   const nodes: { id: string; pins?: string; sub?: string }[] = [];
   const nodeRe = /\{ id: "([^"]+)",[\s\S]*?x: \d+/g;

@@ -415,6 +415,19 @@ test("circuit 17: 97P from H1 lands on DASH CONNECTOR (2), not relay 615", () =>
   );
 });
 
+test("circuit 17N has no 661 — interrupt goes straight to 387", () => {
+  const map = loadCore().find((m) => m.id === "17N");
+  assert.ok(map);
+  assert.equal(map.nodes.some((n) => n.id === "r661"), false, "17N must not draw 661");
+  assert.ok(map.wires.some((w) => w.from === "int" && w.to === "rel" && w.circuit === "17C"));
+  assert.equal(map.wires.some((w) => w.circuit === "97H" || w.circuit === "97L" || w.circuit === "97A"), false);
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
+});
+
 test("shop hops for 17B, 18-G, 662, and 17F use a wall plug", () => {
   const hops = new Set(
     hopsCabEngWithoutConnector(

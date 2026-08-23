@@ -1,6 +1,6 @@
 {
-  "version": "1.2.41",
+  "version": "1.2.42",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "661 crank inhibit is optional cab-side, often not fitted, not in the engine bay."
+  "notes": "Circuit 17N is starter control with no 661. Original circuit 17 still has the inhibit relay."
 }

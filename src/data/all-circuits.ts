@@ -57,6 +57,13 @@ export const allCircuits: CircuitRow[] = [
     notes: "63 ST is 17C 16PK crank-only. H1 is key-on 97P to (2) B6, not 387 coil. J30 mag switch, J31 solenoid, 436 starter body. 661 pin 2=97H via (3) U. 387 17D is thermal overcrank, not dash ground. 615 is Allison MD overlay only.",
   },
   {
+    id: "17N",
+    name: "STARTER CONTROL — NO CRANK INHIBIT",
+    power: "Mixed",
+    engineCritical: true,
+    notes: "No 661. STARTER INTERRUPT jumpered. 17C 16PK key ST → interrupt → 387 pin 2. Same 387 / J30 / J31 path as circuit 17.",
+  },
+  {
     id: "18 / 18-G",
     name: "GLOW PLUGS/PRE-HEATER",
     power: "Battery",
