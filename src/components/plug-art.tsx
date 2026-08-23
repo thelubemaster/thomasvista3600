@@ -541,6 +541,79 @@ export function Alarm20Art(props: ArtProps) {
   return <Iso4Art {...props} />;
 }
 
+/** START RELAY W/ T444E & I6-HEUI (387) — printed page 89. */
+export function Start387Art({ pins, active, family, onPick }: ArtProps) {
+  const spots: { id: string; x: number; y: number; w?: number; h?: number }[] = [
+    { id: "4", x: 70, y: 48, w: 44, h: 44 },
+    { id: "3", x: 126, y: 48 },
+    { id: "1", x: 70, y: 104 },
+    { id: "2", x: 126, y: 104 },
+  ];
+  return (
+    <SvgPlate caption="START RELAY (387) · p.89" find="T444E 4-cavity. Mating end: 4=17B 3=17F 1=17D 2=17C. Pin 4 is the 10AWG 17B cavity.">
+      <rect x="52" y="32" width="140" height="140" rx="6" fill={paper} stroke={ink} strokeWidth="2.3" />
+      <path d="M 96 32 L 96 20 L 148 20 L 148 32" fill="none" stroke={ink} strokeWidth="1.6" />
+      {spots.map((s) => {
+        const pin = pinAny(pins, [s.id]);
+        return (
+          <Terminal
+            key={s.id}
+            x={s.x}
+            y={s.y}
+            w={s.w ?? 40}
+            h={s.h ?? 40}
+            cavity={s.id}
+            pin={pin}
+            active={active === s.id}
+            family={family}
+            onPick={onPick}
+            pick={s.id}
+            label={s.id}
+            inHole
+          />
+        );
+      })}
+    </SvgPlate>
+  );
+}
+
+/** CRANK INHIBIT RELAY (661) — printed page 104. */
+export function Crank661Art({ pins, active, family, onPick }: ArtProps) {
+  const spots: { id: string; x: number; y: number }[] = [
+    { id: "4", x: 102, y: 36 },
+    { id: "2", x: 58, y: 80 },
+    { id: "3", x: 102, y: 80 },
+    { id: "5", x: 146, y: 80 },
+    { id: "1", x: 102, y: 124 },
+  ];
+  return (
+    <SvgPlate caption="CRANK RELAY (661) · p.104" find="5-cavity micro. Mating end W/3600: 4=17A 5=17C 2=97H 1=97L. Pin 3 unlabeled.">
+      <rect x="48" y="24" width="140" height="148" rx="3" fill={paper} stroke={ink} strokeWidth="2.3" />
+      <path d="M 88 24 L 88 12 L 132 12 L 132 24" fill="none" stroke={ink} strokeWidth="1.6" />
+      {spots.map((s) => {
+        const pin = pinAny(pins, [s.id]);
+        return (
+          <Terminal
+            key={s.id}
+            x={s.x}
+            y={s.y}
+            w={36}
+            h={36}
+            cavity={s.id}
+            pin={pin}
+            active={active === s.id}
+            family={family}
+            onPick={onPick}
+            pick={s.id}
+            label={s.id}
+            inHole
+          />
+        );
+      })}
+    </SvgPlate>
+  );
+}
+
 /** CEC MODULE PWR RELAY W/T444E (662) — printed page 104. */
 export function ModPwr662Art({ pins, active, family, onPick }: ArtProps) {
   const spots: { id: string; x: number; y: number }[] = [
@@ -1226,8 +1299,10 @@ export function PlugArt({
   if (tag === "194") return <Body194Art {...p} />;
   if (tag === "459") return <Turn6Art {...p} />;
   if (tag === "300") return <Hyd300Art {...p} />;
+  if (tag === "387") return <Start387Art {...p} />;
+  if (tag === "661") return <Crank661Art {...p} />;
   if (tag === "662") return <ModPwr662Art {...p} />;
-  if (["61", "387", "396", "431", "615", "100", "101", "423", "639", "661", "995", "996"].includes(tag)) {
+  if (["61", "396", "431", "615", "100", "101", "423", "639", "995", "996"].includes(tag)) {
     return <Iso4Art {...p} />;
   }
   if (["50", "51", "301", "303", "304", "398", "345", "373", "374", "540", "763", "426"].includes(tag)) return <Weather2Art {...p} />;

@@ -395,9 +395,24 @@ test("circuit 17: 97P from H1 lands on DASH CONNECTOR (2), not relay 615", () =>
     fromH1.map((w) => `${w.to}:${w.circuit}`),
     ["bulk:97P"],
   );
-  assert.equal(map.wires.some((w) => w.circuit === "97AV"), false, "97AV does not land on 661 pin 2");
+  assert.equal(map.wires.some((w) => w.circuit === "97AV"), false, "97AV does not land on 661");
   const on661 = map.wires.filter((w) => w.from === "r661" || w.to === "r661");
   assert.ok(on661.length <= 5, on661.map((w) => w.id).join(", "));
+  assert.ok(map.wires.some((w) => w.circuit === "97H" && (w.from === "eng3" || w.to === "eng3")), "97H crosses ENGINE DASH (3) U");
+  assert.equal(
+    map.wires.some((w) => w.circuit === "97H" && ((w.from === "cec" && w.to === "r661") || (w.from === "r661" && w.to === "cec"))),
+    false,
+    "97H does not skip the wall from CEC to 661",
+  );
+  assert.ok(map.nodes.some((n) => n.id === "over"), "thermal overcrank is on the drawing");
+  assert.equal(map.nodes.some((n) => n.id === "gndDash"), false, "387-85 is not dash ground");
+  assert.ok(map.wires.some((w) => w.circuit === "17C" && (w.from === "sol" || w.to === "sol")), "17C 10PK lands on J31 S");
+  assert.ok(map.wires.some((w) => w.circuit === "17F" && (w.from === "mag" || w.to === "mag")), "17F lands on J30");
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
 });
 
 test("shop hops for 17B, 18-G, 662, and 17F use a wall plug", () => {
@@ -419,4 +434,6 @@ test("shop hops for 17B, 18-G, 662, and 17F use a wall plug", () => {
   assert.ok(worldWires.some((w) => w.id === "w-r662-eng3-97ct"));
   assert.ok(worldWires.some((w) => w.id === "w-front-cl28-18g"));
   assert.ok(worldWires.some((w) => w.id === "w-pass17b-r387"));
+  assert.ok(worldWires.some((w) => w.id === "w-r387-pass-17d"), "387-85 17D crosses the starter pass to the thermal");
+  assert.ok(worldWires.some((w) => w.id === "w-eng3-r661-2"), "97H lands on 661 pin 2");
 });

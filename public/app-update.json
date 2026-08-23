@@ -1,8 +1,8 @@
 {
-  "version": "1.2.37",
-  "apkVersion": "1.2.37",
-  "apkVersionCode": 44,
+  "version": "1.2.38",
+  "apkVersion": "1.2.38",
+  "apkVersionCode": 45,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 14: 662 97CT goes to C2 through (3) F, not into the CEC."
+  "notes": "Circuit 17: 97H crosses (3) U onto 661 pin 2. 387 17D is thermal overcrank, not dash ground."
 }
