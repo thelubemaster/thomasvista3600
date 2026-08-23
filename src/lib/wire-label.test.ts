@@ -109,6 +109,23 @@ test("a short stub does not get a flow chevron on top of a box", () => {
   assert.equal(marks.length, 0);
 });
 
+test("a labeled mid-length run still gets a flow chevron", () => {
+  const pts = [
+    { x: 100, y: 80 },
+    { x: 100, y: 180 },
+  ];
+  const [lab] = placeWireLabels([{ id: "a", pts, circuit: "17C", note: "16PK" }], [], { w: 400, h: 280 });
+  const marks = placeFlowMarks(pts, lab?.attach ?? null);
+  assert.ok(marks.length >= 1, "short labeled 17C lost its arrow");
+  for (const m of marks) {
+    assert.ok(onPath({ x: m.x, y: m.y }, pts, 1.2));
+    if (lab) {
+      const d = Math.hypot(m.x - lab.attach.x, m.y - lab.attach.y);
+      assert.ok(d >= 10, `chevron sits on the tag (${d.toFixed(1)}px)`);
+    }
+  }
+});
+
 test("the mark sits on the middle of the wire, not at a connector", () => {
   const pts = hLine(140, 80, 520);
   const [lab] = placeWireLabels([{ id: "a", pts, circuit: "19A", note: "H5" }], [], { w: 600, h: 280 });
@@ -195,6 +212,22 @@ function labelMap(map: ReturnType<typeof parseMaps>[number]) {
   });
   return { labels: placeWireLabels(items, obstacles, { w: map.w, h: map.h }), items };
 }
+
+test("circuit 17: 17C and 97L wires get flow arrows", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(join(here, "../data/schematics.ts"), "utf8");
+  const map = parseMaps(src).find((m) => m.id === "17");
+  assert.ok(map);
+  const { labels, items } = labelMap(map);
+  const byLab = new Map(labels.map((l) => [l.id, l]));
+  const missing: string[] = [];
+  for (const it of items) {
+    if (it.circuit !== "17C" && it.circuit !== "97L") continue;
+    const marks = placeFlowMarks(it.pts, byLab.get(it.id)?.attach ?? null);
+    if (!marks.length) missing.push(`${it.id} ${it.circuit}`);
+  }
+  assert.deepEqual(missing, []);
+});
 
 test("circuit 19: 19A/19B/19C labels do not collide", () => {
   const here = dirname(fileURLToPath(import.meta.url));

@@ -1,8 +1,8 @@
 {
-  "version": "1.2.38",
-  "apkVersion": "1.2.38",
-  "apkVersionCode": 45,
+  "version": "1.2.39",
+  "apkVersion": "1.2.39",
+  "apkVersionCode": 46,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 17: 97H crosses (3) U onto 661 pin 2. 387 17D is thermal overcrank, not dash ground."
+  "notes": "Circuit 17: 17C and 97L wires show current-direction chevrons."
 }

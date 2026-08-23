@@ -90,23 +90,32 @@ export type FlowMark = { x: number; y: number; tx: number; ty: number };
 export function placeFlowMarks(pts: Pt[], attach?: Pt | null): FlowMark[] {
   const total = pathLen(pts);
   if (pts.length < 2 || total < 28) return [];
-  const startPad = Math.min(20, total * 0.2);
+  const startPad = Math.min(20, total * 0.18);
   const endPad = Math.min(18, total * 0.16);
   const lo = startPad;
-  const hi = Math.max(lo + 1, total - endPad);
-  const samples = total >= 110 ? [0.36, 0.72] : total >= 56 ? [0.62] : [0.55];
+  const hi = Math.max(lo + 8, total - endPad);
+  const keepOff = 16;
+  const farEnough = (hit: { p: Pt }) =>
+    !attach || Math.hypot(hit.p.x - attach.x, hit.p.y - attach.y) >= keepOff;
+  const samples = total >= 140 ? [0.32, 0.68] : total >= 80 ? [0.38, 0.7] : [0.55];
   const marks: FlowMark[] = [];
   for (const t of samples) {
     const hit = atLength(pts, lo + (hi - lo) * t);
-    if (!hit) continue;
-    if (attach && Math.hypot(hit.p.x - attach.x, hit.p.y - attach.y) < 18) continue;
+    if (!hit || !farEnough(hit)) continue;
     if (marks.some((m) => Math.hypot(m.x - hit.p.x, m.y - hit.p.y) < 26)) continue;
     marks.push({ x: hit.p.x, y: hit.p.y, tx: hit.tx, ty: hit.ty });
   }
   if (!marks.length) {
-    const hit = atLength(pts, (lo + hi) / 2);
-    if (hit && !(attach && Math.hypot(hit.p.x - attach.x, hit.p.y - attach.y) < 14)) {
-      marks.push({ x: hit.p.x, y: hit.p.y, tx: hit.tx, ty: hit.ty });
+    let best: { hit: NonNullable<ReturnType<typeof atLength>>; dist: number } | null = null;
+    const step = Math.max(4, (hi - lo) / 12);
+    for (let s = lo; s <= hi + 0.01; s += step) {
+      const hit = atLength(pts, s);
+      if (!hit) continue;
+      const dist = attach ? Math.hypot(hit.p.x - attach.x, hit.p.y - attach.y) : 99;
+      if (!best || dist > best.dist) best = { hit, dist };
+    }
+    if (best && (best.dist >= 10 || !attach)) {
+      marks.push({ x: best.hit.p.x, y: best.hit.p.y, tx: best.hit.tx, ty: best.hit.ty });
     }
   }
   return marks;
