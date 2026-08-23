@@ -1,6 +1,6 @@
 {
-  "version": "1.2.35",
+  "version": "1.2.36",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "90B is a tap of always-hot 90A to fuse E3, not key-on into 300."
+  "notes": "Chevrons on each wire show current from → to."
 }

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { placeWireLabels, type LabelBox, type Pt } from "./wire-label.ts";
+import { flowChevronPoints, placeFlowMarks, placeWireLabels, type LabelBox, type Pt } from "./wire-label.ts";
 import { nodeWH, routeMapWires } from "./wire-route.ts";
 
 function hLine(y: number, x0 = 80, x1 = 520): Pt[] {
@@ -83,6 +83,30 @@ test("leader runs from the pill to the attach point on the wire", () => {
     false,
     "pill must not cover the attach dot",
   );
+});
+
+test("flow chevrons sit on the wire and point toward the destination", () => {
+  const pts = hLine(140, 80, 520);
+  const marks = placeFlowMarks(pts);
+  assert.ok(marks.length >= 1);
+  const dest = pts[pts.length - 1]!;
+  const start = pts[0]!;
+  for (const m of marks) {
+    assert.ok(onPath({ x: m.x, y: m.y }, pts, 1.2), `mark ${m.x},${m.y} off the wire`);
+    const toStart = Math.hypot(m.x - start.x, m.y - start.y);
+    const toEnd = Math.hypot(m.x - dest.x, m.y - dest.y);
+    assert.ok(toStart >= 16, `too close to start ${toStart.toFixed(1)}`);
+    assert.ok(toEnd >= 14, `too close to end ${toEnd.toFixed(1)}`);
+    const toward = (dest.x - m.x) * m.tx + (dest.y - m.y) * m.ty;
+    assert.ok(toward > 0, "chevron does not point toward to");
+    const poly = flowChevronPoints(m).split(/\s+/);
+    assert.equal(poly.length, 3);
+  }
+});
+
+test("a short stub does not get a flow chevron on top of a box", () => {
+  const marks = placeFlowMarks(hLine(100, 80, 96));
+  assert.equal(marks.length, 0);
 });
 
 test("the mark sits on the middle of the wire, not at a connector", () => {

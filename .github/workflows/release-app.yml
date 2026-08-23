@@ -45,7 +45,7 @@ jobs:
           ver = Path('VERSION').read_text().strip()
           p = Path('android/app/build.gradle')
           t = p.read_text()
-          t = t.replace('versionCode 1', 'versionCode 42')
+          t = t.replace('versionCode 1', 'versionCode 43')
           t = t.replace('versionName \"1.0\"', f'versionName \"{ver}\"')
           p.write_text(t)
           "
@@ -65,12 +65,12 @@ jobs:
           path: artifacts/3600-wiring.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.35
-          name: 3600 Wiring 1.2.35
+          tag_name: v1.2.36
+          name: 3600 Wiring 1.2.36
           body: |
             **[Open the shop-manual](https://thelubemaster.github.io/thomasvista3600/)**
 
-            90B is a tap of always-hot 90A through (2) A6 to fuse E3. It is not key-on into relay 300.
+            Chevrons on each wire show current from → to (power toward the load).
 
             Android: [3600-wiring.apk](https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk)
           files: artifacts/3600-wiring.apk

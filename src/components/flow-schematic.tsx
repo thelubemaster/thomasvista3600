@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import type { FlowMap, FlowNode } from "@/data/schematics";
 import { isWallStop, readLines, type ReadLine } from "@/data/read-lines";
-import { placeWireLabels } from "@/lib/wire-label";
+import { flowChevronPoints, placeFlowMarks, placeWireLabels } from "@/lib/wire-label";
 import { nodeWH, polylineToPath, routeMapWires } from "@/lib/wire-route";
 import { ZoomStage } from "@/components/zoom-stage";
 import { PartInspect } from "@/components/part-inspect";
@@ -175,7 +175,10 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
       { w: W, h: H },
     );
     const byLab = new Map(labels.map((l) => [l.id, l]));
-    return items.map((it) => ({ ...it, lab: byLab.get(it.w.id) ?? null }));
+    return items.map((it) => {
+      const lab = byLab.get(it.w.id) ?? null;
+      return { ...it, lab, flow: placeFlowMarks(it.pts, lab?.attach ?? null) };
+    });
   }, [map, W, H]);
 
   const node = map.nodes.find((n) => n.id === selected);
@@ -267,14 +270,25 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
             </text>
           )}
 
-          {drawn.map(({ w, d }) => {
+          {drawn.map(({ w, d, flow }) => {
             const onRead = activeCircuit ? w.circuit === activeCircuit : false;
             const active = !selected && !readCircuit ? true : related.has(w.id) || related.has(w.from) || related.has(w.to) || onRead;
             const dim = Boolean(selected || readCircuit) && !active;
+            const color = strokeFor[w.color];
             return (
               <g key={w.id} className={cn("cursor-pointer", dim && "opacity-20")} data-wire={w.id}>
                 <path d={d} fill="none" stroke="transparent" strokeWidth={18} />
-                <path d={d} fill="none" stroke={strokeFor[w.color]} strokeWidth={active && (selected || onRead) ? 3.4 : 2.1} />
+                <path d={d} fill="none" stroke={color} strokeWidth={active && (selected || onRead) ? 3.4 : 2.1} />
+                {flow.map((m, i) => (
+                  <polygon
+                    key={`${w.id}-flow-${i}`}
+                    points={flowChevronPoints(m)}
+                    fill={color}
+                    stroke="var(--color-surface)"
+                    strokeWidth={0.9}
+                    strokeLinejoin="round"
+                  />
+                ))}
               </g>
             );
           })}
@@ -352,7 +366,9 @@ export function FlowSchematic({ map }: { map: FlowMap }) {
           <p className="font-mono text-[10px] tracking-widest text-accent uppercase">
             Read left to right · cab → wall plug → engine
           </p>
-          <p className="text-xs text-muted">Each tag points at one wire. Tap a tag or a hop below to light that circuit.</p>
+          <p className="text-xs text-muted">
+            Chevrons on the wire are current from → to (power toward the load, returns toward ground). Each tag points at one wire.
+          </p>
           <ul className="space-y-1.5">
             {lines.map((line) => (
               <ReadRow

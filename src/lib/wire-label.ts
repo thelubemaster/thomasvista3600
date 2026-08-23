@@ -84,6 +84,43 @@ function atLength(pts: Pt[], s: number): { p: Pt; tx: number; ty: number } | nul
   return null;
 }
 
+export type FlowMark = { x: number; y: number; tx: number; ty: number };
+
+/** Chevrons along from → to. Stay off connector ends and the circuit tag. */
+export function placeFlowMarks(pts: Pt[], attach?: Pt | null): FlowMark[] {
+  const total = pathLen(pts);
+  if (pts.length < 2 || total < 28) return [];
+  const startPad = Math.min(20, total * 0.2);
+  const endPad = Math.min(18, total * 0.16);
+  const lo = startPad;
+  const hi = Math.max(lo + 1, total - endPad);
+  const samples = total >= 110 ? [0.36, 0.72] : total >= 56 ? [0.62] : [0.55];
+  const marks: FlowMark[] = [];
+  for (const t of samples) {
+    const hit = atLength(pts, lo + (hi - lo) * t);
+    if (!hit) continue;
+    if (attach && Math.hypot(hit.p.x - attach.x, hit.p.y - attach.y) < 18) continue;
+    if (marks.some((m) => Math.hypot(m.x - hit.p.x, m.y - hit.p.y) < 26)) continue;
+    marks.push({ x: hit.p.x, y: hit.p.y, tx: hit.tx, ty: hit.ty });
+  }
+  if (!marks.length) {
+    const hit = atLength(pts, (lo + hi) / 2);
+    if (hit && !(attach && Math.hypot(hit.p.x - attach.x, hit.p.y - attach.y) < 14)) {
+      marks.push({ x: hit.p.x, y: hit.p.y, tx: hit.tx, ty: hit.ty });
+    }
+  }
+  return marks;
+}
+
+export function flowChevronPoints(m: FlowMark, size = 6.5): string {
+  const bx = -m.ty;
+  const by = m.tx;
+  const tip = { x: m.x + m.tx * size, y: m.y + m.ty * size };
+  const left = { x: m.x - m.tx * size * 0.55 + bx * size * 0.5, y: m.y - m.ty * size * 0.55 + by * size * 0.5 };
+  const right = { x: m.x - m.tx * size * 0.55 - bx * size * 0.5, y: m.y - m.ty * size * 0.55 - by * size * 0.5 };
+  return `${tip.x.toFixed(1)},${tip.y.toFixed(1)} ${left.x.toFixed(1)},${left.y.toFixed(1)} ${right.x.toFixed(1)},${right.y.toFixed(1)}`;
+}
+
 function runs(pts: Pt[]): { fromS: number; toS: number; len: number }[] {
   const out: { fromS: number; toS: number; len: number }[] = [];
   let fromS = 0;
