@@ -259,7 +259,7 @@ export const connectors: Connector[] = [
       { cavity: "13", circuit: "---", dest: "Empty" },
       { cavity: "14", circuit: "---", dest: "Empty" },
       { cavity: "15", circuit: "62-GA", dest: "Panel lamp ground" },
-      { cavity: "16", circuit: "29A", dest: "Water temp from engine D5" },
+      { cavity: "16", circuit: "26A", dest: "Ammeter + from dash 2-E5 / J1 tap" },
       { cavity: "17", circuit: "31", dest: "Trans temp from engine H4" },
     ],
   },

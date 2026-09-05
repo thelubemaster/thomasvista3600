@@ -187,21 +187,21 @@ export const allCircuits: CircuitRow[] = [
     name: "GENERATOR - FIELD",
     power: "Signal",
     engineCritical: false,
-    notes: "Charging. Engine runs without it until the battery dies.",
+    notes: "Alternator I. Key IGN through (2) F6. Engine runs without it until the battery dies.",
   },
   {
     id: "2",
     name: "GENERATOR - CHARGE",
     power: "Battery",
     engineCritical: false,
-    notes: "Alternator output. Not required to start or idle.",
+    notes: "Alternator B 4RD to J1. G is 2-G on the engine. Not required to start or idle.",
   },
   {
     id: "7",
     name: "GENERATOR - REGULATOR",
     power: "Signal",
     engineCritical: false,
-    notes: "Charging control only.",
+    notes: "Internal in the Delco / L-N. No separate 7 wire on printed page 18.",
   },
   {
     id: "12 / 12A",
@@ -236,7 +236,7 @@ export const allCircuits: CircuitRow[] = [
     name: "AMMETER",
     power: "Signal",
     engineCritical: false,
-    notes: "Dash 2-F5 / E5 and cluster 26-7. Gauge only.",
+    notes: "Dash 2-F5 / E5 to cluster 26-7 / 26-16. Tap at J1, not on the alt. Gauge only.",
   },
   {
     id: "28 / 28A–E / 28-G*",

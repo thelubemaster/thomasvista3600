@@ -71,6 +71,31 @@ function skipIds(map: MapBlock): string[] {
     .map((w) => `${map.id}/${w.id}:${w.from}->${w.to}`);
 }
 
+test("circuit 2: charge 2 crosses at the 4RD pass; field 1 and ammeter cross at dash (2); G stays on the engine", () => {
+  const map = loadCore().find((m) => m.id === "2");
+  assert.ok(map && map.firewallX);
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
+  const altW = map.wires.filter((w) => w.from === "alt" || w.to === "alt");
+  assert.ok(altW.some((w) => w.circuit === "2" && (w.from === "pass" || w.to === "pass")));
+  assert.ok(altW.some((w) => w.circuit === "1" && (w.from === "bulk" || w.to === "bulk")));
+  assert.ok(altW.some((w) => w.circuit === "2-G"));
+  assert.equal(
+    altW.some((w) => w.circuit === "26" || w.circuit === "26A"),
+    false,
+    "ammeter does not land on the alternator",
+  );
+  const gnd = map.wires.find((w) => w.circuit === "2-G");
+  assert.ok(gnd);
+  const byId = new Map(map.nodes.map((n) => [n.id, n]));
+  const ga = byId.get(gnd.from);
+  const gb = byId.get(gnd.to);
+  assert.ok(ga && gb && ga.x > map.firewallX && gb.x > map.firewallX);
+});
+
 test("circuit 19: no wire crosses the firewall except at DASH CONNECTOR (2)", () => {
   const map = loadCore().find((m) => m.id === "19");
   assert.ok(map && map.firewallX);

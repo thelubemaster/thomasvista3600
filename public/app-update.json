@@ -1,8 +1,8 @@
 {
-  "version": "1.2.42",
-  "apkVersion": "1.2.42",
-  "apkVersionCode": 49,
+  "version": "1.2.43",
+  "apkVersion": "1.2.43",
+  "apkVersionCode": 50,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 17N is starter control with no 661. Original circuit 17 still has the inhibit relay."
+  "notes": "Circuit 2 charging redraw: alternator I field, B charge, G ground. Ammeter is a J1 tap, not an alt pin."
 }

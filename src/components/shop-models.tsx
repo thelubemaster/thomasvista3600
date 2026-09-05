@@ -571,7 +571,7 @@ export function Alternator({
         <torusGeometry args={[0.038, 0.008, 8, 16]} />
         <M color={C.rubber} opacity={op} />
       </mesh>
-      {selected ? <Tag text="GENERATOR" sub="Charge · circuit 2" /> : null}
+      {selected ? <Tag text="ALTERNATOR (J33)" sub="I=1 · B=2 · G=2-G" /> : null}
     </group>
   );
 }

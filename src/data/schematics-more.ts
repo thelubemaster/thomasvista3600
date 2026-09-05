@@ -62,14 +62,14 @@ function map(
 }
 
 export const moreMaps: FlowMap[] = [
-  map("1", "GENERATOR - FIELD", false, "Battery", "Printed page 18. Field from the generator.", "GENERATOR", "Field", "BODY BUILDER FEED STUD (J1)", "Charge path", { id: "pass", label: "FIREWALL PASS", sub: "Charge 4ga" }),
-  map("7", "GENERATOR - REGULATOR", false, "Signal", "Regulator sense / field control.", "GENERATOR", "Regulator", "FUSE BLOCK", "Sense", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
+  map("1", "GENERATOR - FIELD", false, "Key / IGN", "Printed page 18. Alternator terminal I. Key 63 IGN 1 14LTBL through DASH CONNECTOR (2) F6 / 2A-F6 1-RW. Full charging drawing is circuit 2.", "KEY SWITCH (63) IGN", "1 14LTBL", "ALTERNATOR (J33)", "Terminal I", { id: "d2", label: "DASH CONNECTOR (2)", sub: "F6" }),
+  map("7", "GENERATOR - REGULATOR", false, "Internal", "Printed page 18. Regulator is inside the Delco 1100/130/145 and L/N 1105/160. No separate circuit-7 wire. The three alt pins are I, B, G — see circuit 2.", "ALTERNATOR (J33)", "Internal regulator", "NO CID 7 PIN", "I / B / G only"),
   map("12", "ACCESSORY FEED", false, "Key ACC", "KEY SWITCH (63) ACC → J2 → D1 / E1.", "KEY SWITCH (63) ACC", "Circuit 12", "ACCESSORY FEED (J2)", "Left lower dash", { id: "fuse", label: "FUSE D1 / E1", sub: "ACC fuses" }),
   map("24", "EXHAUST BRAKE", false, "Signal", "CEC 15. Rare on a 3600 bus. Solenoid stays on the engine.", "CEC CONTROL MODULE (379)", "Pin 15 · on the engine", "EXHAUST BRAKE", "On the engine"),
   map("25", "PYROMETER", false, "Signal", "Optional pyrometer gauge.", "ENGINE", "EGT probe", "INSTRUMENT CLUSTER", "Gauge", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
-  map("26", "AMMETER", false, "Signal", "GENERATOR charge sense through DASH CONNECTOR (2) E5/F5 to cluster.", "GENERATOR", "Charge sense", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 7", { id: "d2", label: "DASH CONNECTOR (2)", sub: "E5 / F5" }),
+  map("26", "AMMETER", false, "Signal", "Printed page 18 / 81. W/V8 tap at J1 through DASH CONNECTOR (2) E5=26A / F5=26 to YELLOW (26) 16 / 7. Not a wire on the alternator.", "J1 FEED STUD", "26 / 26A tap W/V8", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "16=26A · 7=26", { id: "d2", label: "DASH CONNECTOR (2)", sub: "E5 / F5" }),
   map("27", "VOLTMETER", false, "Signal", "Optional voltmeter.", "BATTERY FEED", "Sense", "INSTRUMENT CLUSTER", "Voltmeter"),
-  map("29", "ENGINE WATER TEMPERATURE", false, "Signal", "Sender through DASH CONNECTOR (2) to YELLOW (26) 16.", "ENGINE", "Water sender", "INSTRUMENT CLUSTER LEFT — YELLOW (26)", "Cavity 16", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
+  map("29", "ENGINE WATER TEMPERATURE", false, "Signal", "Sender through DASH CONNECTOR (2) D5 to GREEN (27) 15. Yellow (26) 16 is ammeter 26A, not water temp.", "ENGINE", "Water sender", "INSTRUMENT CLUSTER CENTER — GREEN (27)", "Cavity 15", { id: "d2", label: "DASH CONNECTOR (2)", sub: "D5" }),
   map("30", "ENGINE OIL TEMPERATURE", false, "Signal", "Optional oil-temp sender.", "ENGINE", "Oil temp sender", "INSTRUMENT CLUSTER", "Gauge", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
   map("33", "ENGINE OIL LEVEL", false, "Signal", "Optional oil-level warning.", "ENGINE", "Level switch", "AUDIBLE ALARM (20)", "Warning", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
   map("34", "COOLANT LEVEL", false, "Key", "Low-coolant with G1 / Allison feed.", "FUSE G1 15A IGN/XMSN", "Key-on", "COOLANT LEVEL SWITCH", "Warning", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
