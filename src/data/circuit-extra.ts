@@ -125,6 +125,16 @@ export const extras: Record<string, Extra> = {
     engine: "Engine 2A-C6 / B5 → sender 196",
     more: "Fuel level sender and its ground both cross the firewall.",
   },
+  "LT": {
+    fuse: "C3 30A TURN · D3 30A STOP+FTP · E2 30A MARKER. Headlight 50 is unfused from J1.",
+    power: "Battery",
+    engineCritical: false,
+    ifCut: "No exterior lamps. Engine still runs.",
+    cab: "Switch 60, turn 459, stop 51, flasher R1, LTD 100, FTP 101. BODY BUILDER (194) A/C/F/G/H.",
+    engine: "FRONT END (2B) cab face: E1=52 hi, D1=53 lo, E2=56 L turn, D2=57 R turn, F3=58A park.",
+    relay: "FLASHER (R1). LIFT TO DIM (100). FLASH TO PASS (101).",
+    more: "Rebuild drawing. Hood/body lamps stay on the mates of 2B and 194. 194-D is backup 71A if you run it. D3 is stop AND flash-to-pass.",
+  },
   "50": {
     fuse: "Unfused 50 12YL from J1. FTP 50A is D3 30A STOP.",
     power: "Battery",

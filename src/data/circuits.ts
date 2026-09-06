@@ -34,6 +34,7 @@ export const circuitNames: Record<string, string> = {
   "47": "SPEEDOMETER",
   "48": "TACHOMETER",
   "49": "DIFFERENTIAL LOCK ENGAGED WARNING",
+  "LT": "LIGHTS — CAB TO WALL REBUILD",
   "50": "HEADLIGHTS-FEED",
   "51": "DIMMER SWITCH-FEED",
   "52": "HEADLIGHT - HI BEAM",

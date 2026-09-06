@@ -32,10 +32,50 @@ function loadCircuit17() {
   return { id: "17", nodes, wires };
 }
 
+test("circuit LT front end (2B) shows hi lo turns and park", () => {
+  const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../data/schematics.ts"), "utf8");
+  const start = src.indexOf('\n    id: "LT"');
+  const end = src.indexOf('\n    id: "62"', start);
+  const block = src.slice(start, end);
+  const nodes: { id: string; pins?: string; sub?: string }[] = [];
+  const nodeRe = /\{ id: "([^"]+)",[\s\S]*?x: \d+/g;
+  const wiresStart = block.indexOf("    wires:");
+  let n: RegExpExecArray | null;
+  while ((n = nodeRe.exec(block))) {
+    if (wiresStart >= 0 && n.index > wiresStart) break;
+    const slice = block.slice(n.index, n.index + 500);
+    nodes.push({
+      id: n[1],
+      pins: /pins: "([^"]*)"/.exec(slice)?.[1],
+      sub: /sub: "([^"]*)"/.exec(slice)?.[1],
+    });
+  }
+  const wires: { from: string; to: string; circuit: string; label?: string }[] = [];
+  const wireRe =
+    /\{ id: "[^"]+", from: "([^"]+)", to: "([^"]+)", circuit: "([^"]+)", color: "[^"]+"(?:, label: "([^"]+)")?/g;
+  while ((n = wireRe.exec(block))) wires.push({ from: n[1], to: n[2], circuit: n[3], label: n[4] });
+  const map = { id: "LT", nodes, wires };
+  const front = connectors.find((c) => c.id === "front-2-cab");
+  const bb = connectors.find((c) => c.id === "bb-194");
+  assert.ok(front && bb);
+  assert.deepEqual(
+    pinsOnSchematic(front, map as never, "front")
+      .map((p) => p.cavity)
+      .sort(),
+    ["D1", "D2", "E1", "E2", "F3"],
+  );
+  assert.deepEqual(
+    pinsOnSchematic(bb, map as never, "bb")
+      .map((p) => p.cavity)
+      .sort(),
+    ["A", "C", "F", "G", "H"],
+  );
+});
+
 test("circuit 50 front end (2B) shows E1 hi and D1 lo", () => {
   const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../data/schematics.ts"), "utf8");
   const start = src.indexOf('\n    id: "50"');
-  const end = src.indexOf('\n    id: "62"', start);
+  const end = src.indexOf('\n    id: "LT"', start);
   const block = src.slice(start, end);
   const nodes: { id: string; pins?: string; sub?: string }[] = [];
   const nodeRe = /\{ id: "([^"]+)",[\s\S]*?x: \d+/g;

@@ -340,6 +340,29 @@ test("circuit 50: both headlights get hi and lo", () => {
   assert.ok(toRh.includes("53A") || toRh.includes("53"));
 });
 
+test("circuit LT rebuild lands on FRONT END (2B) and BODY BUILDER (194)", () => {
+  const map = loadCore().find((m) => m.id === "LT");
+  assert.ok(map && map.firewallX);
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
+  assert.ok(map.nodes.some((n) => n.id === "front"));
+  assert.ok(map.nodes.some((n) => n.id === "bb"));
+  assert.ok(map.nodes.some((n) => n.id === "flash"));
+  assert.ok(map.nodes.some((n) => n.id === "ltd"));
+  assert.ok(map.wires.some((w) => w.circuit === "52" && (w.from === "front" || w.to === "front")));
+  assert.ok(map.wires.some((w) => w.circuit === "56" && (w.from === "front" || w.to === "front")));
+  assert.ok(map.wires.some((w) => w.circuit === "70A" && (w.from === "bb" || w.to === "bb")));
+  assert.ok(map.wires.some((w) => w.circuit === "58A" && (w.from === "front" || w.to === "front")));
+  assert.equal(
+    map.nodes.some((n) => n.id === "lh" || n.id === "rh"),
+    false,
+    "rebuild stops at the wall — no hood lamps",
+  );
+});
+
 test("circuit 50: 3600 stationary uses LTD 100 and FTP 101 — no floor dimmer", () => {
   const map = loadCore().find((m) => m.id === "50");
   assert.ok(map && map.firewallX);

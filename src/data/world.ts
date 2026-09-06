@@ -80,6 +80,7 @@ export const circuitToggles = [
   { id: "47", title: "SPEEDOMETER", crit: false },
   { id: "48", title: "TACHOMETER", crit: false },
   { id: "49", title: "DIFFERENTIAL LOCK ENGAGED WARNING", crit: false },
+  { id: "LT", title: "LIGHTS — CAB TO WALL REBUILD", crit: false },
   { id: "50", title: "HEADLIGHTS-FEED", crit: false },
   { id: "51", title: "DIMMER SWITCH-FEED", crit: false },
   { id: "52", title: "HEADLIGHT - HI BEAM", crit: false },

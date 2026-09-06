@@ -1,6 +1,6 @@
 {
-  "version": "1.2.44",
+  "version": "1.2.45",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "Circuit 50 headlights redraw: LTD 100 and FTP 101, not a floor dimmer. Park 58A crosses at 2B-F3."
+  "notes": "Lights cab-to-wall rebuild drawing: headlights, turns, stop, park on FRONT END (2B) and BODY BUILDER (194)."
 }

@@ -309,6 +309,13 @@ export const allCircuits: CircuitRow[] = [
     notes: "Printed page 57. J1 50 12YL unfused to switch 60. LTD 100 / FTP 101. No floor dimmer.",
   },
   {
+    id: "LT",
+    name: "LIGHTS — CAB TO WALL REBUILD",
+    power: "Battery",
+    engineCritical: false,
+    notes: "Headlights, turns, stop, park. Fuses C3 D3 E2, flasher R1, switch 60, 459, 51, LTD 100, FTP 101. Lands on FRONT END (2B) and BODY BUILDER (194).",
+  },
+  {
     id: "52 / 52A / 52B / 52C",
     name: "HEADLIGHT - HI BEAM",
     power: "Battery",
