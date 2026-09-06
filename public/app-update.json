@@ -1,8 +1,8 @@
 {
-  "version": "1.2.46",
-  "apkVersion": "1.2.46",
-  "apkVersionCode": 53,
+  "version": "1.2.47",
+  "apkVersion": "1.2.47",
+  "apkVersionCode": 54,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "LT: flasher 2-blade with 3 wires; E4 20A fuses J1 to the headlight switch."
+  "notes": "LT: every lamp on the rebuild — heads 502/504, front 503/505, body stop/turn/marker, panel."
 }

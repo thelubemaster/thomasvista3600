@@ -45,7 +45,7 @@ export const BOOK_PLUG_GROUPS = [
     id: "lights",
     label: "Lights",
     page: "98–101",
-    ids: ["lh-502", "rh-504", "lt-503", "hood-413", "horn-605", "stop-540"],
+    ids: ["lh-502", "rh-504", "lt-503", "rt-505", "hood-413", "horn-605", "stop-540"],
   },
   {
     id: "relays",

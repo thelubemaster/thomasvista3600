@@ -871,13 +871,27 @@ export const connectors: Connector[] = [
   {
     id: "lt-503",
     tag: "503",
-    name: "Left turn signal",
+    name: "LEFT FRONT TURN / MARKER (503)",
     harness: "Front",
-    page: "98",
+    page: "13 / 63 / 98",
     hyd: true,
     pins: [
-      { cavity: "SIG", circuit: "56", dest: "Front-end E2" },
-      { cavity: "GND", circuit: "11", dest: "Ground" },
+      { cavity: "SIG", circuit: "56", dest: "Front-end E2 — turn from C3 / R1 / 459" },
+      { cavity: "PARK", circuit: "58E", dest: "Park / marker from 2B-F3" },
+      { cavity: "GND", circuit: "11-GD", dest: "Ground" },
+    ],
+  },
+  {
+    id: "rt-505",
+    tag: "505",
+    name: "RIGHT FRONT TURN / MARKER (505)",
+    harness: "Front",
+    page: "13 / 63",
+    hyd: true,
+    pins: [
+      { cavity: "SIG", circuit: "57", dest: "Front-end D2 — turn from C3 / R1 / 459" },
+      { cavity: "PARK", circuit: "58F", dest: "Park / marker from 2B-F3" },
+      { cavity: "GND", circuit: "11-GF", dest: "Ground" },
     ],
   },
   {

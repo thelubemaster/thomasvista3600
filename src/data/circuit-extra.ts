@@ -130,10 +130,10 @@ export const extras: Record<string, Extra> = {
     power: "Battery",
     engineCritical: false,
     ifCut: "No exterior lamps. Engine still runs.",
-    cab: "Switch 60, turn 459, stop 51, flasher R1, LTD 100, FTP 101. BODY BUILDER (194) A/C/F/G/H.",
-    engine: "FRONT END (2B) cab face: E1=52 hi, D1=53 lo, E2=56 L turn, D2=57 R turn, F3=58A park.",
+    cab: "Switch 60, turn 459, stop 51, flasher R1, LTD 100, FTP 101. Cluster: hi 52A, L turn 56C, R turn 57C, panel 62.",
+    engine: "2B: E1=52→502/504 HI, D1=53→502/504 LO, E2=56→503, D2=57→505, F3=58A park. 194: A stop, F L turn, G R turn, H marker, C panel.",
     relay: "FLASHER (R1). LIFT TO DIM (100). FLASH TO PASS (101).",
-    more: "Rebuild drawing. E4 fuses J1 to switch 60-A (book left E4 empty). Flasher is 2-blade with 3 wires — two piggybacked on load blade B (55A + 60). Hood/body lamps stay on the mates of 2B and 194.",
+    more: "Rebuild drawing with the lamps on it. E4 fuses J1 to switch 60-A. Flasher is 2-blade, 3 wires (55A+60 on B) — no ground pin. 194-D backup is circuit 71 / A1, not this drawing.",
   },
   "50": {
     fuse: "E4 20A HEAD (rebuild). Book had 50 unfused from J1. FTP 50A is D3 30A STOP.",

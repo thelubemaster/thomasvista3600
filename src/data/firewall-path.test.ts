@@ -360,11 +360,16 @@ test("circuit LT rebuild lands on FRONT END (2B) and BODY BUILDER (194)", () => 
   assert.ok(map.wires.some((w) => w.circuit === "56" && (w.from === "front" || w.to === "front")));
   assert.ok(map.wires.some((w) => w.circuit === "70A" && (w.from === "bb" || w.to === "bb")));
   assert.ok(map.wires.some((w) => w.circuit === "58A" && (w.from === "front" || w.to === "front")));
-  assert.equal(
-    map.nodes.some((n) => n.id === "lh" || n.id === "rh"),
-    false,
-    "rebuild stops at the wall — no hood lamps",
-  );
+  assert.ok(map.nodes.some((n) => n.id === "lh"), "LEFT HEADLIGHT (502)");
+  assert.ok(map.nodes.some((n) => n.id === "rh"), "RIGHT HEADLIGHT (504)");
+  assert.ok(map.nodes.some((n) => n.id === "lft"), "LEFT FRONT TURN (503)");
+  assert.ok(map.nodes.some((n) => n.id === "rft"), "RIGHT FRONT TURN (505)");
+  assert.ok(map.nodes.some((n) => n.id === "bStop"), "BODY STOP LAMPS");
+  assert.ok(map.nodes.some((n) => n.id === "bLt") && map.nodes.some((n) => n.id === "bRt"));
+  assert.ok(map.nodes.some((n) => n.id === "bMark") && map.nodes.some((n) => n.id === "panel"));
+  assert.ok(map.wires.some((w) => w.circuit === "52" && (w.from === "lh" || w.to === "lh")));
+  assert.ok(map.wires.some((w) => w.circuit === "56" && (w.from === "lft" || w.to === "lft")));
+  assert.ok(map.wires.some((w) => w.circuit === "70A" && (w.from === "bStop" || w.to === "bStop")));
 });
 
 test("circuit 50: 3600 stationary uses LTD 100 and FTP 101 — no floor dimmer", () => {
