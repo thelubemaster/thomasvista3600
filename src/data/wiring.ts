@@ -139,6 +139,15 @@ export const fuses: Fuse[] = [
     notes: "Hydro-Max control. Chart does not prefix BAT/IGN; diagrams treat it as switched, not a J1 always-hot feed. Critical for hydraulic brakes, not for the engine.",
   },
   {
+    id: "E4",
+    cover: "HEAD",
+    size: "20A",
+    source: "battery",
+    description: "Headlights (rebuild)",
+    engineCritical: false,
+    notes: "Book: NOT USED. Rebuild: fuse J1 to HEADLIGHT SWITCH (60) A. 20A yellow. 14A in, 50 out. Book ran 50 unfused.",
+  },
+  {
     id: "F1",
     cover: "ABS IGN",
     size: "10A",

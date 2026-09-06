@@ -351,7 +351,11 @@ test("circuit LT rebuild lands on FRONT END (2B) and BODY BUILDER (194)", () => 
   assert.ok(map.nodes.some((n) => n.id === "front"));
   assert.ok(map.nodes.some((n) => n.id === "bb"));
   assert.ok(map.nodes.some((n) => n.id === "flash"));
+  assert.ok(map.nodes.some((n) => n.id === "spliceR1"));
+  assert.ok(map.nodes.some((n) => n.id === "e4"));
   assert.ok(map.nodes.some((n) => n.id === "ltd"));
+  assert.ok(map.wires.some((w) => w.circuit === "50" && (w.from === "e4" || w.to === "e4")));
+  assert.ok(map.wires.some((w) => w.circuit === "60" && (w.from === "spliceR1" || w.to === "spliceR1")));
   assert.ok(map.wires.some((w) => w.circuit === "52" && (w.from === "front" || w.to === "front")));
   assert.ok(map.wires.some((w) => w.circuit === "56" && (w.from === "front" || w.to === "front")));
   assert.ok(map.wires.some((w) => w.circuit === "70A" && (w.from === "bb" || w.to === "bb")));

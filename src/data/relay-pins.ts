@@ -361,7 +361,7 @@ export const relayFaces: RelayFace[] = [
     name: "FLASHER",
     page: "77",
     where: "Sits in the fuse-panel lid (circle on the cover)",
-    look: "Round 2-blade can. R1-A is feed, R1-B is load.",
+    look: "Round 2-blade can. Three wires: A=55 one wire, B=two wires 55A and 60.",
     engineCritical: false,
     fused: "C3 30A TURN (battery)",
     layout: "flash2",
@@ -369,7 +369,7 @@ export const relayFaces: RelayFace[] = [
       { id: "A", iso: "X", circuit: "55", role: "In", goes: "Fuse C3-B", power: "Battery" },
       { id: "B", iso: "L", circuit: "55A / 60", role: "Out", goes: "Turn / hazard switch 459", power: "Battery" },
     ],
-    more: "Two blades only. Swap for an electronic flasher if you add LED lamps.",
+    more: "Two blades, three wires. Load blade B has 55A (turn) and 60 (hazard) piggybacked. Swap for an electronic flasher if you add LED lamps.",
   },
   {
     id: "99",
