@@ -81,7 +81,7 @@ export const moreMaps: FlowMap[] = [
   map("46", "POWER TAKE OFF (PTO) WARNING", false, "Signal", "Optional PTO lamp.", "PTO SWITCH", "Cab", "INSTRUMENT CLUSTER", "PTO lamp"),
   map("48", "TACHOMETER", false, "Signal", "CEC / engine speed to cluster.", "CEC CONTROL MODULE (379)", "Tach out", "INSTRUMENT CLUSTER", "Tach", { id: "eng3", label: "ENGINE DASH (3)", sub: "Firewall" }),
   map("49", "DIFFERENTIAL LOCK ENGAGED WARNING", false, "Signal", "Optional locker lamp.", "DIFF LOCK SWITCH", "Axle", "INSTRUMENT CLUSTER", "Lamp", { id: "d2", label: "DASH CONNECTOR (2)", sub: "Firewall" }),
-  map("51", "DIMMER SWITCH-FEED", false, "Battery", "HEADLIGHT SWITCH (60) to dimmer.", "HEADLIGHT SWITCH (60)", "Feed", "FRONT END CONNECTOR (2B)", "HI / LO"),
+  map("51", "DIMMER SWITCH-FEED", false, "Battery", "Printed page 57. 51 12YL from HEADLIGHT SWITCH (60) B into LIFT TO DIM RELAY (100) pin 2. Full drawing is circuit 50.", "HEADLIGHT SWITCH (60)", "B=51", "LIFT TO DIM RELAY (100)", "Pin 2"),
   map("52", "HEADLIGHT - HI BEAM", false, "Battery", "2B to LEFT HEADLIGHT (502) / RIGHT (504). Cluster HI indicator is a cab tap, not the wall hop.", "FRONT END CONNECTOR (2B)", "HI", "LEFT HEADLIGHT (502)", "HI 52"),
   map("53", "HEADLIGHT - LO BEAM", false, "Battery", "2B to both headlights LO.", "FRONT END CONNECTOR (2B)", "LO", "LEFT HEADLIGHT (502)", "LO 53"),
   map("56", "LEFT TURN SIGNAL", false, "Battery", "TURN SIGNAL SWITCH (459) through FRONT END (2B) to the lamp. GREEN (27) cavity 6 is the dash indicator.", "NAVISTAR TURN SIGNAL SWITCH (459)", "Left", "LEFT TURN SIGNAL", "Front / body", { id: "d2", label: "FRONT END (2B)", sub: "Firewall" }),

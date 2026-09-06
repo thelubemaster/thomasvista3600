@@ -32,6 +32,38 @@ function loadCircuit17() {
   return { id: "17", nodes, wires };
 }
 
+test("circuit 50 front end (2B) shows E1 hi and D1 lo", () => {
+  const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../data/schematics.ts"), "utf8");
+  const start = src.indexOf('\n    id: "50"');
+  const end = src.indexOf('\n    id: "62"', start);
+  const block = src.slice(start, end);
+  const nodes: { id: string; pins?: string; sub?: string }[] = [];
+  const nodeRe = /\{ id: "([^"]+)",[\s\S]*?x: \d+/g;
+  const wiresStart = block.indexOf("    wires:");
+  let n: RegExpExecArray | null;
+  while ((n = nodeRe.exec(block))) {
+    if (wiresStart >= 0 && n.index > wiresStart) break;
+    const slice = block.slice(n.index, n.index + 500);
+    nodes.push({
+      id: n[1],
+      pins: /pins: "([^"]*)"/.exec(slice)?.[1],
+      sub: /sub: "([^"]*)"/.exec(slice)?.[1],
+    });
+  }
+  const wires: { from: string; to: string; circuit: string; label?: string }[] = [];
+  const wireRe =
+    /\{ id: "[^"]+", from: "([^"]+)", to: "([^"]+)", circuit: "([^"]+)", color: "[^"]+"(?:, label: "([^"]+)")?/g;
+  while ((n = wireRe.exec(block))) wires.push({ from: n[1], to: n[2], circuit: n[3], label: n[4] });
+  const map = { id: "50", nodes, wires };
+  const conn = connectors.find((c) => c.id === "front-2-cab");
+  assert.ok(conn);
+  const pins = pinsOnSchematic(conn, map as never, "front");
+  assert.deepEqual(
+    pins.map((p) => p.cavity).sort(),
+    ["D1", "E1"],
+  );
+});
+
 test("circuit 17 dash connector (2) shows G6 and B6", () => {
   const map = loadCircuit17();
   const conn = connectors.find((c) => c.id === "dash-2-hyd");

@@ -275,7 +275,7 @@ export const relays: Relay[] = [
     loadSide: "51 / 52C hi beam",
     coilSide: "53A / 51D",
     engineCritical: false,
-    notes: "Printed page 84 / 60. DRL / stationary column.",
+    notes: "Printed page 84 / 57. 1=52C 2=51/51F 3 empty 4=53A 5=51D. Typical 3600 stationary. Not a floor dimmer.",
   },
   {
     id: "101",

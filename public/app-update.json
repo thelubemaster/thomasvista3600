@@ -1,8 +1,8 @@
 {
-  "version": "1.2.43",
-  "apkVersion": "1.2.43",
-  "apkVersionCode": 50,
+  "version": "1.2.44",
+  "apkVersion": "1.2.44",
+  "apkVersionCode": 51,
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
   "url": "https://thelubemaster.github.io/thomasvista3600/",
-  "notes": "Circuit 2 charging redraw: alternator I field, B charge, G ground. Ammeter is a J1 tap, not an alt pin."
+  "notes": "Circuit 50 headlights redraw: LTD 100 and FTP 101, not a floor dimmer. Park 58A crosses at 2B-F3."
 }

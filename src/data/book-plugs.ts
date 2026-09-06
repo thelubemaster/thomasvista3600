@@ -39,13 +39,13 @@ export const BOOK_PLUG_GROUPS = [
     id: "cab",
     label: "Cab",
     page: "82–85",
-    ids: ["hdlamp-60", "horn-61", "cruise-391", "cruise-392", "bb-194", "turn-459"],
+    ids: ["hdlamp-60", "horn-61", "cruise-391", "cruise-392", "bb-194", "turn-459", "ftp-ltd-192"],
   },
   {
     id: "lights",
     label: "Lights",
     page: "98–101",
-    ids: ["lh-502", "rh-504", "lt-503", "horn-605", "stop-540"],
+    ids: ["lh-502", "rh-504", "lt-503", "hood-413", "horn-605", "stop-540"],
   },
   {
     id: "relays",

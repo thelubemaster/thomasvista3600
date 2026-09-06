@@ -125,6 +125,16 @@ export const extras: Record<string, Extra> = {
     engine: "Engine 2A-C6 / B5 → sender 196",
     more: "Fuel level sender and its ground both cross the firewall.",
   },
+  "50": {
+    fuse: "Unfused 50 12YL from J1. FTP 50A is D3 30A STOP.",
+    power: "Battery",
+    engineCritical: false,
+    ifCut: "No headlights. Engine still runs.",
+    cab: "J1 → switch 60-A 50. 60-B 51 → LTD (100) pin 2. D3 50A → FTP (101) pin 2. Stalk 192 is FTP/LTD. Hi indicator 52A on GREEN (27) 4.",
+    engine: "FRONT END (2B) E1=52 hi, D1=53 lo. HOOD CONN (413) B=52 A=53. LEFT (502) 52/53. RIGHT (504) 52B/53A.",
+    relay: "LIFT TO DIM (100). FLASH TO PASS (101).",
+    more: "Printed page 57. Typical 3600 stationary column N/DRL. There is no floor dimmer. 50 from J1 is unfused. D3 30A is STOP and also FTP.",
+  },
   "47": {
     fuse: "CEC 5V / sensor",
     power: "Signal",

@@ -161,8 +161,8 @@ export function withGrounds(map: FlowMap): FlowMap {
     const cav = nodeCavities(n);
     if (cav != null && incidentCount(n.id, wires) >= cav) return false;
     // 661 pin 3 is NC empty. 662/396 coil is 97CM, not chassis ground.
-    if (n.relayId === "661" || n.relayId === "662" || n.relayId === "396") return false;
-    if (/crank relay \(661\)|module pwr relay|module relay \(396\)/i.test(n.label)) return false;
+    if (n.relayId === "661" || n.relayId === "662" || n.relayId === "396" || n.relayId === "100" || n.relayId === "101") return false;
+    if (/crank relay \(661\)|module pwr relay|module relay \(396\)|lift to dim|flash to pass/i.test(n.label)) return false;
     return true;
   });
 

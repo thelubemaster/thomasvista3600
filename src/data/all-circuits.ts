@@ -306,7 +306,7 @@ export const allCircuits: CircuitRow[] = [
     name: "HEADLIGHTS-FEED / DIMMER SWITCH-FEED",
     power: "Battery",
     engineCritical: false,
-    notes: "Switch 60.",
+    notes: "Printed page 57. J1 50 12YL unfused to switch 60. LTD 100 / FTP 101. No floor dimmer.",
   },
   {
     id: "52 / 52A / 52B / 52C",

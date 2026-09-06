@@ -340,6 +340,27 @@ test("circuit 50: both headlights get hi and lo", () => {
   assert.ok(toRh.includes("53A") || toRh.includes("53"));
 });
 
+test("circuit 50: 3600 stationary uses LTD 100 and FTP 101 — no floor dimmer", () => {
+  const map = loadCore().find((m) => m.id === "50");
+  assert.ok(map && map.firewallX);
+  assert.ok(map.nodes.some((n) => n.id === "ltd"));
+  assert.ok(map.nodes.some((n) => n.id === "ftp"));
+  assert.equal(
+    map.nodes.some((n) => /dimmer switch/i.test(n.label ?? "")),
+    false,
+  );
+  const skips = hopsThatSkipFirewall(map.nodes, map.wires, map.firewallX);
+  assert.deepEqual(
+    skips.map((w) => `${w.id}:${w.from}->${w.to}`),
+    [],
+  );
+  assert.ok(map.wires.some((w) => w.circuit === "51" && (w.from === "sw" || w.to === "sw") && (w.from === "ltd" || w.to === "ltd")));
+  assert.ok(map.wires.some((w) => w.circuit === "50A" && (w.from === "d3" || w.to === "d3")));
+  assert.ok(map.wires.some((w) => w.circuit === "52" && (w.from === "front" || w.to === "front")));
+  assert.ok(map.wires.some((w) => w.circuit === "53" && (w.from === "front" || w.to === "front")));
+  assert.ok(map.nodes.some((n) => n.id === "hood"));
+});
+
 test("circuit 98: 384 A/B are ATA splices, not C/D", () => {
   const map = loadCore().find((m) => m.id === "98");
   assert.ok(map);
