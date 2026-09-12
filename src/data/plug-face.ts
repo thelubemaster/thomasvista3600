@@ -16,3 +16,7 @@ export const CLUSTER_TOP_L = ["17", "16", "15", "14"] as const;
 export const CLUSTER_TOP_R = ["13", "12", "11", "10"] as const;
 export const CLUSTER_BOT_L = ["9", "8", "7", "6"] as const;
 export const CLUSTER_BOT_R = ["5", "4", "3", "2", "1"] as const;
+/** HEADLIGHT SWITCH (60) mating end, printed page 82. Left stack A/H/G, B beside A, right wing C/D/F/E. */
+export const HEADLIGHT_60_LEFT = ["A", "H", "G"] as const;
+export const HEADLIGHT_60_TOP = ["A", "B"] as const;
+export const HEADLIGHT_60_RIGHT = ["C", "D", "F", "E"] as const;

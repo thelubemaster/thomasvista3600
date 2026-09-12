@@ -25,6 +25,9 @@ export {
   ENGINE2A_COLS,
   FILTER6_ROWS,
   FRONT2B_COLS,
+  HEADLIGHT_60_LEFT,
+  HEADLIGHT_60_RIGHT,
+  HEADLIGHT_60_TOP,
   ISO_MICRO,
 } from "@/data/plug-face";
 
@@ -1007,36 +1010,93 @@ export function Monitor49Art({ pins, active, family, onPick }: ArtProps) {
   );
 }
 
-/** HEADLIGHT SWITCH (60) — printed page 82. */
+/** HEADLIGHT SWITCH (60) — printed page 82 mating end of the harness plug. */
 export function Headlamp60Art({ pins, active, family, onPick }: ArtProps) {
-  const spots: { c: string; x: number; y: number }[] = [
-    { c: "A", x: 70, y: 36 },
-    { c: "B", x: 118, y: 36 },
-    { c: "H", x: 70, y: 84 },
-    { c: "C", x: 150, y: 70 },
-    { c: "G", x: 70, y: 132 },
-    { c: "F", x: 130, y: 118 },
-    { c: "E", x: 170, y: 148 },
-    { c: "D", x: 200, y: 100 },
+  const blades: { c: string; x: number; y: number; note: string; lx: number; ly: number }[] = [
+    { c: "A", x: 118, y: 40, note: "50 HEADS", lx: 8, ly: 66 },
+    { c: "B", x: 168, y: 40, note: "51 DIMMER", lx: 214, ly: 28 },
+    { c: "H", x: 118, y: 96, note: "62 PANEL", lx: 8, ly: 122 },
+    { c: "G", x: 118, y: 152, note: "58A PARK", lx: 8, ly: 178 },
+  ];
+  const wing: { c: string; x: number; y: number; note: string; lx: number; ly: number }[] = [
+    { c: "C", x: 228, y: 82, note: "C  51A", lx: 328, ly: 92 },
+    { c: "D", x: 278, y: 90, note: "D  empty", lx: 328, ly: 112 },
+    { c: "F", x: 220, y: 124, note: "F  empty", lx: 328, ly: 136 },
+    { c: "E", x: 268, y: 142, note: "E  58", lx: 328, ly: 160 },
   ];
   return (
-    <SvgPlate caption="HEADLIGHT SWITCH (60) · p.82" find="Irregular column switch. A/B on top, H/G down the left, C/F/E/D around the right — same as printed page 82.">
-      <path d="M 58 28 L 150 28 L 168 52 L 210 70 L 230 110 L 210 170 L 58 170 Z" fill={paper} stroke={ink} strokeWidth="2.2" />
-      {spots.map((s) => (
-        <Terminal
-          key={s.c}
-          x={s.x}
-          y={s.y}
-          w={32}
-          h={28}
-          cavity={s.c}
-          pin={pinAt(pins, s.c)}
-          active={active === s.c}
-          family={family}
-          onPick={onPick}
-          label={s.c}
-          inHole
-        />
+    <SvgPlate
+      caption="HEADLIGHT SWITCH (60) · harness plug · mating end · p.82"
+      find="Hold the plug this way up, looking into the holes. Left stack top to bottom: A heads, H panel, G park. Fat blade next to A is B dimmer. Right wing is C D / F E. Connector 0286786C1."
+      box="0 0 400 250"
+      maxW={560}
+    >
+      <text x="210" y="16" textAnchor="middle" fill={ink} style={{ fontSize: 9, fontFamily: "ui-monospace, monospace", fontWeight: 700 }}>
+        ▲ THIS WAY UP
+      </text>
+      <path
+        d="M 110 32
+           L 210 32
+           Q 220 32 226 44
+           L 242 62
+           L 318 62
+           Q 340 62 346 84
+           L 346 154
+           Q 346 178 322 184
+           L 232 184
+           L 218 214
+           L 110 214
+           Q 98 214 98 200
+           L 98 46
+           Q 98 32 110 32 Z"
+        fill={paper}
+        stroke={ink}
+        strokeWidth="2.4"
+      />
+      <path d="M 98 92 L 84 92 L 84 152 L 98 152" fill={paper} stroke={ink} strokeWidth="1.8" />
+      <text x="91" y="128" textAnchor="middle" fill={ink} style={{ fontSize: 7, fontFamily: "ui-monospace, monospace", fontWeight: 700 }}>
+        LOCK
+      </text>
+      {blades.map((s) => (
+        <g key={s.c}>
+          <Terminal
+            x={s.x}
+            y={s.y}
+            w={38}
+            h={44}
+            kind="slot"
+            cavity={s.c}
+            pin={pinAt(pins, s.c)}
+            active={active === s.c}
+            family={family}
+            onPick={onPick}
+            label={s.c}
+            inHole
+          />
+          <text x={s.lx} y={s.ly} textAnchor="start" fill={ink} style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", fontWeight: 700 }}>
+            {s.note}
+          </text>
+        </g>
+      ))}
+      {wing.map((s) => (
+        <g key={s.c}>
+          <Terminal
+            x={s.x}
+            y={s.y}
+            w={28}
+            h={26}
+            cavity={s.c}
+            pin={pinAt(pins, s.c)}
+            active={active === s.c}
+            family={family}
+            onPick={onPick}
+            label={s.c}
+            inHole
+          />
+          <text x={s.lx} y={s.ly} textAnchor="start" fill={ink} style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", fontWeight: 700 }}>
+            {s.note}
+          </text>
+        </g>
       ))}
     </SvgPlate>
   );

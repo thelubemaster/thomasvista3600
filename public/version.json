@@ -1,6 +1,6 @@
 {
-  "version": "1.2.47",
+  "version": "1.2.48",
   "name": "3600 Wiring",
   "apkUrl": "https://thelubemaster.github.io/thomasvista3600/3600-wiring.apk",
-  "notes": "LT: every lamp on the rebuild — heads 502/504, front 503/505, body stop/turn/marker, panel."
+  "notes": "Headlight switch (60) plug is the real page-82 boot: A/H/G left, B dimmer, C/D/F/E wing."
 }

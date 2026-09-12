@@ -11,6 +11,9 @@ import {
   ENGINE2A_COLS,
   FILTER6_ROWS,
   FRONT2B_COLS,
+  HEADLIGHT_60_LEFT,
+  HEADLIGHT_60_RIGHT,
+  HEADLIGHT_60_TOP,
   ISO_MICRO,
 } from "../data/plug-face.ts";
 
@@ -38,6 +41,12 @@ test("fuel filter 6-way is D C / E B / F A like printed page 83", () => {
 
 test("ISO micro relay is the plus face from printed page 82", () => {
   assert.deepEqual([...ISO_MICRO], ["4", "5", "3", "2", "1"]);
+});
+
+test("headlight switch 60 is the page 82 boot: A/H/G left, B beside A, C/D/F/E right", () => {
+  assert.deepEqual([...HEADLIGHT_60_LEFT], ["A", "H", "G"]);
+  assert.deepEqual([...HEADLIGHT_60_TOP], ["A", "B"]);
+  assert.deepEqual([...HEADLIGHT_60_RIGHT], ["C", "D", "F", "E"]);
 });
 
 test("cluster 17-way is split by the center latch like printed page 81", () => {
